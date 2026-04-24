@@ -1,5 +1,6 @@
 # Star/unstar contact error is silent
 
+**Status:** Complete — `toggleStar()` now calls `toast.show('Could not update star')` after reverting the optimistic signal.
 **Flow:** [10 — Star / Unstar Contact](../flows/10-star-contact/10-star-contact.md)
 **Traces:** L1-002, L2-083.
 **Severity:** Medium — a failed PATCH silently reverts the optimistic icon with no user-visible signal; the visitor taps the star, sees it fill, and then sees it clear for no apparent reason.

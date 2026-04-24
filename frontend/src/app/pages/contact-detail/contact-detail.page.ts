@@ -321,6 +321,7 @@ export class ContactDetailPage implements OnInit {
       this.contact.set(updated);
     } catch {
       this.contact.set(c);
+      this.toast.show('Could not update star');
     }
   }
 }
