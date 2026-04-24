@@ -4,6 +4,13 @@ import { InputFieldComponent } from '../../ui/input-field/input-field.component'
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
 import { AuthService } from '../../auth/auth.service';
 
+const ERROR_MESSAGES: Record<string, string> = {
+  invalid_email: 'Please enter a valid email address.',
+  weak_password: 'Password must be at least 12 characters and include both letters and digits.',
+  email_taken: 'An account with this email already exists.',
+  register_failed: 'We could not create your account. Please try again.',
+};
+
 @Component({
   selector: 'app-register-page',
   standalone: true,
@@ -76,7 +83,8 @@ export class RegisterPage {
       await this.auth.register(this.email(), this.password());
       await this.router.navigateByUrl('/home');
     } catch (e: any) {
-      this.error.set(e?.message ?? 'error');
+      const code = e?.message ?? 'register_failed';
+      this.error.set(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['register_failed']);
     } finally {
       this.busy.set(false);
     }

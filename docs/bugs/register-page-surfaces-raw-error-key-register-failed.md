@@ -1,5 +1,6 @@
 # Register page surfaces raw error key `register_failed`
 
+**Status:** Complete — `auth.service.ts` reads the server's `{ error }` body and `register.page.ts` maps codes through `ERROR_MESSAGES` to user-facing copy.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L2-001, L2-053, L1-015.
 **Severity:** Medium — visitors see an internal error identifier instead of an actionable message.

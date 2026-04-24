@@ -15,8 +15,9 @@ export class AuthService {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok && res.status !== 201) {
-      if (res.status === 409) throw new Error('email_taken');
-      throw new Error('register_failed');
+      const body = await res.json().catch(() => ({} as { error?: string }));
+      const code = body?.error ?? (res.status === 409 ? 'email_taken' : 'register_failed');
+      throw new Error(code);
     }
     await this.login(email, password);
   }
