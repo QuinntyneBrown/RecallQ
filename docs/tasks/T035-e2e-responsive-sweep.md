@@ -51,5 +51,7 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] Spec green consistently.
-- [ ] Three verification passes complete clean.
+- [x] Spec green consistently.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

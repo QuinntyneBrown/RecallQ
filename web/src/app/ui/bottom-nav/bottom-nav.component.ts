@@ -60,6 +60,8 @@ import { AuthService } from '../../auth/auth.service';
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
     }
     button:hover, button:focus-visible {
       color: var(--foreground-primary);

@@ -6,6 +6,7 @@ import { HomeIndicatorComponent } from './ui/home-indicator/home-indicator.compo
 import { ToastHostComponent } from './ui/toast/toast.component';
 import { SidebarComponent } from './ui/sidebar/sidebar.component';
 import { HealthService } from './health.service';
+import { BreakpointService } from './shell/breakpoint.service';
 
 @Component({
   selector: 'app-root',
@@ -20,11 +21,15 @@ import { HealthService } from './health.service';
   ],
   template: `
     <app-status-bar class="status"/>
-    <app-sidebar class="sidebar"/>
+    @if (breakpoints.md()) {
+      <app-sidebar class="sidebar"/>
+    }
     <main class="content"><router-outlet/></main>
-    <app-bottom-nav class="bottom"/>
+    @if (!breakpoints.md()) {
+      <app-bottom-nav class="bottom"/>
+      <app-home-indicator class="home-ind"/>
+    }
     <app-toast-host/>
-    <app-home-indicator class="home-ind"/>
   `,
   styles: [`
     :host {
@@ -90,6 +95,7 @@ import { HealthService } from './health.service';
 export class App implements OnInit {
   protected readonly title = signal('web');
   private readonly health = inject(HealthService);
+  protected readonly breakpoints = inject(BreakpointService);
 
   ngOnInit(): void {
     this.health.start();
