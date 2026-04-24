@@ -1,5 +1,6 @@
 # Register page has no product branding or logo
 
+**Status:** Complete — new `app-brand` component rendered at the top of `/register` and `/login`.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012.
 **Severity:** Low — first-impression / branding gap.

@@ -2,14 +2,16 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { InputFieldComponent } from '../../ui/input-field/input-field.component';
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
+import { BrandComponent } from '../../ui/brand/brand.component';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [InputFieldComponent, ButtonPrimaryComponent, RouterLink],
+  imports: [InputFieldComponent, ButtonPrimaryComponent, BrandComponent, RouterLink],
   template: `
     <section class="page">
+      <app-brand/>
       <h1>Sign in</h1>
       <form (submit)="onSubmit($event)">
         <app-input-field

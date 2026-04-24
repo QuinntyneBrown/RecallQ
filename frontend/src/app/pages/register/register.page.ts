@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { InputFieldComponent } from '../../ui/input-field/input-field.component';
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
+import { BrandComponent } from '../../ui/brand/brand.component';
 import { AuthService } from '../../auth/auth.service';
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -14,9 +15,10 @@ const ERROR_MESSAGES: Record<string, string> = {
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [InputFieldComponent, ButtonPrimaryComponent, RouterLink],
+  imports: [InputFieldComponent, ButtonPrimaryComponent, BrandComponent, RouterLink],
   template: `
     <section class="page">
+      <app-brand/>
       <h1>Create account</h1>
       <form (submit)="onSubmit($event)">
         <app-input-field
