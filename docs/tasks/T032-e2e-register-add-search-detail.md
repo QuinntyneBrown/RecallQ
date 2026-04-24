@@ -76,6 +76,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] Spec passes consistently (10 runs green).
-- [ ] Screenshots saved and visually representative.
-- [ ] Three verification passes complete clean.
+- [x] Spec passes consistently (10 runs green).
+- [x] Screenshots saved and visually representative.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

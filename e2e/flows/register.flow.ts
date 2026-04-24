@@ -7,3 +7,5 @@ export async function registerAndLogin(page: Page, email: string, password: stri
   await auth.register(email, password);
   await expect(page).toHaveURL(/\/home$/);
 }
+
+export { registerAndLogin as registerFlow };

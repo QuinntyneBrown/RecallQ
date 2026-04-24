@@ -23,3 +23,5 @@ export async function createContact(page: Page, contact: ContactInput): Promise<
   if (!match) throw new Error('contact id not found in URL: ' + url);
   return match[1];
 }
+
+export { createContact as addContactFlow };

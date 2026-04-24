@@ -9,3 +9,5 @@ export async function searchFromHome(page: Page, q: string): Promise<SearchResul
   await expect(page).toHaveURL(/\/search/);
   return new SearchResultsPage(page);
 }
+
+export { searchFromHome as searchFlow };
