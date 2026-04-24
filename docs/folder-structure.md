@@ -78,7 +78,7 @@ frontend/src/app/
 RecallQ/
 ├── src/                    Backend source (RecallQ.Api)
 ├── web/                    Frontend source (Angular app)
-├── tests/                  xUnit acceptance tests (Testcontainers, real Postgres)
+├── backend/RecallQ.AcceptanceTests/   xUnit acceptance tests (Testcontainers, real Postgres)
 ├── e2e/                    Playwright end-to-end tests
 ├── docs/                   Design files, specs, ADRs, and this document
 ├── docker/                 Postgres init scripts

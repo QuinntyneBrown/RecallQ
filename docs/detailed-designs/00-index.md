@@ -56,6 +56,6 @@ Features are numbered in the order they shall be implemented. Each feature is a 
 
 **Owner-scoped everything.** Every EF Core query for user-owned data goes through a global query filter on `OwnerUserId = CurrentUser.Id`. The current user is resolved from the authenticated principal and exposed as a scoped `ICurrentUser` service.
 
-**Tests live next to the feature.** Backend acceptance tests (xUnit + WebApplicationFactory + Testcontainers for PostgreSQL+pgvector) live under `tests/RecallQ.AcceptanceTests/{FeatureName}Tests.cs`. Frontend acceptance tests (Playwright) live under `e2e/{feature-name}.spec.ts`. Every test carries a `// Traces to: L2-XXX` header.
+**Tests live next to the feature.** Backend acceptance tests (xUnit + WebApplicationFactory + Testcontainers for PostgreSQL+pgvector) live under `backend/RecallQ.AcceptanceTests/{FeatureName}Tests.cs`. Frontend acceptance tests (Playwright) live under `e2e/{feature-name}.spec.ts`. Every test carries a `// Traces to: L2-XXX` header.
 
 **Pen-to-code component parity.** Each `.pen` reusable component maps to exactly one Angular component under `src/app/ui/`. Token names in CSS custom properties mirror the `.pen` variable names (`--surface-primary`, `--accent-gradient-start`, …).

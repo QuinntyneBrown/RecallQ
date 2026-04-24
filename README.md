@@ -35,6 +35,6 @@ Testcontainers, so Docker must be running.
 ## Layout
 
 - `backend/RecallQ.Api/` — ASP.NET Core minimal API + EF Core + pgvector.
-- `tests/RecallQ.AcceptanceTests/` — xUnit acceptance tests.
+- `backend/RecallQ.AcceptanceTests/` — xUnit acceptance tests.
 - `frontend/` — Angular workspace.
 - `docker-compose.yml` — local Postgres with pgvector.

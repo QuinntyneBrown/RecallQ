@@ -16,7 +16,7 @@ Stand up the radically-simple skeleton: one `RecallQ.Api` .NET project, one Angu
 **In:**
 - `src/RecallQ.Api/RecallQ.Api.csproj` (net9.0), `Program.cs` < 50 lines.
 - `src/RecallQ.Api/AppDbContext.cs` — empty class, `UseNpgsql().UseVector()`.
-- `tests/RecallQ.AcceptanceTests/RecallQ.AcceptanceTests.csproj` (xUnit + Microsoft.AspNetCore.Mvc.Testing + Testcontainers.PostgreSql).
+- `backend/RecallQ.AcceptanceTests/RecallQ.AcceptanceTests.csproj` (xUnit + Microsoft.AspNetCore.Mvc.Testing + Testcontainers.PostgreSql).
 - `web/` — Angular workspace created with `ng new --standalone --routing --style=css`.
 - `docker-compose.yml` at repo root running `ankane/pgvector:v0.8.0` on port 5432 with a seeded database.
 - Root-level `README.md` updates explaining how to `docker compose up`, `dotnet run`, `ng serve`.
