@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<Interaction> Interactions => Set<Interaction>();
     public DbSet<ContactEmbedding> ContactEmbeddings => Set<ContactEmbedding>();
     public DbSet<InteractionEmbedding> InteractionEmbeddings => Set<InteractionEmbedding>();
+    public DbSet<BackfillCursor> BackfillCursors => Set<BackfillCursor>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -107,5 +108,16 @@ public class AppDbContext : DbContext
             .HasForeignKey<InteractionEmbedding>(e => e.InteractionId)
             .OnDelete(DeleteBehavior.Cascade);
         ie.HasQueryFilter(e => e.OwnerUserId == _currentUser.UserId);
+
+        var bc = builder.Entity<BackfillCursor>();
+        bc.ToTable("backfill_cursors");
+        bc.HasKey(x => new { x.OwnerUserId, x.Table });
+        bc.Property(x => x.OwnerUserId).HasColumnName("owner_user_id");
+        bc.Property(x => x.Table).HasColumnName("table_name").HasMaxLength(32);
+        bc.Property(x => x.LastProcessedCreatedAt).HasColumnName("last_processed_created_at");
+        bc.Property(x => x.LastProcessedId).HasColumnName("last_processed_id");
+        bc.Property(x => x.StartedAt).HasColumnName("started_at");
+        bc.Property(x => x.UpdatedAt).HasColumnName("updated_at");
+        bc.Property(x => x.Completed).HasColumnName("completed").HasDefaultValue(false);
     }
 }

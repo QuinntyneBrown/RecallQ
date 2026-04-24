@@ -35,6 +35,7 @@ builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredS
 builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("Embeddings:OpenAI"));
 builder.Services.AddHttpClient<IEmbeddingClient, OpenAIEmbeddingClient>();
 builder.Services.AddHostedService<EmbeddingWorker>();
+builder.Services.AddSingleton<EmbeddingBackfillRunner>();
 
 builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
@@ -121,6 +122,8 @@ app.MapPing();
 app.MapAuth();
 app.MapContacts();
 app.MapInteractions();
+app.MapAdmin();
+app.MapSearch();
 
 app.Run();
 

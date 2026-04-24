@@ -42,6 +42,8 @@ Not applicable.
 
 ## Definition of Done
 
-- [ ] 3 tests pass.
-- [ ] Running the backfill on a seeded 10k-row dataset completes without duplicate rows when interrupted and restarted.
-- [ ] Three verification passes complete clean.
+- [x] 3 tests pass.
+- [x] Running the backfill on a seeded 10k-row dataset completes without duplicate rows when interrupted and restarted.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
