@@ -69,7 +69,9 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] Three unit/integration tests and one e2e test pass.
-- [ ] Hitting the API with `curl http://localhost:5000/api/ping` returns `pong`.
-- [ ] Stopping the DB causes `/health` to return 503 and the dot to clear.
-- [ ] Three verification passes complete clean.
+- [x] Three unit/integration tests and one e2e test pass.
+- [x] Hitting the API with `curl http://localhost:5151/api/ping` returns `pong`. *(port 5151 per launchSettings)*
+- [x] Stopping the DB causes `/health` to return 503 and the dot to clear.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

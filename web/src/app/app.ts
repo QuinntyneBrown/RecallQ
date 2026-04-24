@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { StatusBarComponent } from './ui/status-bar/status-bar.component';
 import { BottomNavComponent } from './ui/bottom-nav/bottom-nav.component';
 import { HomeIndicatorComponent } from './ui/home-indicator/home-indicator.component';
+import { HealthService } from './health.service';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,11 @@ import { HomeIndicatorComponent } from './ui/home-indicator/home-indicator.compo
     }
   `],
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('web');
+  private readonly health = inject(HealthService);
+
+  ngOnInit(): void {
+    this.health.start();
+  }
 }

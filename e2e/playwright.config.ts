@@ -33,11 +33,20 @@ export default defineConfig({
     },
     ...(includeLarger ? largerProjects : []),
   ],
-  webServer: {
-    command: 'npm run start',
-    cwd: '../web',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-  },
+  webServer: [
+    {
+      command: 'npm run start',
+      cwd: '../web',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+    },
+    {
+      command: 'dotnet run --project ../src/RecallQ.Api --urls http://localhost:5151',
+      url: 'http://localhost:5151/api/ping',
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+      stdout: 'pipe',
+    },
+  ],
 });

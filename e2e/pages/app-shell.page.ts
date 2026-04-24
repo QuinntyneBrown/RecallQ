@@ -18,4 +18,13 @@ export class AppShellPage {
       homeIndicator: this.page.getByTestId('home-indicator'),
     };
   }
+
+  async healthDot() {
+    return this.page.getByTestId('health-dot');
+  }
+
+  async isOnline(): Promise<boolean> {
+    const dot = await this.healthDot();
+    return dot.evaluate(el => getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)');
+  }
 }
