@@ -1,10 +1,12 @@
 import { AfterViewChecked, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { AskService } from '../../chat/ask.service';
+import { CitationCardComponent } from '../../ui/citation-card/citation-card.component';
 
 @Component({
   selector: 'app-ask-page',
   standalone: true,
+  imports: [CitationCardComponent],
   template: `
     <section class="ask-shell">
       <header class="top-bar">
@@ -29,6 +31,13 @@ import { AskService } from '../../chat/ask.service';
           } @else {
             <div data-testid="assistant-bubble" class="bubble assistant-bubble">
               {{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
+              @if (m.citations?.length) {
+                <div class="citations">
+                  @for (c of m.citations; track c.contactId; let i = $index) {
+                    <app-citation-card [citation]="c" [top]="i === 0"/>
+                  }
+                </div>
+              }
             </div>
           }
         }
@@ -124,6 +133,7 @@ import { AskService } from '../../chat/ask.service';
       animation: blink 1s steps(2, start) infinite;
     }
     @keyframes blink { to { visibility: hidden; } }
+    .citations { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
     .error {
       align-self: flex-start;
       color: var(--accent-secondary);

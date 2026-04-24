@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using RecallQ.Api.Chat;
+using RecallQ.Api.Security;
 
 namespace RecallQ.Api.Endpoints;
 
@@ -21,7 +22,7 @@ public static class AskEndpoints
         return app;
     }
 
-    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, ILoggerFactory lf)
+    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, CitationRetriever retriever, ICurrentUser current, ILoggerFactory lf)
     {
         var logger = lf.CreateLogger("Ask");
         var q = (req?.Q ?? string.Empty).Trim();
@@ -34,6 +35,13 @@ public static class AskEndpoints
 
         var hashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(q))).ToLowerInvariant()[..12];
         logger.LogInformation("Ask q_len={len} q_hash={hash}", q.Length, hashHex);
+
+        IReadOnlyList<Citation> citations = Array.Empty<Citation>();
+        if (current.UserId is Guid ownerId)
+        {
+            try { citations = await retriever.RetrieveAsync(ownerId, q, 3, http.RequestAborted); }
+            catch (Exception ex) { logger.LogWarning(ex, "citation_retrieval_failed"); }
+        }
 
         http.Response.Headers["Content-Type"] = "text/event-stream";
         http.Response.Headers["Cache-Control"] = "no-cache";
@@ -50,6 +58,22 @@ public static class AskEndpoints
         {
             var json = JsonSerializer.Serialize(new { token });
             await http.Response.WriteAsync($"data: {json}\n\n", http.RequestAborted);
+            await http.Response.Body.FlushAsync(http.RequestAborted);
+        }
+
+        if (citations.Count > 0)
+        {
+            var items = citations.Select(c => new
+            {
+                contactId = c.ContactId,
+                contactName = c.ContactName,
+                snippet = c.Snippet,
+                similarity = c.Similarity,
+                source = c.Source,
+            });
+            var payload = JsonSerializer.Serialize(new { items });
+            await http.Response.WriteAsync("event: citations\n", http.RequestAborted);
+            await http.Response.WriteAsync($"data: {payload}\n\n", http.RequestAborted);
             await http.Response.Body.FlushAsync(http.RequestAborted);
         }
 

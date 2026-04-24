@@ -50,6 +50,7 @@ else
 }
 builder.Services.AddHostedService<EmbeddingWorker>();
 builder.Services.AddSingleton<EmbeddingBackfillRunner>();
+builder.Services.AddScoped<CitationRetriever>();
 
 builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);

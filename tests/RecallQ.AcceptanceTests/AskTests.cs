@@ -1,10 +1,13 @@
-// Traces to: L2-021, L2-022, L2-025, L2-055, L2-061, L2-071, L2-084
-// Task: T016
+// Traces to: L2-021, L2-022, L2-023, L2-025, L2-055, L2-061, L2-071, L2-084
+// Task: T016, T017
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RecallQ.Api;
 using RecallQ.AcceptanceTests.Infrastructure;
 
 namespace RecallQ.AcceptanceTests;
@@ -128,6 +131,113 @@ public class AskTests : IClassFixture<AskFactory>
             while (await rd.ReadLineAsync() != null) { }
         }
         Assert.Equal(HttpStatusCode.TooManyRequests, seen429);
+    }
+
+    private async Task<Guid> GetUserId(HttpClient client, string cookie)
+    {
+        using var meReq = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
+        meReq.Headers.Add("Cookie", cookie);
+        var me = await client.SendAsync(meReq);
+        var body = await me.Content.ReadFromJsonAsync<JsonElement>();
+        return body.GetProperty("id").GetGuid();
+    }
+
+    private static async Task<Guid> CreateContact(HttpClient client, string cookie, string displayName)
+    {
+        var payload = new { displayName, initials = "ZZ", role = (string?)null, organization = (string?)null,
+            location = (string?)null, tags = Array.Empty<string>(), emails = Array.Empty<string>(), phones = Array.Empty<string>() };
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/contacts") { Content = JsonContent.Create(payload) };
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+        return body.GetProperty("id").GetGuid();
+    }
+
+    private async Task WaitForEmbeddings(Guid userId, int expected)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(30);
+        while (DateTime.UtcNow < deadline)
+        {
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var cc = await db.ContactEmbeddings.IgnoreQueryFilters().CountAsync(e => e.OwnerUserId == userId && !e.Failed);
+            if (cc >= expected) return;
+            await Task.Delay(100);
+        }
+        throw new Xunit.Sdk.XunitException($"embeddings not ready for {userId}");
+    }
+
+    private static async Task<List<(string eventName, string data)>> ReadSseFrames(HttpResponseMessage res)
+    {
+        var frames = new List<(string, string)>();
+        using var stream = await res.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(stream);
+        var currentEvent = "message";
+        var dataBuf = new StringBuilder();
+        string? line;
+        while ((line = await reader.ReadLineAsync()) != null)
+        {
+            if (line.Length == 0)
+            {
+                if (dataBuf.Length > 0 || currentEvent != "message")
+                    frames.Add((currentEvent, dataBuf.ToString()));
+                currentEvent = "message";
+                dataBuf.Clear();
+                continue;
+            }
+            if (line.StartsWith("event:", StringComparison.Ordinal))
+                currentEvent = line["event:".Length..].Trim();
+            else if (line.StartsWith("data:", StringComparison.Ordinal))
+                dataBuf.Append(line["data:".Length..].Trim());
+        }
+        if (dataBuf.Length > 0 || currentEvent != "message")
+            frames.Add((currentEvent, dataBuf.ToString()));
+        return frames;
+    }
+
+    [Fact]
+    public async Task Ask_emits_citations_with_up_to_3()
+    {
+        var (client, cookie) = await RegisterLogin();
+        var userId = await GetUserId(client, cookie);
+        await CreateContact(client, cookie, "Alice VC Investor in AI");
+        await CreateContact(client, cookie, "Bob DevOps Engineer");
+        await CreateContact(client, cookie, "Carol Kindergarten Teacher");
+        await WaitForEmbeddings(userId, 3);
+
+        using var req = AskRequest(cookie, "hi");
+        using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var frames = await ReadSseFrames(res);
+        var citationsFrame = frames.FirstOrDefault(f => f.eventName == "citations");
+        Assert.False(string.IsNullOrEmpty(citationsFrame.data), "expected citations frame");
+        using var doc = JsonDocument.Parse(citationsFrame.data);
+        var items = doc.RootElement.GetProperty("items");
+        Assert.Equal(3, items.GetArrayLength());
+        foreach (var item in items.EnumerateArray())
+        {
+            Assert.True(item.TryGetProperty("contactId", out _));
+            Assert.True(item.TryGetProperty("contactName", out var n) && !string.IsNullOrEmpty(n.GetString()));
+            Assert.True(item.TryGetProperty("snippet", out _));
+            var sim = item.GetProperty("similarity").GetDouble();
+            Assert.InRange(sim, 0.0, 1.0);
+            var src = item.GetProperty("source").GetString();
+            Assert.Contains(src, new[] { "contact", "interaction" });
+        }
+        Assert.Contains(frames, f => f.eventName == "done");
+    }
+
+    [Fact]
+    public async Task Ask_with_no_hits_omits_citations()
+    {
+        var (client, cookie) = await RegisterLogin();
+        using var req = AskRequest(cookie, "hi");
+        using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var frames = await ReadSseFrames(res);
+        Assert.DoesNotContain(frames, f => f.eventName == "citations");
+        Assert.Contains(frames, f => f.eventName == "done");
     }
 
     [Fact]

@@ -1,10 +1,12 @@
 import { Injectable, signal } from '@angular/core';
+import { Citation } from '../ui/citation-card/citation-card.component';
 
 export interface AskMessage {
   id: string;
   role: 'user' | 'assistant';
   text: string;
   streaming?: boolean;
+  citations?: Citation[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +28,12 @@ export class AskService {
   private appendText(id: string, chunk: string): void {
     this.messages.update(list =>
       list.map(m => (m.id === id ? { ...m, text: m.text + chunk } : m)),
+    );
+  }
+
+  private setCitations(id: string, citations: Citation[]): void {
+    this.messages.update(list =>
+      list.map(m => (m.id === id ? { ...m, citations } : m)),
     );
   }
 
@@ -70,18 +78,25 @@ export class AskService {
           const frame = buffer.slice(0, idx);
           buffer = buffer.slice(idx + 2);
           if (!frame) continue;
-          if (frame.startsWith('event: done')) { done = true; break; }
-          const lines = frame.split('\n');
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
-              const payload = line.slice('data:'.length).trim();
-              if (!payload || payload === '{}') continue;
-              try {
-                const parsed = JSON.parse(payload) as { token?: string };
-                if (parsed.token) this.appendText(assistantMsg.id, parsed.token);
-              } catch { /* ignore malformed */ }
-            }
+          let eventName = 'message';
+          let data = '';
+          for (const line of frame.split('\n')) {
+            if (line.startsWith('event:')) eventName = line.slice('event:'.length).trim();
+            else if (line.startsWith('data:')) data = line.slice('data:'.length).trim();
           }
+          if (eventName === 'done') { done = true; break; }
+          if (eventName === 'citations') {
+            try {
+              const parsed = JSON.parse(data) as { items?: Citation[] };
+              if (parsed.items?.length) this.setCitations(assistantMsg.id, parsed.items);
+            } catch { /* ignore */ }
+            continue;
+          }
+          if (!data || data === '{}') continue;
+          try {
+            const parsed = JSON.parse(data) as { token?: string };
+            if (parsed.token) this.appendText(assistantMsg.id, parsed.token);
+          } catch { /* ignore malformed */ }
         }
       }
     } catch (e) {

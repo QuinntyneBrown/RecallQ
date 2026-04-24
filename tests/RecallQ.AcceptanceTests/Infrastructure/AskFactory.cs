@@ -11,6 +11,12 @@ public class AskFactory : RecallqFactory
     public readonly ConcurrentBag<string> LogMessages = new();
     public FakeChatClient ChatClient { get; } = new();
 
+    public AskFactory()
+    {
+        UseRealEmbeddingWorker = true;
+        EmbeddingClientFactory = _ => new BagOfWordsEmbeddingClient();
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureLogging(logging =>

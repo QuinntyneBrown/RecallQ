@@ -9,4 +9,5 @@ export class AskModePage {
   assistantBubbles() { return this.page.getByTestId('assistant-bubble'); }
   greetBubble()      { return this.page.getByTestId('greet-bubble'); }
   inputBar()         { return this.page.getByTestId('input-bar'); }
+  citations()        { return this.page.getByTestId('citation-card'); }
 }
