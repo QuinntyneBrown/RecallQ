@@ -1,3 +1,3 @@
 namespace RecallQ.Api.Embeddings;
 
-public record EmbeddingJob(Guid ContactId, Guid OwnerUserId, string Kind = "contact");
+public record EmbeddingJob(Guid Id, Guid OwnerUserId, string Kind = "contact");

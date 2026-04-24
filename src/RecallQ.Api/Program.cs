@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using RecallQ.Api;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
@@ -13,8 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? "Host=localhost;Port=5432;Database=recallq;Username=recallq;Password=recallq";
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.UseVector();
+var dataSource = dataSourceBuilder.Build();
+builder.Services.AddSingleton(dataSource);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString, o => o.UseVector()));
+    options.UseNpgsql(dataSource, o => o.UseVector()));
 
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 
@@ -26,7 +32,9 @@ builder.Services.AddSingleton<SessionRevocationStore>();
 builder.Services.AddSingleton(Channel.CreateUnbounded<EmbeddingJob>());
 builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
-builder.Services.AddHostedService<NullEmbeddingConsumer>();
+builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("Embeddings:OpenAI"));
+builder.Services.AddHttpClient<IEmbeddingClient, OpenAIEmbeddingClient>();
+builder.Services.AddHostedService<EmbeddingWorker>();
 
 builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
@@ -79,6 +87,16 @@ using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.EnsureCreatedAsync();
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync("CREATE EXTENSION IF NOT EXISTS vector;");
+            await db.Database.ExecuteSqlRawAsync("CREATE INDEX IF NOT EXISTS ix_contact_embeddings_vector ON contact_embeddings USING hnsw (embedding vector_cosine_ops);");
+            await db.Database.ExecuteSqlRawAsync("CREATE INDEX IF NOT EXISTS ix_interaction_embeddings_vector ON interaction_embeddings USING hnsw (embedding vector_cosine_ops);");
+        }
+        catch (Exception ex)
+        {
+            app.Logger.LogWarning(ex, "HNSW index creation skipped.");
+        }
     }
     catch (Exception ex)
     {

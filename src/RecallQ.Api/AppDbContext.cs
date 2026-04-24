@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Contact> Contacts => Set<Contact>();
     public DbSet<Interaction> Interactions => Set<Interaction>();
+    public DbSet<ContactEmbedding> ContactEmbeddings => Set<ContactEmbedding>();
+    public DbSet<InteractionEmbedding> InteractionEmbeddings => Set<InteractionEmbedding>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -67,5 +69,43 @@ public class AppDbContext : DbContext
             .HasForeignKey(i => i.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
         interaction.HasQueryFilter(i => i.OwnerUserId == _currentUser.UserId);
+
+        var ce = builder.Entity<ContactEmbedding>();
+        ce.ToTable("contact_embeddings");
+        ce.HasKey(e => e.ContactId);
+        ce.Property(e => e.ContactId).HasColumnName("contact_id");
+        ce.Property(e => e.OwnerUserId).HasColumnName("owner_user_id");
+        ce.Property(e => e.Model).HasColumnName("model").IsRequired();
+        ce.Property(e => e.ContentHash).HasColumnName("content_hash").IsRequired();
+        ce.Property(e => e.Embedding).HasColumnName("embedding").HasColumnType("vector(1536)");
+        ce.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+        ce.Property(e => e.Failed).HasColumnName("failed").HasDefaultValue(false);
+        ce.Property(e => e.Attempts).HasColumnName("attempts").HasDefaultValue(0);
+        ce.Property(e => e.LastError).HasColumnName("last_error");
+        ce.HasIndex(e => e.OwnerUserId);
+        ce.HasOne<Contact>()
+            .WithOne()
+            .HasForeignKey<ContactEmbedding>(e => e.ContactId)
+            .OnDelete(DeleteBehavior.Cascade);
+        ce.HasQueryFilter(e => e.OwnerUserId == _currentUser.UserId);
+
+        var ie = builder.Entity<InteractionEmbedding>();
+        ie.ToTable("interaction_embeddings");
+        ie.HasKey(e => e.InteractionId);
+        ie.Property(e => e.InteractionId).HasColumnName("interaction_id");
+        ie.Property(e => e.OwnerUserId).HasColumnName("owner_user_id");
+        ie.Property(e => e.Model).HasColumnName("model").IsRequired();
+        ie.Property(e => e.ContentHash).HasColumnName("content_hash").IsRequired();
+        ie.Property(e => e.Embedding).HasColumnName("embedding").HasColumnType("vector(1536)");
+        ie.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+        ie.Property(e => e.Failed).HasColumnName("failed").HasDefaultValue(false);
+        ie.Property(e => e.Attempts).HasColumnName("attempts").HasDefaultValue(0);
+        ie.Property(e => e.LastError).HasColumnName("last_error");
+        ie.HasIndex(e => e.OwnerUserId);
+        ie.HasOne<Interaction>()
+            .WithOne()
+            .HasForeignKey<InteractionEmbedding>(e => e.InteractionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        ie.HasQueryFilter(e => e.OwnerUserId == _currentUser.UserId);
     }
 }

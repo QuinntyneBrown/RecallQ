@@ -83,10 +83,10 @@ public class InteractionsTests : IClassFixture<RecallqFactory>
 
         var deadline = DateTime.UtcNow.AddSeconds(5);
         while (DateTime.UtcNow < deadline &&
-            (!_factory.CapturedJobs.Any(j => j.ContactId == id && j.Kind == "interaction")
+            (!_factory.CapturedJobs.Any(j => j.Id == id && j.Kind == "interaction")
              || !_factory.SummaryRefreshJobs.Any(j => j.ContactId == contactId)))
             await Task.Delay(50);
-        Assert.Contains(_factory.CapturedJobs, j => j.ContactId == id && j.Kind == "interaction" && j.OwnerUserId == userId);
+        Assert.Contains(_factory.CapturedJobs, j => j.Id == id && j.Kind == "interaction" && j.OwnerUserId == userId);
         Assert.Contains(_factory.SummaryRefreshJobs, j => j.ContactId == contactId && j.OwnerUserId == userId);
     }
 
@@ -122,9 +122,9 @@ public class InteractionsTests : IClassFixture<RecallqFactory>
         Assert.Equal(HttpStatusCode.OK, patchRes.StatusCode);
 
         var deadline = DateTime.UtcNow.AddSeconds(5);
-        while (DateTime.UtcNow < deadline && _factory.CapturedJobs.Count(j => j.ContactId == id) < 2)
+        while (DateTime.UtcNow < deadline && _factory.CapturedJobs.Count(j => j.Id == id) < 2)
             await Task.Delay(50);
-        Assert.True(_factory.CapturedJobs.Count(j => j.ContactId == id && j.Kind == "interaction") >= 2);
+        Assert.True(_factory.CapturedJobs.Count(j => j.Id == id && j.Kind == "interaction") >= 2);
     }
 
     [Fact]

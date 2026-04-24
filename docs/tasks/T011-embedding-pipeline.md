@@ -48,6 +48,8 @@ Not applicable.
 
 ## Definition of Done
 
-- [ ] All 3 tests pass against a real Postgres+pgvector from Testcontainers.
-- [ ] Creating a contact or interaction enqueues a job and results in a row with a non-null vector column.
-- [ ] Three verification passes complete clean.
+- [x] All 3 tests pass against a real Postgres+pgvector from Testcontainers.
+- [x] Creating a contact or interaction enqueues a job and results in a row with a non-null vector column.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

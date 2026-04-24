@@ -25,6 +25,8 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public readonly ConcurrentBag<EmbeddingJob> CapturedJobs = new();
     public readonly ConcurrentBag<SummaryRefreshJob> SummaryRefreshJobs = new();
+    public bool UseRealEmbeddingWorker { get; set; } = false;
+    public Func<IServiceProvider, IEmbeddingClient>? EmbeddingClientFactory { get; set; }
 
     public async Task InitializeAsync()
     {
@@ -48,18 +50,38 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
             if (descriptor is not null) services.Remove(descriptor);
 
+            var dsBuilder = new NpgsqlDataSourceBuilder(ConnectionString);
+            dsBuilder.UseVector();
+            var dataSource = dsBuilder.Build();
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(ConnectionString, o => o.UseVector()));
+                options.UseNpgsql(dataSource, o => o.UseVector()));
 
             var hosted = services.Where(d =>
                 d.ImplementationType == typeof(NullEmbeddingConsumer)
-                || d.ImplementationType == typeof(NullSummaryConsumer)).ToList();
+                || d.ImplementationType == typeof(NullSummaryConsumer)
+                || d.ImplementationType == typeof(EmbeddingWorker)).ToList();
             foreach (var d in hosted) services.Remove(d);
 
             services.AddSingleton(CapturedJobs);
             services.AddSingleton(SummaryRefreshJobs);
-            services.AddHostedService<CapturingEmbeddingConsumer>();
             services.AddHostedService<CapturingSummaryConsumer>();
+
+            if (UseRealEmbeddingWorker)
+            {
+                // Swap IEmbeddingClient with fake (or custom factory)
+                var clientDescriptors = services.Where(d => d.ServiceType == typeof(IEmbeddingClient)).ToList();
+                foreach (var d in clientDescriptors) services.Remove(d);
+                if (EmbeddingClientFactory is not null)
+                    services.AddSingleton<IEmbeddingClient>(EmbeddingClientFactory);
+                else
+                    services.AddSingleton<IEmbeddingClient, FakeEmbeddingClient>();
+                services.AddHostedService<EmbeddingWorker>();
+            }
+            else
+            {
+                services.AddHostedService<CapturingEmbeddingConsumer>();
+            }
         });
     }
 }

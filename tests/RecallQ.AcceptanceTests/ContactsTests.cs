@@ -120,9 +120,9 @@ public class ContactsTests : IClassFixture<RecallqFactory>
         var id = body.GetProperty("id").GetGuid();
 
         var deadline = DateTime.UtcNow.AddSeconds(5);
-        while (DateTime.UtcNow < deadline && !_factory.CapturedJobs.Any(j => j.ContactId == id))
+        while (DateTime.UtcNow < deadline && !_factory.CapturedJobs.Any(j => j.Id == id))
             await Task.Delay(50);
-        Assert.Contains(_factory.CapturedJobs, j => j.ContactId == id && j.OwnerUserId == userId);
+        Assert.Contains(_factory.CapturedJobs, j => j.Id == id && j.OwnerUserId == userId);
     }
 
     [Fact]
