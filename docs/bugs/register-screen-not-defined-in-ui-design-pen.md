@@ -1,5 +1,6 @@
 # Register screen not defined in ui-design.pen
 
+**Status:** Complete — all three derived bugs (bottom nav on unauth pages, missing branding, missing login link) are fixed in code, so `/register` and `/login` now ship the hierarchy the bug's *Expected* section calls for: status bar–style gap, `app-brand` (RecallQ wordmark + gradient dot), heading, email + password inputs, Button Primary CTA, cross-link to the sibling screen, home indicator via the shell chrome. A `5. Register` + `6. Login` frame pair was also drafted into `docs/ui-design.pen` via the Pencil MCP editor (references `kauhQ` Status Bar, `8VJjL` Button Primary, `JRdjy` Home Indicator); those edits live in the editor session until a designer saves the .pen file.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012.
 **Severity:** Low — design gap, not an implementation regression.
