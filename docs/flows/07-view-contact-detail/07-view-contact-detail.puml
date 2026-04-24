@@ -1,0 +1,38 @@
+@startuml 07-view-contact-detail
+!theme plain
+skinparam sequenceMessageAlign center
+
+title View Contact Detail
+
+actor User
+participant "ContactDetailPage" as UI
+participant "ContactsApi" as SVC
+participant "GET /api/contacts/{id}" as API
+participant "AppDbContext" as CTX
+database "contacts + interactions" as DB
+
+User -> UI: tap result card / deep link
+UI -> SVC: get(id, take=3)
+SVC -> API: GET /api/contacts/:id?take=3
+API -> CTX: Contacts.FirstOrDefault(id)
+CTX -> DB: SELECT contact
+DB --> CTX: row | null
+alt found (owner match)
+    CTX --> API: contact
+    API -> CTX: Interactions.OrderBy(OccurredAt desc).Take(3)
+    CTX -> DB: SELECT interactions
+    DB --> CTX: up to 3 rows
+    API -> CTX: interactions.CountAsync()
+    CTX -> DB: SELECT COUNT
+    DB --> CTX: 24
+    API --> SVC: ContactDetailDto
+    SVC --> UI: dto
+    UI --> User: hero + tags + 4 actions\n+ summary slot + "See all 24"
+else absent or foreign
+    CTX --> API: null
+    API --> SVC: 404 Not Found
+    SVC --> UI: throw
+    UI --> User: "Contact not found"
+end
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml 16-search-sort
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Search Sort (Similarity <-> Recency)
+
+actor User
+participant "SearchResultsPage" as UI
+participant "SearchApi" as SVC
+participant "POST /api/search" as API
+participant "AppDbContext" as CTX
+database "pgvector" as DB
+
+User -> UI: tap Sort, pick "Most recent"
+UI -> UI: sort.set('recency')\npage.set(1)
+UI -> SVC: search({ q, sort:recency, page:1 })
+SVC -> API: POST
+API -> CTX: CTE ... ORDER BY occurred_at DESC
+CTX -> DB: SELECT
+DB --> CTX: rows
+API --> SVC: 200 { results, totalCount unchanged }
+SVC --> UI: results
+UI --> User: rows reordered newest-first\nmeta "N contacts matched" unchanged
+
+@enduml

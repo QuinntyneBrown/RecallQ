@@ -1,0 +1,43 @@
+@startuml 34-hardened-request-pipeline
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Hardened Request Pipeline
+
+actor User
+participant "TLS termination" as TLS
+participant "Security headers" as SH
+participant "Rate limiter" as RL
+participant "Auth cookie / JWT reader" as AUTH
+participant "Endpoint handler" as EP
+participant "Validation guards" as V
+participant "AppDbContext\n(global query filter)" as CTX
+database "Postgres" as DB
+
+User -> TLS: HTTPS request
+TLS -> SH: plain HTTP inside process
+SH -> RL: +HSTS, CSP, nosniff headers
+RL -> RL: bucket check
+alt over limit
+    RL --> User: 429 Retry-After
+else under limit
+    RL -> AUTH: forward
+    AUTH -> AUTH: verify cookie / Bearer
+    alt invalid
+        AUTH --> User: 401
+    else valid
+        AUTH -> EP: ctx.User populated
+        EP -> V: validate request
+        alt invalid
+            V --> User: 400 { errors }
+        else valid
+            V -> CTX: SELECT (scoped owner_user_id=@me)
+            CTX -> DB: SQL
+            DB --> CTX: rows (owner only)
+            CTX --> EP: dto
+            EP --> User: 200 + security headers
+        end
+    end
+end
+
+@enduml

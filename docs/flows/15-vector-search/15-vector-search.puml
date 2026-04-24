@@ -1,0 +1,42 @@
+@startuml 15-vector-search
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Vector Semantic Search
+
+actor User
+participant "SearchBar /\nSearchResultsPage" as UI
+participant "SearchApi" as SVC
+participant "Rate limiter" as RL
+participant "POST /api/search" as API
+participant "IEmbeddingClient" as EC
+participant "AppDbContext" as CTX
+database "pgvector\n(HNSW/IVFFlat)" as DB
+participant "Provider" as P
+
+User -> UI: submit query
+UI -> SVC: search({ q, sort:similarity })
+SVC -> RL: POST /api/search
+RL -> RL: per-user 60/min
+alt under limit
+    RL -> API: forward
+    API -> API: validate q non-empty
+    API -> EC: EmbedAsync(q)
+    EC -> P: POST /embeddings
+    P --> EC: float[1536]
+    EC --> API: qv
+    API -> CTX: SqlQuery<Row>(CTE)
+    CTX -> DB: WITH contact_hits AS ...\nUNION interaction_hits\nORDER BY embedding <=> @qv
+    DB --> CTX: ranked rows (best per contact)
+    CTX --> API: rows
+    API -> API: trim matchedText to 240 chars\ntier similarity High/Mid/Low
+    API --> SVC: { results, totalCount, nextPage }
+    SVC --> UI: results
+    UI --> User: query chip + featured card + list
+else over limit
+    RL --> SVC: 429 Retry-After
+    SVC --> UI: throw
+    UI --> User: "Too many searches, try again"
+end
+
+@enduml

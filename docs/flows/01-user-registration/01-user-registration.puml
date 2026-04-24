@@ -1,0 +1,42 @@
+@startuml 01-user-registration
+!theme plain
+skinparam sequenceMessageAlign center
+
+title User Registration
+
+actor Visitor
+participant "RegisterPage\n(Angular)" as SPA
+participant "POST /api/auth/register" as API
+participant "Argon2Hasher" as H
+participant "AppDbContext" as CTX
+database "users" as DB
+
+Visitor -> SPA: fill email + password, submit
+SPA -> API: POST { email, password }
+API -> API: validate email format\nand password strength
+alt valid
+    API -> CTX: exists(email)?
+    CTX -> DB: SELECT 1 FROM users WHERE email=@e
+    DB --> CTX: empty
+    CTX --> API: false
+    API -> H: Hash(password)
+    H --> API: argon2id$...
+    API -> CTX: Users.Add(user)
+    API -> CTX: SaveChangesAsync
+    CTX -> DB: INSERT user
+    DB --> CTX: id
+    API --> SPA: 201 Created { id, email }
+    SPA --> Visitor: "Account created"
+else email taken
+    API -> CTX: exists(email)?
+    CTX -> DB: SELECT
+    DB --> CTX: row
+    CTX --> API: true
+    API --> SPA: 409 Conflict
+    SPA --> Visitor: "Email already in use"
+else weak password
+    API --> SPA: 400 Bad Request\n{ errors }
+    SPA --> Visitor: field errors
+end
+
+@enduml

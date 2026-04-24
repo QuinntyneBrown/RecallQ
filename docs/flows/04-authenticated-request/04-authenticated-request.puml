@@ -1,0 +1,34 @@
+@startuml 04-authenticated-request
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Authenticated Request
+
+actor Client
+participant "Auth middleware" as AUTH
+participant "ICurrentUser" as CU
+participant "Endpoint handler" as EP
+participant "AppDbContext\n(global query filter)" as CTX
+database "Postgres" as DB
+
+Client -> AUTH: GET /api/contacts/{id}\nAuthorization: Bearer ...
+AUTH -> AUTH: validate token / cookie
+alt invalid
+    AUTH --> Client: 401 Unauthorized
+else valid
+    AUTH -> CU: populate Id from claim "sub"
+    AUTH -> EP: next(ctx)
+    EP -> CTX: Contacts.FirstOrDefault(x => x.Id==id)
+    CTX -> CTX: rewrite WHERE owner_user_id=@me
+    CTX -> DB: SELECT
+    DB --> CTX: row | null
+    alt row owned by me
+        CTX --> EP: row
+        EP --> Client: 200 ContactDto
+    else foreign or absent
+        CTX --> EP: null
+        EP --> Client: 404 Not Found
+    end
+end
+
+@enduml

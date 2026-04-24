@@ -1,0 +1,36 @@
+@startuml 10-star-contact
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Star / Unstar Contact
+
+actor User
+participant "ContactDetailPage" as UI
+participant "ContactsApi" as SVC
+participant "PATCH /api/contacts/{id}" as API
+participant "AppDbContext" as CTX
+database "contacts" as DB
+
+User -> UI: tap star icon
+UI -> UI: starred.set(true) (optimistic)
+UI --> User: filled star
+UI -> SVC: update(id, { starred:true })
+SVC -> API: PATCH { starred:true }
+API -> CTX: Contacts.FirstOrDefault(id)
+CTX -> DB: SELECT
+DB --> CTX: row
+API -> CTX: row.Starred = true
+API -> CTX: SaveChangesAsync
+CTX -> DB: UPDATE
+DB --> CTX: ok
+alt success
+    API --> SVC: 200
+    SVC --> UI: ok
+else error
+    API --> SVC: 4xx/5xx
+    SVC --> UI: throw
+    UI -> UI: starred.set(false) (revert)
+    UI --> User: toast "Could not update star"
+end
+
+@enduml

@@ -1,0 +1,47 @@
+@startuml 32-embedding-pipeline
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Embedding Pipeline
+
+participant "Endpoint handler" as EP
+queue "Channel<EmbeddingJob>" as CH
+participant "EmbeddingWorker" as W
+participant "AppDbContext" as CTX
+participant "IEmbeddingClient" as EC
+database "Postgres + pgvector" as DB
+participant "Provider" as P
+
+EP -> CH: Write(EmbeddingJob{kind,id})
+activate W
+CH -> W: ReadAllAsync()
+W -> CTX: load entity text
+CTX -> DB: SELECT
+DB --> CTX: row
+W -> W: sourceHash = SHA256(text)
+W -> CTX: existing embedding row
+CTX -> DB: SELECT
+alt same hash + same modelId
+    DB --> CTX: hit
+    CTX --> W: skip
+    note right of W: idempotent no-op
+else miss
+    DB --> CTX: none / different
+    W -> EC: EmbedAsync(text)
+    EC -> P: HTTPS POST /embeddings
+    alt success
+        P --> EC: float[1536]
+        EC --> W: vector
+        W -> CTX: UPSERT embedding\n{ vector, modelId, sourceHash }
+        CTX -> DB: INSERT/UPDATE
+        DB --> CTX: ok
+    else transient error
+        EC --> W: error
+        W -> W: retry up to 3x backoff
+    else permanent error
+        W -> CTX: mark embedding_failed
+    end
+end
+deactivate W
+
+@enduml

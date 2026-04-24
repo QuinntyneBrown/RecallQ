@@ -1,0 +1,38 @@
+@startuml 02-user-login
+!theme plain
+skinparam sequenceMessageAlign center
+
+title User Login
+
+actor User
+participant "LoginPage\n(Angular)" as SPA
+participant "Rate limiter" as RL
+participant "POST /api/auth/login" as API
+participant "Argon2Hasher" as H
+participant "AppDbContext" as CTX
+database "users" as DB
+
+User -> SPA: enter email + password, submit
+SPA -> RL: POST /api/auth/login
+RL -> RL: check (email,IP) bucket\n<=5 per 60s
+alt under limit
+    RL -> API: forward
+    API -> CTX: Users.FirstOrDefault(Email=@e)
+    CTX -> DB: SELECT
+    DB --> CTX: user row | null
+    CTX --> API: row
+    alt row and Verify == true
+        API -> H: Verify(password, row.Hash)
+        H --> API: true
+        API --> SPA: 200\nSet-Cookie: rq_sid=...
+        SPA --> User: navigate /home
+    else bad credentials
+        API --> SPA: 401 "invalid credentials"
+        SPA --> User: generic error
+    end
+else over limit
+    RL --> SPA: 429 Too Many Requests\nRetry-After
+    SPA --> User: "Try again in N seconds"
+end
+
+@enduml

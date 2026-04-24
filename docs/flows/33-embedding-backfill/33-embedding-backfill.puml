@@ -1,0 +1,43 @@
+@startuml 33-embedding-backfill
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Embedding Backfill / Regeneration
+
+actor Admin
+participant "POST /api/admin/embeddings/backfill" as API
+participant "BackfillCoordinator" as C
+participant "AppDbContext" as CTX
+database "cursor + entities" as DB
+queue "Channel<EmbeddingJob>" as CH
+participant "EmbeddingWorker" as W
+
+Admin -> API: POST start
+API -> C: Start()
+C -> CTX: load cursor
+CTX -> DB: SELECT cursor
+DB --> CTX: lastId | empty
+CTX --> C: cursor
+
+loop batches of 500 until drained
+    C -> CTX: SELECT id > cursor LIMIT 500
+    CTX -> DB: SELECT
+    DB --> CTX: batch
+    loop per record
+        C -> CH: Write(EmbeddingJob)
+    end
+    C -> CTX: save cursor = lastId
+    CTX -> DB: UPDATE cursor
+end
+C --> API: completed
+API --> Admin: 202 Accepted / status page
+
+... meanwhile ...
+W -> CH: ReadAllAsync
+note right of W
+  Hash-based idempotency
+  (flow 32) skips
+  unchanged-model records
+end note
+
+@enduml

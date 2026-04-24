@@ -1,0 +1,38 @@
+@startuml 13-update-interaction
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Update Interaction
+
+actor User
+participant "EditInteractionPage" as UI
+participant "InteractionsApi" as SVC
+participant "PATCH /api/interactions/{id}" as API
+participant "AppDbContext" as CTX
+queue "EmbeddingJob channel" as EQ
+queue "SummaryRefresh channel" as SQ
+database "interactions" as DB
+
+User -> UI: edit content, save
+UI -> SVC: update(id, patch)
+SVC -> API: PATCH
+API -> CTX: Interactions.FirstOrDefault(id)
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt null
+    API --> SVC: 404 Not Found
+else found
+    API -> CTX: apply allowed fields\nUpdatedAt = now
+    API -> CTX: SaveChangesAsync
+    CTX -> DB: UPDATE
+    DB --> CTX: ok
+    alt content/subject changed
+        API -> EQ: Write(EmbeddingJob{id})
+    end
+    API -> SQ: Write(SummaryRefresh{contactId})
+    API --> SVC: 200 InteractionDto
+    SVC --> UI: dto
+    UI --> User: timeline row updated
+end
+
+@enduml

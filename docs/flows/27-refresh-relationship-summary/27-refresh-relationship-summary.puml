@@ -1,0 +1,39 @@
+@startuml 27-refresh-relationship-summary
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Refresh Relationship Summary (Manual)
+
+actor User
+participant "ContactDetailPage" as UI
+participant "Rate limiter" as RL
+participant "POST /api/contacts/{id}/summary:refresh" as API
+queue "SummaryQueue" as Q
+participant "SummaryWorker" as W
+participant "IChatClient" as CC
+participant "AppDbContext" as CTX
+database "relationship_summaries" as DB
+
+User -> UI: tap Refresh
+UI -> RL: POST refresh
+RL -> RL: bucket (user,contact) 1/60s
+alt under limit
+    RL -> API: forward
+    API -> Q: enqueue SummaryRefreshJob
+    API --> UI: 202 Accepted
+    UI -> UI: show loading on card,\nstart poll (see flow 26)
+    W -> Q: ReadAllAsync
+    W -> CTX: load contact + last 20 ix
+    W -> CC: CompleteAsync
+    CC --> W: { paragraph, sentiment }
+    W -> CTX: UPSERT
+    CTX -> DB: UPSERT
+    UI -> API: GET summary (poll)
+    API --> UI: fresh row
+    UI --> User: card updated
+else over limit
+    RL --> UI: 429 Too Many Requests
+    UI --> User: toast "Refresh available in N seconds"
+end
+
+@enduml

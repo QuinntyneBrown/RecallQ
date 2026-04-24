@@ -1,0 +1,31 @@
+@startuml 03-user-logout
+!theme plain
+skinparam sequenceMessageAlign center
+
+title User Logout
+
+actor User
+participant "AppShell\n(Angular)" as SPA
+participant "POST /api/auth/logout" as API
+participant "AppDbContext" as CTX
+database "revoked_tokens" as DB
+
+User -> SPA: tap Log out
+SPA -> API: POST /api/auth/logout\n(cookie or Bearer)
+API -> CTX: INSERT revoked (jti, expiresAt)
+CTX -> DB: INSERT
+DB --> CTX: ok
+API --> SPA: 204\nSet-Cookie: rq_sid=; Max-Age=0
+SPA -> SPA: clear session signal
+SPA --> User: redirect /login
+
+... later ...
+SPA -> API: GET /api/contacts\nwith stale token
+API -> CTX: is jti revoked?
+CTX -> DB: SELECT
+DB --> CTX: found
+CTX --> API: revoked
+API --> SPA: 401 Unauthorized
+SPA --> User: force re-login
+
+@enduml

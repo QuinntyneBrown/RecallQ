@@ -1,0 +1,37 @@
+@startuml 40-keyboard-navigation
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Keyboard Navigation
+
+actor User
+participant "HomePage" as UI
+participant "SearchResultsPage" as SR
+participant "Angular router" as R
+participant "Focus ring CSS" as F
+
+User -> UI: press Tab
+UI -> F: focus -> logo
+F --> User: visible ring (>=3:1)
+User -> UI: Tab
+UI -> F: focus -> notifications
+User -> UI: Tab
+UI -> F: focus -> profile
+User -> UI: Tab
+UI -> F: focus -> search input
+User -> UI: type query, press Enter
+UI -> R: navigate /search?q=...
+R --> SR: mount
+SR -> F: focus -> back / featured result
+User -> SR: Tab through featured / results / bottom nav
+User -> SR: Enter on featured result
+SR -> R: navigate /contacts/:id
+
+note right of F
+  No outline:none without
+  a replacement ring.
+  Button Primary (gradient) uses
+  $accent-tertiary ring at 2px.
+end note
+
+@enduml

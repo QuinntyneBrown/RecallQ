@@ -1,0 +1,48 @@
+@startuml 26-view-relationship-summary
+!theme plain
+skinparam sequenceMessageAlign center
+
+title View Relationship Summary
+
+actor User
+participant "ContactDetailPage" as UI
+participant "GET /api/contacts/{id}/summary" as API
+participant "AppDbContext" as CTX
+queue "SummaryQueue" as Q
+participant "SummaryWorker" as W
+participant "IChatClient" as CC
+database "relationship_summaries" as DB
+
+User -> UI: open /contacts/:id
+UI -> API: GET summary
+API -> CTX: SELECT summary
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt fresh (age<1h, no newer ix)
+    CTX --> API: row
+    API --> UI: 200 { paragraph, stats, stale:false }
+    UI --> User: summary card
+else stale / missing
+    API -> Q: enqueue SummaryRefreshJob{contactId}
+    API --> UI: 200 existing (stale:true) or 204
+    UI --> User: stale summary + small "updating" mark
+    loop every 1.5s (max 15s)
+        UI -> API: GET summary
+        API -> CTX: SELECT
+        alt fresh row
+            CTX --> API: new row
+            API --> UI: 200 { ..., stale:false }
+            UI --> User: summary replaced in place
+        else still stale
+            API --> UI: 200 stale
+        end
+    end
+    W -> Q: ReadAllAsync()
+    W -> CTX: load contact + last 20 ix
+    W -> CC: CompleteAsync(system,user)
+    CC --> W: { paragraph, sentiment }
+    W -> CTX: UPSERT summary
+    CTX -> DB: UPSERT
+end
+
+@enduml

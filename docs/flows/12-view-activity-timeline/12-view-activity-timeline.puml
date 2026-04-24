@@ -1,0 +1,42 @@
+@startuml 12-view-activity-timeline
+!theme plain
+skinparam sequenceMessageAlign center
+
+title View Activity Timeline
+
+actor User
+participant "ContactDetailPage" as CD
+participant "ContactActivityPage" as ACT
+participant "InteractionsApi" as SVC
+participant "GET /api/contacts/{id}/interactions" as API
+participant "AppDbContext" as CTX
+database "interactions" as DB
+
+User -> CD: open /contacts/:id
+CD -> SVC: list(contactId, take=3)
+SVC -> API: GET ?take=3
+API -> CTX: OrderBy(OccurredAt desc).Take(3)
+CTX -> DB: SELECT
+DB --> CTX: rows
+API --> SVC: dtos
+SVC --> CD: top-3
+CD --> User: timeline preview + "See all 24"
+
+User -> CD: tap "See all 24"
+CD -> ACT: navigate /contacts/:id/activity
+ACT -> SVC: list({ page:1, pageSize:50 })
+SVC -> API: GET ?page=1&pageSize=50
+API -> CTX: OrderBy...Skip(0).Take(50)
+CTX -> DB: SELECT
+DB --> CTX: 50 rows
+API --> SVC: { items, nextPage:2 }
+SVC --> ACT: page1
+ACT --> User: full list
+
+User -> ACT: scroll near bottom
+ACT -> SVC: list({ page:2 })
+SVC -> API: GET ?page=2
+API --> SVC: { items, nextPage:null }
+ACT --> User: more rows appended
+
+@enduml

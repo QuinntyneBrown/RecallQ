@@ -1,0 +1,33 @@
+@startuml 37-observability-correlation
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Observability: Correlation ID + Structured Logging
+
+actor Client
+participant "CorrelationMiddleware" as CM
+participant "Serilog\n(LogContext)" as L
+participant "Endpoint handler" as EP
+participant "AppDbContext" as CTX
+
+Client -> CM: HTTP (X-Correlation-Id?)
+CM -> CM: id = header ?? newGuid()
+CM -> L: push { correlationId: id }
+CM -> EP: next()
+EP -> L: log.Info("start", correlationId=id)
+EP -> CTX: SELECT
+CTX -> L: log.Debug("db call", correlationId=id)
+EP -> L: log.Info("complete", correlationId=id, statusCode=200)
+EP --> Client: 200 + X-Correlation-Id: id
+
+... error path ...
+EP -> L: log.Error(ex, correlationId=id,\n  path, userIdHash, stack)
+EP --> Client: 500 + X-Correlation-Id: id
+
+note over L
+  PII rules:
+  no plaintext queries, emails,
+  phones, content; hashed user id.
+end note
+
+@enduml

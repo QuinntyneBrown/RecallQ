@@ -1,0 +1,39 @@
+@startuml 09-delete-contact
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Delete Contact (Cascade)
+
+actor User
+participant "ContactDetailPage" as UI
+participant "ContactsApi" as SVC
+participant "DELETE /api/contacts/{id}" as API
+participant "AppDbContext" as CTX
+database "contacts + deps" as DB
+
+User -> UI: more menu > Delete
+UI -> UI: confirm modal
+User -> UI: confirm
+UI -> SVC: delete(id)
+SVC -> API: DELETE /api/contacts/:id
+API -> CTX: Contacts.FirstOrDefault(id)
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt null
+    API --> SVC: 404 Not Found
+else found
+    API -> CTX: BeginTransaction
+    API -> CTX: Summaries.Remove(contactId)
+    API -> CTX: InteractionEmbeddings.RemoveRange
+    API -> CTX: Interactions.RemoveRange(contactId)
+    API -> CTX: ContactEmbedding.Remove(contactId)
+    API -> CTX: Contacts.Remove(contact)
+    API -> CTX: SaveChangesAsync + Commit
+    CTX -> DB: DELETE rows
+    DB --> CTX: ok
+    API --> SVC: 204 No Content
+    SVC --> UI: ok
+    UI --> User: toast "Contact deleted"\nback to list
+end
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml 20-ask-citations
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask Citations (Mini-Cards)
+
+actor User
+participant "AskModePage" as UI
+participant "POST /api/ask (SSE)" as API
+participant "IChatClient" as CC
+participant "Angular router" as R
+
+... streaming tokens (flow 19) ...
+CC --> API: end
+API --> UI: event: citations\ndata: [c1, c2, c3]
+UI -> UI: append ContactMiniCard\ninside last assistant bubble
+UI --> User: 3 mini-cards visible\n(High/Mid/Low score components)
+API --> UI: event: done
+
+User -> UI: tap citation card
+UI -> R: router.navigate(/contacts/:id)
+R --> UI: ContactDetailPage mounts
+UI --> User: contact detail loaded\n(back restores Ask view)
+
+@enduml

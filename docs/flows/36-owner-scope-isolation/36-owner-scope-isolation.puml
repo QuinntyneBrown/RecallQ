@@ -1,0 +1,39 @@
+@startuml 36-owner-scope-isolation
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Owner-Scope Data Isolation
+
+actor "User A" as A
+actor "User B" as B
+participant "Auth middleware" as AUTH
+participant "ICurrentUser" as CU
+participant "Endpoint handler" as EP
+participant "AppDbContext" as CTX
+database "Postgres" as DB
+
+A -> AUTH: GET /api/contacts/{X}
+AUTH -> CU: currentUser.Id = A
+AUTH -> EP: next()
+EP -> CTX: Contacts.FirstOrDefault(x => x.Id == X)
+CTX -> CTX: rewrite\nWHERE owner_user_id=@A AND id=@X
+CTX -> DB: SQL
+DB --> CTX: row (A owns X)
+EP --> A: 200 Contact X
+
+B -> AUTH: GET /api/contacts/{X} (owned by A)
+AUTH -> CU: currentUser.Id = B
+AUTH -> EP: next()
+EP -> CTX: Contacts.FirstOrDefault(x => x.Id == X)
+CTX -> CTX: rewrite\nWHERE owner_user_id=@B AND id=@X
+CTX -> DB: SQL
+DB --> CTX: (no row)
+EP --> B: 404 Not Found\n(no 403 — no enumeration leak)
+
+note over CTX
+  Global filter registered in
+  OnModelCreating applies to
+  every entity owned by users.
+end note
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml 41-screen-reader-streaming
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Screen Reader Announcement for Streaming Chat
+
+actor "SR user" as User
+participant "AskModePage\n(aria-live=polite)" as UI
+participant "AnnouncementBuffer" as BUF
+participant "POST /api/ask (SSE)" as API
+participant "Screen reader" as SR
+
+User -> UI: type question, Enter
+UI -> UI: append user bubble\ninto live region
+UI -> SR: "You said: {question}"
+SR --> User: announces once
+
+UI -> API: POST (SSE)
+loop tokens
+    API --> UI: event: token
+    UI -> BUF: append text (hidden)
+    UI -> UI: visible bubble updates (for sighted)
+end
+API --> UI: event: citations / done
+UI -> UI: write full buffered answer\ninto live region (atomic)
+UI -> SR: announce full answer once
+SR --> User: hears answer
+
+UI -> UI: append mini-cards (role=link)\naria-name "Contact: Name, role, similarity S"
+UI -> SR: announce each card in order
+SR --> User: hears citations
+
+UI -> UI: append follow-up chips (buttons)
+UI -> SR: labels equal chip text
+
+note over BUF
+  Buffering prevents token-by-token
+  firehose announcements.
+end note
+
+@enduml

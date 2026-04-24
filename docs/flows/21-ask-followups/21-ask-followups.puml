@@ -1,0 +1,27 @@
+@startuml 21-ask-followups
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask Follow-Up Chips
+
+actor User
+participant "AskModePage" as UI
+participant "POST /api/ask (SSE)" as API
+participant "IChatClient" as CC
+
+... streaming answer + citations (flows 19, 20) ...
+API -> CC: CompleteAsync\n(non-stream, ask for 3 followups)
+CC --> API: JSON ["q1","q2","q3"]
+API --> UI: event: followups\ndata: ["q1","q2","q3"]
+UI -> UI: render up to 3 FollowUpChip\nunder "FOLLOW-UP" label
+UI --> User: chips visible
+API --> UI: event: done
+
+User -> UI: tap chip "Draft pitch to Sarah"
+UI -> UI: submit("Draft pitch to Sarah")
+note right of UI
+  Enters flow 19 again
+  for the new user turn
+end note
+
+@enduml

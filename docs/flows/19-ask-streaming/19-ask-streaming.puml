@@ -1,0 +1,47 @@
+@startuml 19-ask-streaming
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask Mode (Streaming Answer)
+
+actor User
+participant "AskModePage" as UI
+participant "Rate limiter" as RL
+participant "POST /api/ask" as API
+participant "IEmbeddingClient" as EC
+participant "AppDbContext" as CTX
+database "pgvector" as DB
+participant "PromptBuilder" as PB
+participant "IChatClient" as CC
+participant "LLM provider" as P
+
+User -> UI: type question, send
+UI -> RL: POST /api/ask (SSE)
+RL -> RL: per-user 20/min
+alt under limit
+    RL -> API: forward
+    API -> EC: EmbedAsync(q)
+    EC --> API: qv
+    API -> CTX: SqlQuery top-8 hits
+    CTX -> DB: CTE search
+    DB --> CTX: rows
+    API -> PB: System(hits)
+    PB --> API: system prompt
+    API -> CC: StreamAsync(system, question)
+    CC -> P: chat.completions.stream
+    loop tokens
+        P --> CC: token
+        CC --> API: token
+        API --> UI: event: token\ndata: "..."
+        UI -> UI: append to answer bubble
+    end
+    P --> CC: [DONE]
+    CC --> API: end
+    API --> UI: event: done
+    UI --> User: full answer shown
+else over limit
+    RL --> UI: 429 Retry-After
+    UI --> User: "Too many questions, try again"
+end
+
+@enduml

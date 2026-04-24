@@ -1,0 +1,52 @@
+@startuml 25-proactive-suggestion
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Proactive AI Suggestion
+
+participant "SuggestionDetector\n(BackgroundService)" as D
+participant "AppDbContext" as CTX
+database "suggestions" as DB
+actor User
+participant "HomePage" as UI
+participant "GET /api/suggestions" as API
+participant "POST /api/suggestions/{key}/dismiss" as DISMISS
+participant "SearchResults / Ask" as TGT
+
+== Detect ==
+D -> CTX: load last 14d interactions per user
+D -> D: apply heuristics
+D -> CTX: UPSERT Suggestion (by Key)
+CTX -> DB: INSERT/UPDATE
+
+== Render ==
+User -> UI: load home
+UI -> API: GET /api/suggestions
+API -> CTX: active (DismissedAt null, age<7d)
+CTX -> DB: SELECT
+DB --> API: row | none
+alt row
+    API --> UI: suggestion
+    UI --> User: gradient card + [Primary] [Dismiss]
+else none
+    API --> UI: 204
+    UI -> UI: hide card, shift stacks up
+end
+
+== Primary ==
+User -> UI: tap primary action
+UI -> TGT: navigate /search?... or /ask?q=...
+
+== Dismiss ==
+User -> UI: tap Dismiss
+UI -> DISMISS: POST /api/suggestions/{key}/dismiss
+DISMISS -> CTX: UPDATE DismissedAt = now
+CTX -> DB: UPDATE
+DB --> CTX: ok
+DISMISS --> UI: 204
+UI -> UI: hide card
+note right of UI
+  Key suppressed for 7 days
+end note
+
+@enduml

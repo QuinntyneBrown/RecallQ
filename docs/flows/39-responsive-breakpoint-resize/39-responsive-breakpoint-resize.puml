@@ -1,0 +1,34 @@
+@startuml 39-responsive-breakpoint-resize
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Responsive Breakpoint Resize
+
+actor User
+participant "Window\n(ResizeObserver)" as W
+participant "BreakpointService" as BP
+participant "AppShellComponent" as SHELL
+participant "HomePage /\nSearchResultsPage /\nContactDetailPage /\nAskModePage" as PAGES
+participant "SearchState /\nAskSessionService /\nSelectedContactService" as STATE
+
+User -> W: resize window (XS -> LG)
+W -> BP: breakpoint update
+BP -> BP: signal.set('lg')
+BP --> SHELL: (reactive)
+SHELL -> SHELL: hide bottom-nav\nshow sidebar (>=MD)
+SHELL --> User: chrome re-renders
+
+BP --> PAGES: breakpoint = 'lg'
+PAGES -> PAGES: computed layout = two-pane
+PAGES -> STATE: read q, messages, selectedContact
+STATE --> PAGES: same values
+PAGES --> User: two-pane layout with\nsearch text / conversation / selection intact
+
+note over STATE
+  State lives in injectable
+  services (Signals), not in
+  per-component fields, so
+  resize does not lose anything.
+end note
+
+@enduml

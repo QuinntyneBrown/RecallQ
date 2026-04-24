@@ -1,0 +1,40 @@
+@startuml 24-smart-stacks
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Smart Stacks (View and Open)
+
+actor User
+participant "HomePage" as UI
+participant "GET /api/stacks" as API
+participant "MemoryCache" as CACHE
+participant "AppDbContext" as CTX
+database "contacts + embeddings" as DB
+participant "SearchResultsPage" as SR
+
+User -> UI: load home
+UI -> API: GET /api/stacks
+API -> CTX: stack defs for me
+CTX -> DB: SELECT
+DB --> CTX: rows
+loop per stack
+    API -> CACHE: get count(userId, stackId)
+    alt hit
+        CACHE --> API: count
+    else miss
+        API -> CTX: count by kind\n(tag filter / semantic query / classifier)
+        CTX -> DB: SELECT / vector search
+        DB --> CTX: n
+        API -> CACHE: set 5min
+    end
+end
+API --> UI: StackDto[] (exclude count=0)
+UI --> User: scrollable stack cards
+
+User -> UI: tap "AI founders"
+UI -> SR: navigate /search?stackId=...
+SR -> API: GET /api/stacks/:id/contacts
+API --> SR: { contacts, nextPage }
+SR --> User: filtered list with query chip
+
+@enduml

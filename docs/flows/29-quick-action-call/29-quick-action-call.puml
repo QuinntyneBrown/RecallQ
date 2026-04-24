@@ -1,0 +1,32 @@
+@startuml 29-quick-action-call
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Quick Action: Call
+
+actor User
+participant "ContactDetailPage" as UI
+participant "AddPhoneModal" as M
+participant "PATCH /api/contacts/{id}" as API
+participant "Browser" as B
+participant "Clipboard" as CLIP
+
+User -> UI: tap Call (aCall)
+alt no phone on file
+    UI -> M: open
+    User -> M: enter phone, save
+    M -> API: PATCH { phones:[new] }
+    API --> M: 200
+    M -> UI: close
+end
+
+alt viewport XS/SM (mobile)
+    UI -> B: location = tel:{phone}
+    B --> User: OS dialer
+else viewport >= MD (desktop)
+    UI -> CLIP: writeText(phone)
+    CLIP --> UI: ok
+    UI --> User: toast "Phone copied"
+end
+
+@enduml

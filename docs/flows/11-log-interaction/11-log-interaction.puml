@@ -1,0 +1,37 @@
+@startuml 11-log-interaction
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Log Interaction
+
+actor User
+participant "AddInteractionPage" as UI
+participant "InteractionsApi" as SVC
+participant "POST /api/contacts/{id}/interactions" as API
+participant "AppDbContext" as CTX
+queue "EmbeddingJob channel" as EQ
+queue "SummaryRefresh channel" as SQ
+database "interactions" as DB
+
+User -> UI: pick type, write content, submit
+UI -> SVC: log(contactId, payload)
+SVC -> API: POST
+API -> API: validate type, occurredAt, content
+API -> CTX: Contacts.FirstOrDefault(contactId)
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt null
+    API --> SVC: 404 Not Found
+else found
+    API -> CTX: Interactions.Add(ix)
+    API -> CTX: SaveChangesAsync
+    CTX -> DB: INSERT
+    DB --> CTX: id
+    API -> EQ: Write(EmbeddingJob{interactionId})
+    API -> SQ: Write(SummaryRefresh{contactId})
+    API --> SVC: 201 InteractionDto
+    SVC --> UI: dto
+    UI --> User: back to detail,\nnew item at top of timeline
+end
+
+@enduml

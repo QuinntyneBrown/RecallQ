@@ -1,0 +1,28 @@
+@startuml 35-rate-limit
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Rate Limiting (429 Response)
+
+actor Client
+participant "Rate limiter\nmiddleware" as RL
+participant "Bucket store" as S
+participant "Endpoint handler" as EP
+
+Client -> RL: POST /api/ask
+RL -> S: extract key (userId, endpoint)
+S --> RL: tokens = 0?
+alt under limit
+    RL -> S: consume 1 token
+    RL -> EP: forward
+    EP --> Client: 200 (SSE stream)
+else over limit
+    RL --> Client: 429 Too Many Requests\nRetry-After: 30\n{ "error":"rate_limited" }
+    Client -> Client: wait Retry-After seconds
+    Client -> RL: retry
+    RL -> S: refreshed bucket has tokens
+    RL -> EP: forward
+    EP --> Client: 200
+end
+
+@enduml

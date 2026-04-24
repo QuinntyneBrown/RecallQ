@@ -1,0 +1,35 @@
+@startuml 30-quick-action-intro
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Quick Action: Intro Draft
+
+actor User
+participant "IntroModal" as UI
+participant "POST /api/intro-drafts" as API
+participant "AppDbContext" as CTX
+participant "IChatClient" as CC
+participant "Clipboard" as CLIP
+participant "Browser" as B
+
+User -> UI: tap Intro, pick contactB
+User -> UI: tap Generate draft
+UI -> API: POST { contactAId, contactBId }
+API -> CTX: load A, B, summaries
+CTX --> API: rows
+API -> CC: CompleteAsync(prompt)
+CC --> API: subject + body
+API --> UI: 200 { subject, body }
+UI --> User: editable draft + [Copy] [Send] [Close]
+
+alt Copy
+    User -> UI: tap Copy
+    UI -> CLIP: writeText(body)
+    UI --> User: toast "Draft copied"
+else Send via email
+    User -> UI: tap Send
+    UI -> B: mailto:A,B?subject=..&body=..
+    B --> User: mail client opens
+end
+
+@enduml

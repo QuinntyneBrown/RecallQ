@@ -1,0 +1,29 @@
+@startuml 22-ask-new-session
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask New Session
+
+actor User
+participant "AskModePage" as UI
+participant "AskSessionService" as SVC
+
+User -> UI: tap "+" (newBtn)
+alt messages.length > 0
+    UI -> UI: open confirm dialog
+    User -> UI: confirm
+end
+UI -> SVC: messages.set([])
+UI -> SVC: sessionId.set(newGuid())
+UI -> UI: re-render greeting only
+UI --> User: chat cleared to greeting state
+
+... later ...
+User -> UI: type new question, send
+UI -> UI: POST /api/ask\n{ sessionId: newGuid }
+note right of UI
+  New sessionId isolates
+  conversation memory server-side
+end note
+
+@enduml

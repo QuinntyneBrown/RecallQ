@@ -1,0 +1,24 @@
+@startuml 23-ask-from-contact
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask AI from Contact Detail
+
+actor User
+participant "ContactDetailPage" as CD
+participant "AskModePage" as AM
+participant "POST /api/ask (SSE)" as API
+
+User -> CD: tap Ask AI (aAsk)
+CD -> AM: navigate /ask?contactId={id}&seed=...
+AM -> AM: input.set("What should I say to {name} next?")
+AM -> AM: focus input
+AM --> User: seeded input visible
+
+User -> AM: (optional) edit text, tap Send
+AM -> API: POST { question, contactId }
+API -> API: bias retrieval toward contactId
+API --> AM: SSE (token / citations / followups / done)
+AM --> User: streaming answer\n+ mini-cards (likely incl. this contact)
+
+@enduml

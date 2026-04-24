@@ -1,0 +1,37 @@
+@startuml 38-metrics-scrape
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Metrics Scrape
+
+actor Client
+participant "Endpoint handler" as EP
+participant "Metrics registry\n(prometheus-net)" as M
+participant "IEmbeddingClient" as EC
+participant "IChatClient" as CC
+participant "/metrics" as MX
+participant "Scraper" as S
+participant "Alerting" as AL
+
+Client -> EP: HTTP request
+EP -> EP: time start
+EP -> EC: embed (if used)
+EC -> M: Observe(embedding_latency)
+EP -> CC: chat (if used)
+CC -> M: Add(llm_tokens_total)
+CC -> M: Set(llm_cost_usd)
+EP -> M: Observe(api_latency, endpoint, status)
+EP -> M: Inc(http_requests_total, status_code)
+EP --> Client: 200
+
+S -> MX: GET /metrics
+MX -> M: render snapshot
+M --> MX: text/plain
+MX --> S: prometheus-format
+S -> AL: samples
+alt rule threshold crossed
+    AL -> AL: evaluate
+    AL --> S: fire alert
+end
+
+@enduml

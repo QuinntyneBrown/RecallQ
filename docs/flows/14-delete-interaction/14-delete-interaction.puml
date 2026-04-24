@@ -1,0 +1,37 @@
+@startuml 14-delete-interaction
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Delete Interaction
+
+actor User
+participant "ContactDetailPage" as UI
+participant "InteractionsApi" as SVC
+participant "DELETE /api/interactions/{id}" as API
+participant "AppDbContext" as CTX
+queue "SummaryRefresh channel" as SQ
+database "interactions + embeddings" as DB
+
+User -> UI: swipe to delete, confirm
+UI -> SVC: delete(id)
+SVC -> API: DELETE
+API -> CTX: Interactions.FirstOrDefault(id)
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt null
+    API --> SVC: 404 Not Found
+else found
+    API -> CTX: BeginTransaction
+    API -> CTX: InteractionEmbeddings.Remove(id)
+    API -> CTX: Interactions.Remove(row)
+    API -> CTX: SaveChangesAsync + Commit
+    CTX -> DB: DELETE
+    DB --> CTX: ok
+    API -> SQ: Write(SummaryRefresh{contactId})
+    API --> SVC: 204 No Content
+    SVC --> UI: ok
+    UI -> UI: remove row, decrement count
+    UI --> User: "See all 23"
+end
+
+@enduml

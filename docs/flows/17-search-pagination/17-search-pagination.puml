@@ -1,0 +1,30 @@
+@startuml 17-search-pagination
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Search Pagination (Infinite Scroll)
+
+actor User
+participant "SearchResultsPage" as UI
+participant "IntersectionObserver" as IO
+participant "SearchApi" as SVC
+participant "POST /api/search" as API
+
+UI --> User: page 1 rendered (50 rows, nextPage=2)
+User -> UI: scroll toward bottom
+IO -> UI: sentinel intersected\n(<=200px from bottom)
+UI -> SVC: search({ q, sort, page:2 })
+SVC -> API: POST
+API --> SVC: 200 { results:[50], nextPage:3 }
+SVC --> UI: append rows
+UI --> User: 100 rendered (virtualized ~80 in DOM)
+
+User -> UI: continue scroll
+IO -> UI: sentinel intersects again
+UI -> SVC: search({ page:3 })
+SVC -> API: POST
+API --> SVC: 200 { results:[20], nextPage:null }
+SVC --> UI: append rows
+UI --> User: "End of results"
+
+@enduml

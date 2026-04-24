@@ -1,0 +1,29 @@
+@startuml 18-search-zero-state
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Search Zero-Result State
+
+actor User
+participant "SearchResultsPage" as UI
+participant "POST /api/search" as API
+participant "AskModePage" as AM
+
+User -> UI: submit query
+UI -> API: POST { q }
+API -> API: embed + CTE
+API --> UI: 200 { results:[], totalCount:0 }
+UI -> UI: render zero-state panel
+UI --> User: "0 contacts matched"\n"No matches yet"\n[Ask RecallQ] [Edit query]
+
+alt user taps Ask RecallQ
+    User -> UI: tap Ask
+    UI -> AM: navigate /ask?q={query}
+    AM -> AM: input.set(q); focus
+    AM --> User: Ask ready
+else user edits query
+    User -> UI: edit text
+    UI -> API: POST { q' }
+end
+
+@enduml

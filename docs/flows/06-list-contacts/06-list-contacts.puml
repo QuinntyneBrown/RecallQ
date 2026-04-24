@@ -1,0 +1,27 @@
+@startuml 06-list-contacts
+!theme plain
+skinparam sequenceMessageAlign center
+
+title List Contacts
+
+actor User
+participant "HomePage /\nContactsListPage" as UI
+participant "ContactsApi" as SVC
+participant "GET /api/contacts" as API
+participant "AppDbContext" as CTX
+database "contacts" as DB
+
+User -> UI: open /home
+UI -> SVC: list({ page:1, pageSize:50, sort:recent })
+SVC -> API: GET /api/contacts?page=1&pageSize=50
+API -> CTX: Contacts.CountAsync()
+CTX -> DB: SELECT COUNT(*) WHERE owner=@me
+DB --> CTX: 1284
+API -> CTX: Contacts.OrderBy(...).Skip(0).Take(50)
+CTX -> DB: SELECT ... LIMIT 50
+DB --> CTX: rows
+API --> SVC: { items, totalCount:1284, nextPage:2 }
+SVC --> UI: response
+UI --> User: hero shows "1,284 contacts"\nlist renders cards
+
+@enduml

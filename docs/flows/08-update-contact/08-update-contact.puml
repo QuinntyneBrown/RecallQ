@@ -1,0 +1,38 @@
+@startuml 08-update-contact
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Update Contact
+
+actor User
+participant "EditContactPage" as UI
+participant "ContactsApi" as SVC
+participant "PATCH /api/contacts/{id}" as API
+participant "AppDbContext" as CTX
+queue "Channel<EmbeddingJob>" as Q
+database "contacts" as DB
+
+User -> UI: change role, save
+UI -> SVC: update(id, patch)
+SVC -> API: PATCH { role: "CTO" }
+API -> CTX: Contacts.FirstOrDefault(id)
+CTX -> DB: SELECT
+DB --> CTX: row | null
+alt null (foreign / missing)
+    API --> SVC: 404 Not Found
+else found
+    API -> API: strip id, ownerUserId from patch
+    API -> API: apply allowed fields\nset UpdatedAt
+    API -> API: diff embedded-text fields
+    alt text changed
+        API -> Q: Write(EmbeddingJob{contactId})
+    end
+    API -> CTX: SaveChangesAsync
+    CTX -> DB: UPDATE
+    DB --> CTX: ok
+    API --> SVC: 200 ContactDto
+    SVC --> UI: dto
+    UI --> User: updated fields persist
+end
+
+@enduml

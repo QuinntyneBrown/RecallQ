@@ -1,0 +1,27 @@
+@startuml 28-quick-action-message
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Quick Action: Message
+
+actor User
+participant "ContactDetailPage" as UI
+participant "AddEmailModal" as M
+participant "PATCH /api/contacts/{id}" as API
+participant "Browser" as B
+
+User -> UI: tap Message (aMsg)
+alt email present
+    UI -> B: location = mailto:{email}
+    B --> User: default mail client opens
+else no email
+    UI -> M: open
+    User -> M: enter email, save
+    M -> API: PATCH { emails:[new] }
+    API --> M: 200 ContactDto
+    M -> UI: close
+    UI -> B: location = mailto:{new}
+    B --> User: default mail client opens
+end
+
+@enduml
