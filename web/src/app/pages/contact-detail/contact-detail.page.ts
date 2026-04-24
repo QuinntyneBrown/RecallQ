@@ -1,14 +1,18 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ContactsService, ContactDto } from '../../contacts/contacts.service';
 
 @Component({
   selector: 'app-contact-detail-page',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <section class="page">
       <h1>Contact</h1>
       <p class="soon">coming soon</p>
+      @if (contactId()) {
+        <a class="log-link" [routerLink]="['/contacts', contactId(), 'interactions', 'new']">Log interaction</a>
+      }
       @if (contact(); as c) {
         <dl>
           <dt>Display name</dt><dd>{{ c.displayName }}</dd>
@@ -32,6 +36,10 @@ import { ContactsService, ContactDto } from '../../contacts/contacts.service';
     dt { color: var(--foreground-secondary); font-size: 14px; }
     dd { margin: 0; }
     .err { color: var(--accent-secondary); }
+    .log-link {
+      display: inline-block; margin-bottom: 12px;
+      color: var(--accent-primary); text-decoration: none; font-size: 14px;
+    }
   `],
 })
 export class ContactDetailPage implements OnInit {
@@ -39,10 +47,12 @@ export class ContactDetailPage implements OnInit {
   private readonly contacts = inject(ContactsService);
   readonly contact = signal<ContactDto | null>(null);
   readonly notFound = signal(false);
+  readonly contactId = signal<string | null>(null);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
+    this.contactId.set(id);
     const result = await this.contacts.get(id);
     if (result) this.contact.set(result);
     else this.notFound.set(true);

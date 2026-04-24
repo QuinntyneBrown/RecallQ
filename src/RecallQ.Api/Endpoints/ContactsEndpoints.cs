@@ -55,7 +55,7 @@ public static class ContactsEndpoints
             };
             db.Contacts.Add(contact);
             await db.SaveChangesAsync();
-            await embeddingWriter.WriteAsync(new EmbeddingJob(contact.Id, contact.OwnerUserId));
+            await embeddingWriter.WriteAsync(new EmbeddingJob(contact.Id, contact.OwnerUserId, "contact"));
             return Results.Created($"/api/contacts/{contact.Id}", ContactDto.From(contact));
         });
 

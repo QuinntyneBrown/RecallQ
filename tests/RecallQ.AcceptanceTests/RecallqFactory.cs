@@ -24,6 +24,7 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public string ConnectionString => _postgres.GetConnectionString();
 
     public readonly ConcurrentBag<EmbeddingJob> CapturedJobs = new();
+    public readonly ConcurrentBag<SummaryRefreshJob> SummaryRefreshJobs = new();
 
     public async Task InitializeAsync()
     {
@@ -50,12 +51,41 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(ConnectionString, o => o.UseVector()));
 
-            var hosted = services.Where(d => d.ImplementationType == typeof(NullEmbeddingConsumer)).ToList();
+            var hosted = services.Where(d =>
+                d.ImplementationType == typeof(NullEmbeddingConsumer)
+                || d.ImplementationType == typeof(NullSummaryConsumer)).ToList();
             foreach (var d in hosted) services.Remove(d);
 
             services.AddSingleton(CapturedJobs);
+            services.AddSingleton(SummaryRefreshJobs);
             services.AddHostedService<CapturingEmbeddingConsumer>();
+            services.AddHostedService<CapturingSummaryConsumer>();
         });
+    }
+}
+
+public class CapturingSummaryConsumer : BackgroundService
+{
+    private readonly ChannelReader<SummaryRefreshJob> _reader;
+    private readonly ConcurrentBag<SummaryRefreshJob> _bag;
+
+    public CapturingSummaryConsumer(ChannelReader<SummaryRefreshJob> reader, ConcurrentBag<SummaryRefreshJob> bag)
+    {
+        _reader = reader;
+        _bag = bag;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        try
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var job = await _reader.ReadAsync(stoppingToken);
+                _bag.Add(job);
+            }
+        }
+        catch (OperationCanceledException) { }
     }
 }
 

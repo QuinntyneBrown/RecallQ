@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Contact> Contacts => Set<Contact>();
+    public DbSet<Interaction> Interactions => Set<Interaction>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -47,5 +48,23 @@ public class AppDbContext : DbContext
         contact.Property(c => c.CreatedAt).HasColumnName("created_at");
         contact.HasIndex(c => c.OwnerUserId);
         contact.HasQueryFilter(c => c.OwnerUserId == _currentUser.UserId);
+
+        var interaction = builder.Entity<Interaction>();
+        interaction.ToTable("interactions");
+        interaction.HasKey(i => i.Id);
+        interaction.Property(i => i.Id).HasColumnName("id");
+        interaction.Property(i => i.ContactId).HasColumnName("contact_id");
+        interaction.Property(i => i.OwnerUserId).HasColumnName("owner_user_id");
+        interaction.Property(i => i.Type).HasColumnName("type").HasConversion<string>().IsRequired();
+        interaction.Property(i => i.OccurredAt).HasColumnName("occurred_at");
+        interaction.Property(i => i.Subject).HasColumnName("subject");
+        interaction.Property(i => i.Content).HasColumnName("content").IsRequired();
+        interaction.Property(i => i.CreatedAt).HasColumnName("created_at");
+        interaction.HasIndex(i => new { i.OwnerUserId, i.ContactId, i.OccurredAt });
+        interaction.HasOne<Contact>()
+            .WithMany()
+            .HasForeignKey(i => i.ContactId)
+            .OnDelete(DeleteBehavior.Cascade);
+        interaction.HasQueryFilter(i => i.OwnerUserId == _currentUser.UserId);
     }
 }

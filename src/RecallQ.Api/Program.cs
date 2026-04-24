@@ -28,6 +28,11 @@ builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredS
 builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
 builder.Services.AddHostedService<NullEmbeddingConsumer>();
 
+builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
+builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
+builder.Services.AddSingleton<ChannelReader<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Reader);
+builder.Services.AddHostedService<NullSummaryConsumer>();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -97,6 +102,7 @@ app.MapHealthChecks("/health");
 app.MapPing();
 app.MapAuth();
 app.MapContacts();
+app.MapInteractions();
 
 app.Run();
 
