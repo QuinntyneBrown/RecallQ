@@ -45,6 +45,8 @@ Not applicable.
 
 ## Definition of Done
 
-- [ ] 6 tests pass.
-- [ ] `curl -I https://localhost:5001/api/ping` shows all headers.
-- [ ] Three verification passes complete clean.
+- [x] 6 tests pass.
+- [x] `curl -I https://localhost:5001/api/ping` shows all headers.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

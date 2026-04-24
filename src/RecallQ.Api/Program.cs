@@ -105,7 +105,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddLoginRateLimit();
+builder.Services.AddRecallQRateLimits();
 
 const string DevCorsPolicy = "DevCors";
 builder.Services.AddCors(options =>
@@ -148,6 +148,7 @@ if (app.Environment.IsProduction())
 }
 
 app.UseCors(DevCorsPolicy);
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseLoginEmailExtractor();
 app.UseAuthentication();
 app.UseAuthorization();

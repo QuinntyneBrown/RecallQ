@@ -77,7 +77,7 @@ public static class SummariesEndpoints
             await db.SaveChangesAsync();
             await writer.WriteAsync(new SummaryRefreshJob(id, current.UserId!.Value));
             return Results.Accepted();
-        });
+        }).RequireRateLimiting("summary");
 
         return app;
     }
