@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HealthService } from '../../health.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-bottom-nav',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <nav aria-label="Main" class="bottom-nav">
       <span
@@ -14,9 +15,9 @@ import { AuthService } from '../../auth/auth.service';
         [class.online]="online()"
         aria-hidden="true"
       ></span>
-      <button type="button" aria-label="Home"><i class="ph ph-house"></i></button>
-      <button type="button" aria-label="Search"><i class="ph ph-magnifying-glass"></i></button>
-      <button type="button" aria-label="Ask"><i class="ph ph-sparkle"></i></button>
+      <a routerLink="/home" aria-label="Home"><i class="ph ph-house"></i></a>
+      <a routerLink="/search" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
+      <a routerLink="/ask" aria-label="Ask"><i class="ph ph-sparkle"></i></a>
       <div class="profile-wrap">
         <button type="button" aria-label="Profile" (click)="toggleMenu()"><i class="ph ph-user"></i></button>
         @if (menuOpen()) {
@@ -50,7 +51,7 @@ import { AuthService } from '../../auth/auth.service';
     .dot.online {
       background: var(--success);
     }
-    button {
+    a, button {
       background: transparent;
       border: 0;
       color: var(--foreground-muted);
@@ -62,8 +63,9 @@ import { AuthService } from '../../auth/auth.service';
       justify-content: center;
       min-width: 44px;
       min-height: 44px;
+      text-decoration: none;
     }
-    button:hover, button:focus-visible {
+    a:hover, a:focus-visible, button:hover, button:focus-visible {
       color: var(--foreground-primary);
     }
     .profile-wrap {

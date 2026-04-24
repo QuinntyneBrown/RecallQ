@@ -1,5 +1,6 @@
 # Bottom nav tabs do not navigate
 
+**Status:** Complete — Home/Search/Ask tabs in `bottom-nav.component.ts` are now `<a routerLink="…">` anchors, matching the Sidebar.
 **Flow:** [03 — User Logout](../flows/03-user-logout/03-user-logout.md) (exercising the shell chrome the logout menu lives in)
 **Traces:** L1-001, L2-003, L2-081.
 **Severity:** High — the entire mobile navigation surface is dead; users cannot reach `/home`, `/search`, or `/ask` via the bottom nav.

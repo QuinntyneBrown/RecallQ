@@ -55,10 +55,12 @@ test('T035 responsive sweep xs/sm/md/lg/xl', async ({ page }) => {
       await expect(page.locator('nav[aria-label="Main"]')).toHaveCount(0);
     }
 
-    // Touch-target check at XS on bottom-nav buttons.
+    // Touch-target check at XS on bottom-nav tabs. Home/Search/Ask
+    // render as <a routerLink>, Profile stays a <button>, so query
+    // both roles.
     if (key === 'xs') {
       const boxes = await page.$$eval(
-        'nav[aria-label="Main"] button',
+        'nav[aria-label="Main"] a, nav[aria-label="Main"] button',
         (els) =>
           els.map((el) => {
             const r = (el as HTMLElement).getBoundingClientRect();
