@@ -26,6 +26,7 @@ Thumbs.db
 *.log
 npm-debug.log*
 .claude/
+test-results/
 e2e/test-results/
 e2e/playwright-report/
 e2e/.playwright/
