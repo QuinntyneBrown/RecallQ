@@ -45,6 +45,21 @@ builder.Services.AddSingleton(Channel.CreateUnbounded<EmbeddingJob>());
 builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
 builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("Embeddings:OpenAI"));
+
+builder.Services.AddOptions<AuthOptions>()
+    .Bind(builder.Configuration.GetSection("Auth"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddOptions<DbOptions>()
+    .Configure(o => o.ConnectionString = connectionString)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddOptions<LlmOptions>()
+    .Bind(builder.Configuration.GetSection("Llm"))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 var embeddingsProvider = builder.Configuration["Embeddings:Provider"];
 var openAiKey = builder.Configuration["Embeddings:OpenAI:ApiKey"];
 var useFake = string.Equals(embeddingsProvider, "fake", StringComparison.OrdinalIgnoreCase)
@@ -148,6 +163,7 @@ if (app.Environment.IsProduction())
 }
 
 app.UseCors(DevCorsPolicy);
+app.UseBearerInQueryRejection();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseLoginEmailExtractor();
 app.UseAuthentication();

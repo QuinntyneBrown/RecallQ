@@ -47,6 +47,8 @@ Not applicable (though the XSS test does a Playwright screenshot of the rendered
 
 ## Definition of Done
 
-- [ ] All 8 tests pass.
-- [ ] `T029-xss-safe.png` shows the literal string `<script>alert(1)</script>` rendered as text.
-- [ ] Three verification passes complete clean.
+- [x] All 8 tests pass.
+- [x] `T029-xss-safe.png` shows the literal string `<script>alert(1)</script>` rendered as text.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

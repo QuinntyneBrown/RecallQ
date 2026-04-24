@@ -7,6 +7,7 @@ namespace RecallQ.Api;
 public class AppDbContext : DbContext
 {
     private readonly ICurrentUser _currentUser;
+    public ICurrentUser CurrentUser => _currentUser;
 
     public AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser) : base(options)
     {
@@ -54,7 +55,6 @@ public class AppDbContext : DbContext
         contact.Property(c => c.Starred).HasColumnName("starred").HasDefaultValue(false);
         contact.Property(c => c.CreatedAt).HasColumnName("created_at");
         contact.HasIndex(c => c.OwnerUserId);
-        contact.HasQueryFilter(c => c.OwnerUserId == _currentUser.UserId);
 
         var interaction = builder.Entity<Interaction>();
         interaction.ToTable("interactions");
@@ -72,7 +72,6 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(i => i.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
-        interaction.HasQueryFilter(i => i.OwnerUserId == _currentUser.UserId);
 
         var ce = builder.Entity<ContactEmbedding>();
         ce.ToTable("contact_embeddings");
@@ -91,7 +90,6 @@ public class AppDbContext : DbContext
             .WithOne()
             .HasForeignKey<ContactEmbedding>(e => e.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
-        ce.HasQueryFilter(e => e.OwnerUserId == _currentUser.UserId);
 
         var ie = builder.Entity<InteractionEmbedding>();
         ie.ToTable("interaction_embeddings");
@@ -110,7 +108,6 @@ public class AppDbContext : DbContext
             .WithOne()
             .HasForeignKey<InteractionEmbedding>(e => e.InteractionId)
             .OnDelete(DeleteBehavior.Cascade);
-        ie.HasQueryFilter(e => e.OwnerUserId == _currentUser.UserId);
 
         var bc = builder.Entity<BackfillCursor>();
         bc.ToTable("backfill_cursors");
@@ -141,7 +138,6 @@ public class AppDbContext : DbContext
             .WithOne()
             .HasForeignKey<RelationshipSummary>(x => x.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
-        rs.HasQueryFilter(x => x.OwnerUserId == _currentUser.UserId);
 
         var stack = builder.Entity<Stack>();
         stack.ToTable("stacks");
@@ -154,7 +150,6 @@ public class AppDbContext : DbContext
         stack.Property(s => s.SortOrder).HasColumnName("sort_order").HasDefaultValue(0);
         stack.Property(s => s.CreatedAt).HasColumnName("created_at");
         stack.HasIndex(s => new { s.OwnerUserId, s.SortOrder });
-        stack.HasQueryFilter(s => s.OwnerUserId == _currentUser.UserId);
 
         var sug = builder.Entity<Suggestion>();
         sug.ToTable("suggestions");
@@ -170,6 +165,7 @@ public class AppDbContext : DbContext
         sug.Property(s => s.CreatedAt).HasColumnName("created_at");
         sug.Property(s => s.DismissedAt).HasColumnName("dismissed_at");
         sug.HasIndex(s => new { s.OwnerUserId, s.Key });
-        sug.HasQueryFilter(s => s.OwnerUserId == _currentUser.UserId);
+
+        OwnerScope.ConfigureOwnerScope(builder, this);
     }
 }
