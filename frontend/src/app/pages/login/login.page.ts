@@ -31,7 +31,10 @@ import { AuthService } from '../../auth/auth.service';
         @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
         <app-button-primary type="submit" [disabled]="busy()">Sign in</app-button-primary>
       </form>
-      <a class="alt" routerLink="/register">Create account</a>
+      <p class="aux">
+        Don't have an account?
+        <a routerLink="/register">Create one</a>
+      </p>
     </section>
   `,
   styles: [`
@@ -59,11 +62,15 @@ import { AuthService } from '../../auth/auth.service';
       color: var(--accent-secondary);
       font-size: 14px;
     }
-    .alt {
-      color: var(--accent-tertiary);
-      text-decoration: none;
+    .aux {
+      color: var(--foreground-secondary);
       font-size: 14px;
       text-align: center;
+      margin: 0;
+    }
+    .aux a {
+      color: var(--accent-tertiary);
+      text-decoration: none;
     }
   `],
 })

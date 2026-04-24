@@ -1,5 +1,6 @@
 # Register page has no link to the login page
 
+**Status:** Complete — `/register` now has "Already have an account? Log in" and `/login` has the inverse "Don't have an account? Create one".
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-001, L1-015.
 **Severity:** Low — affects returning users who landed on `/register` by mistake.

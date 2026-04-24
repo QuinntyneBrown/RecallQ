@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { InputFieldComponent } from '../../ui/input-field/input-field.component';
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
 import { AuthService } from '../../auth/auth.service';
@@ -14,7 +14,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [InputFieldComponent, ButtonPrimaryComponent],
+  imports: [InputFieldComponent, ButtonPrimaryComponent, RouterLink],
   template: `
     <section class="page">
       <h1>Create account</h1>
@@ -38,6 +38,10 @@ const ERROR_MESSAGES: Record<string, string> = {
         @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
         <app-button-primary type="submit" [disabled]="busy()">Create account</app-button-primary>
       </form>
+      <p class="aux">
+        Already have an account?
+        <a routerLink="/login">Log in</a>
+      </p>
     </section>
   `,
   styles: [`
@@ -64,6 +68,16 @@ const ERROR_MESSAGES: Record<string, string> = {
     .err {
       color: var(--accent-secondary);
       font-size: 14px;
+    }
+    .aux {
+      color: var(--foreground-secondary);
+      font-size: 14px;
+      text-align: center;
+      margin: 0;
+    }
+    .aux a {
+      color: var(--accent-tertiary);
+      text-decoration: none;
     }
   `],
 })
