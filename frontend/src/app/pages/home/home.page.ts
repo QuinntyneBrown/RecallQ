@@ -17,7 +17,7 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
         <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
         <h1 id="hero-title" class="hero-title">Find anyone.</h1>
         <p class="hero-sub">By meaning, not memory.</p>
-        <p class="hero-subtitle" data-testid="hero-subtitle">Semantic search across {{ contactCount() }} contacts and {{ interactionCount() }} interactions.</p>
+        <p class="hero-subtitle" data-testid="hero-subtitle">{{ heroSubtitle() }}</p>
 
         <div class="search-wrap">
           <label class="sr-only" for="q">Search contacts</label>
@@ -167,6 +167,14 @@ export class HomePage implements OnInit {
 
   readonly contactCount = this.contactsService.contactCount;
   readonly interactionCount = this.contactsService.interactionCount;
+
+  readonly heroSubtitle = computed(() => {
+    const c = this.contactCount();
+    const i = this.interactionCount();
+    const contacts = c === 1 ? '1 contact' : `${c} contacts`;
+    const interactions = i === 1 ? '1 interaction' : `${i} interactions`;
+    return `Semantic search across ${contacts} and ${interactions}.`;
+  });
 
   readonly greetingName = computed(() => {
     const s = this.auth.authState();

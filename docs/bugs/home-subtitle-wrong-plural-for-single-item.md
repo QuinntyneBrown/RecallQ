@@ -1,5 +1,6 @@
 # Home hero subtitle uses plural nouns even when count is 1
 
+**Status:** Complete — a `heroSubtitle` computed in `home.page.ts` now pluralises `contact`/`interaction` based on each count.
 **Flow:** [06 — List Contacts](../flows/06-list-contacts/06-list-contacts.md)
 **Traces:** L1-002, L2-009.
 **Severity:** Medium — the hero subtitle is the most prominent sentence on the app's landing screen; after a user adds their first contact it reads "1 contacts and 0 interactions", which looks unpolished and breaks trust that the team pays attention to copy.
