@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Pgvector;
+using Prometheus;
 using RecallQ.Api.Embeddings;
+using RecallQ.Api.Observability;
 using RecallQ.Api.Security;
 
 namespace RecallQ.Api.Endpoints;
@@ -27,6 +29,7 @@ public static class SearchEndpoints
     private static async Task<IResult> Handle(string? rawQ, int? pageIn, int? pageSizeIn, string? sortIn, AppDbContext db, ICurrentUser current,
         IEmbeddingClient client, EmbeddingBackfillRunner runner, ILoggerFactory lf)
     {
+        using var _timer = RecallQMetrics.SearchLatencySeconds.NewTimer();
         var logger = lf.CreateLogger("Search");
         var q = (rawQ ?? "").Trim();
         if (q.Length == 0) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query is required." } });

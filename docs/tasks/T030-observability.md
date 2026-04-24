@@ -45,6 +45,8 @@ Not applicable.
 
 ## Definition of Done
 
-- [ ] 5 tests pass.
-- [ ] `curl /metrics` returns a well-formed Prometheus exposition.
-- [ ] Three verification passes complete clean.
+- [x] 5 tests pass.
+- [x] `curl /metrics` returns a well-formed Prometheus exposition.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

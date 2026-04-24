@@ -4,16 +4,35 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Prometheus;
 using RecallQ.Api;
 using RecallQ.Api.Chat;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
+using RecallQ.Api.Observability;
 using RecallQ.Api.Security;
 using RecallQ.Api.Stacks;
 using RecallQ.Api.Suggestions;
 using RecallQ.Api.Summaries;
+using Serilog;
+using Serilog.Formatting.Compact;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(new CompactJsonFormatter())
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, cfg) => cfg
+    .ReadFrom.Configuration(ctx.Configuration)
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .WriteTo.Console(new CompactJsonFormatter()),
+    preserveStaticLogger: false,
+    writeToProviders: true);
 
 builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 10_000_000);
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
@@ -162,14 +181,19 @@ if (app.Environment.IsProduction())
     app.UseHttpsRedirection();
 }
 
+app.UseMiddleware<CorrelationMiddleware>();
 app.UseCors(DevCorsPolicy);
 app.UseBearerInQueryRejection();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseLoginEmailExtractor();
+app.UseRouting();
+app.UseMiddleware<ApiLatencyMiddleware>();
+app.UseHttpMetrics();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 
+app.MapMetrics();
 app.MapHealthChecks("/health");
 app.MapPing();
 app.MapAuth();

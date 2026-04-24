@@ -3,7 +3,9 @@ using System.Text;
 using System.Threading.Channels;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
+using Prometheus;
 using RecallQ.Api.Entities;
+using RecallQ.Api.Observability;
 
 namespace RecallQ.Api.Embeddings;
 
@@ -48,6 +50,7 @@ public class EmbeddingWorker : BackgroundService
 
     private async Task ProcessAsync(EmbeddingJob job, CancellationToken ct)
     {
+        using var _timer = RecallQMetrics.EmbeddingLatencySeconds.NewTimer();
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
