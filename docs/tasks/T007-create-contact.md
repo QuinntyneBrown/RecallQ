@@ -73,6 +73,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 6 API tests + 1 e2e pass.
-- [ ] Creating a contact in the UI navigates to `/contacts/:id` and the DTO endpoint returns the created values.
-- [ ] Three verification passes complete clean.
+- [x] 6 API tests + 1 e2e pass.
+- [x] Creating a contact in the UI navigates to `/contacts/:id` and the DTO endpoint returns the created values.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

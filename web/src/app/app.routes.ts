@@ -7,5 +7,7 @@ export const routes: Routes = [
   { path: 'register', loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage) },
   { path: 'logout', loadComponent: () => import('./pages/logout/logout.page').then(m => m.LogoutPage) },
   { path: 'home', canMatch: [authGuard], loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage) },
+  { path: 'contacts/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-contact/add-contact.page').then(m => m.AddContactPage) },
+  { path: 'contacts/:id', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/contact-detail.page').then(m => m.ContactDetailPage) },
   { path: '**', redirectTo: 'login' },
 ];

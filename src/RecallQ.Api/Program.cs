@@ -1,8 +1,10 @@
+using System.Threading.Channels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecallQ.Api;
+using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
 
@@ -20,6 +22,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddSingleton<Argon2Hasher>();
 builder.Services.AddSingleton<SessionRevocationStore>();
+
+builder.Services.AddSingleton(Channel.CreateUnbounded<EmbeddingJob>());
+builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Writer);
+builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
+builder.Services.AddHostedService<NullEmbeddingConsumer>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -89,6 +96,7 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapPing();
 app.MapAuth();
+app.MapContacts();
 
 app.Run();
 
