@@ -1,0 +1,6 @@
+displayName,role,organization,emails,phones,tags,location
+Alice Example,VP Product,Stripe,alice@example.com,+15550001,investor;series-b,SF
+Bob Builder,Engineer,Bob Corp,bob@example.com,+15550002,engineer,Berlin
+,MissingName,FooCo,,,,
+Dana Desai,Designer,DD Studio,dana@example.com,+15550003,design,London
+Eli Example,PM,Eli Inc,eli@example.com,+15550004,vc,NYC

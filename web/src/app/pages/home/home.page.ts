@@ -43,6 +43,7 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
       }
 
       <a class="add-link" href="/contacts/new" (click)="goAdd($event)">Add contact</a>
+      <a class="add-link" href="/import" (click)="goImport($event)">Import CSV</a>
     </section>
   `,
   styles: [`
@@ -195,5 +196,10 @@ export class HomePage implements OnInit {
   goAdd(ev: Event): void {
     ev.preventDefault();
     void this.router.navigate(['/contacts/new']);
+  }
+
+  goImport(ev: Event): void {
+    ev.preventDefault();
+    void this.router.navigate(['/import']);
   }
 }

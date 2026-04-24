@@ -15,6 +15,13 @@ using RecallQ.Api.Summaries;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 10_000_000);
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
+{
+    o.MultipartBodyLengthLimit = 10_000_000;
+    o.ValueLengthLimit = 4_000_000;
+});
+
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? "Host=localhost;Port=5432;Database=recallq;Username=recallq;Password=recallq";
 
@@ -158,6 +165,7 @@ app.MapSummaries();
 app.MapStacks();
 app.MapSuggestions();
 app.MapIntroDrafts();
+app.MapImport();
 
 app.Run();
 
