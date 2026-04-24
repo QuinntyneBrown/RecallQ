@@ -1,5 +1,6 @@
 # Button Primary gradient does not match ui-design.pen
 
+**Status:** Complete — button-primary.component.ts now uses `linear-gradient(90deg, start, end)`.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012, L2-050.
 **Severity:** Medium — visual fidelity regression across every Button Primary in the app.

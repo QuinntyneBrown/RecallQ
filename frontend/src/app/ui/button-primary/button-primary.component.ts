@@ -16,8 +16,8 @@ import { Component, Input } from '@angular/core';
       border-radius: var(--radius-full);
       color: #fff;
       background: linear-gradient(
+        90deg,
         var(--accent-gradient-start),
-        var(--accent-gradient-mid),
         var(--accent-gradient-end)
       );
       font-size: 16px;
