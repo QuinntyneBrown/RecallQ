@@ -5,6 +5,12 @@ import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.c
 import { BrandComponent } from '../../ui/brand/brand.component';
 import { AuthService } from '../../auth/auth.service';
 
+const ERROR_MESSAGES: Record<string, string> = {
+  invalid_credentials: 'Email or password is incorrect.',
+  rate_limited: 'Too many attempts. Try again in a minute.',
+  login_failed: 'We could not sign you in. Please try again.',
+};
+
 @Component({
   selector: 'app-login-page',
   standalone: true,
@@ -92,7 +98,8 @@ export class LoginPage {
       await this.auth.login(this.email(), this.password());
       await this.router.navigateByUrl('/home');
     } catch (e: any) {
-      this.error.set(e?.message ?? 'error');
+      const code = e?.message ?? 'login_failed';
+      this.error.set(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['login_failed']);
     } finally {
       this.busy.set(false);
     }

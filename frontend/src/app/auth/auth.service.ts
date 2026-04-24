@@ -30,6 +30,7 @@ export class AuthService {
       body: JSON.stringify({ email, password }),
     });
     if (res.status === 401) throw new Error('invalid_credentials');
+    if (res.status === 429) throw new Error('rate_limited');
     if (!res.ok) throw new Error('login_failed');
     const body = await res.json() as AuthUser;
     this.authState.set({ id: body.id, email: body.email });

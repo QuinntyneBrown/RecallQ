@@ -1,5 +1,6 @@
 # Login page surfaces raw error keys
 
+**Status:** Complete — `auth.service.ts` now maps 429 to `rate_limited`, and `login.page.ts` translates codes through `ERROR_MESSAGES`.
 **Flow:** [02 — User Login](../flows/02-user-login/02-user-login.md)
 **Traces:** L1-013, L2-002.
 **Severity:** Medium — every failed sign-in shows an internal identifier instead of actionable copy.
