@@ -1,5 +1,6 @@
 # Create contact does not show "Contact added" toast
 
+**Status:** Complete — `add-contact.page.ts` now calls `toast.show('Contact added')` after the navigation on success.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md)
 **Traces:** L1-002, L2-005.
 **Severity:** Medium — silent success breaks the feedback loop Flow 05 step 8 explicitly calls for, and the user has to infer from the URL change that the save succeeded.

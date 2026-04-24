@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { InputFieldComponent } from '../../ui/input-field/input-field.component';
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
 import { ContactsService, ContactsValidationError } from '../../contacts/contacts.service';
+import { ToastService } from '../../ui/toast/toast.service';
 
 function deriveInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -93,6 +94,7 @@ function deriveInitials(name: string): string {
 export class AddContactPage {
   private readonly contacts = inject(ContactsService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   readonly displayName = signal('');
   readonly initials = signal('');
@@ -158,6 +160,7 @@ export class AddContactPage {
       };
       const result = await this.contacts.create(payload);
       await this.router.navigateByUrl('/contacts/' + result.id);
+      this.toast.show('Contact added');
     } catch (e: any) {
       if (e instanceof ContactsValidationError) this.errors.set(e.errors);
       else this.error.set(e?.message ?? 'error');
