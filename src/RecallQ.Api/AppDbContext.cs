@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<InteractionEmbedding> InteractionEmbeddings => Set<InteractionEmbedding>();
     public DbSet<BackfillCursor> BackfillCursors => Set<BackfillCursor>();
     public DbSet<RelationshipSummary> RelationshipSummaries => Set<RelationshipSummary>();
+    public DbSet<Stack> Stacks => Set<Stack>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -140,5 +141,18 @@ public class AppDbContext : DbContext
             .HasForeignKey<RelationshipSummary>(x => x.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
         rs.HasQueryFilter(x => x.OwnerUserId == _currentUser.UserId);
+
+        var stack = builder.Entity<Stack>();
+        stack.ToTable("stacks");
+        stack.HasKey(s => s.Id);
+        stack.Property(s => s.Id).HasColumnName("id");
+        stack.Property(s => s.OwnerUserId).HasColumnName("owner_user_id");
+        stack.Property(s => s.Name).HasColumnName("name").IsRequired();
+        stack.Property(s => s.Kind).HasColumnName("kind").HasConversion<string>().IsRequired();
+        stack.Property(s => s.Definition).HasColumnName("definition").IsRequired();
+        stack.Property(s => s.SortOrder).HasColumnName("sort_order").HasDefaultValue(0);
+        stack.Property(s => s.CreatedAt).HasColumnName("created_at");
+        stack.HasIndex(s => new { s.OwnerUserId, s.SortOrder });
+        stack.HasQueryFilter(s => s.OwnerUserId == _currentUser.UserId);
     }
 }

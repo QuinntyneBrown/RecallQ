@@ -27,6 +27,9 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
         @if (q()) {
           <app-query-chip [q]="q()"></app-query-chip>
         }
+        @if (stackName()) {
+          <span class="stack-chip" data-testid="stack-chip">Stack: {{ stackName() }}</span>
+        }
         <app-sort-menu [sort]="sort()" (sortChange)="onSortChange($event)"></app-sort-menu>
       </div>
       <div class="meta">
@@ -79,6 +82,14 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
       color: var(--foreground-primary);
     }
     .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .stack-chip {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--stack-border);
+      font-size: 12px;
+      color: var(--foreground-secondary);
+      background: var(--surface-elevated);
+    }
     .meta { color: var(--foreground-secondary); font-size: 13px; }
     .error {
       background: color-mix(in srgb, var(--accent-secondary) 15%, transparent);
@@ -129,6 +140,7 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
   readonly contactsMatched = this.searchService.contactsMatched;
   readonly sort = this.searchService.sort;
 
+  readonly stackName = signal<string | null>(null);
   readonly contactsMap = signal<Map<string, ResultCardContact>>(new Map());
   readonly featured = computed<SearchResult | null>(() => this.results()[0] ?? null);
   readonly standardResults = computed<SearchResult[]>(() => this.results().slice(1));
@@ -139,7 +151,10 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.sub = this.route.queryParamMap.subscribe(async params => {
-      const q = params.get('q') ?? '';
+      const stackId = params.get('stackId');
+      const stackName = params.get('stackName');
+      this.stackName.set(stackId && stackName ? stackName : null);
+      const q = stackId && stackName ? stackName : (params.get('q') ?? '');
       const sortParam = (params.get('sort') ?? 'similarity') as SearchSort;
       const sort: SearchSort = sortParam === 'recent' ? 'recent' : 'similarity';
       await this.searchService.search(q, { reset: true, sort });

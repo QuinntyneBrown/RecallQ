@@ -2,10 +2,13 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { ContactsService } from '../../contacts/contacts.service';
+import { StacksService } from '../../stacks/stacks.service';
+import { StackCardComponent } from '../../ui/stack-card/stack-card.component';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
+  imports: [StackCardComponent],
   template: `
     <section class="home">
       <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
@@ -21,6 +24,17 @@ import { ContactsService } from '../../contacts/contacts.service';
                placeholder="Search contacts"
                (keyup.enter)="goSearch($event)" />
       </div>
+
+      @if (stacksService.stacks().length > 0) {
+        <section class="stacks-row">
+          <h2 class="eyebrow">SMART STACKS <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
+          <div class="stacks-scroll">
+            @for (s of stacksService.stacks(); track s.id) {
+              <app-stack-card [stack]="s"/>
+            }
+          </div>
+        </section>
+      }
 
       <a class="add-link" href="/contacts/new" (click)="goAdd($event)">Add contact</a>
     </section>
@@ -91,6 +105,35 @@ import { ContactsService } from '../../contacts/contacts.service';
       text-decoration: none;
       align-self: flex-start;
     }
+    .stacks-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .eyebrow {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--foreground-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+    .eyebrow a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: normal;
+      font-weight: 400;
+    }
+    .stacks-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 0 24px;
+      margin: 0 -24px;
+    }
     .sr-only {
       position: absolute;
       width: 1px;
@@ -107,6 +150,7 @@ import { ContactsService } from '../../contacts/contacts.service';
 export class HomePage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly contactsService = inject(ContactsService);
+  protected readonly stacksService = inject(StacksService);
   private readonly router = inject(Router);
 
   readonly contactCount = this.contactsService.contactCount;
@@ -127,6 +171,7 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     void this.contactsService.refreshCount();
+    void this.stacksService.refresh();
   }
 
   goSearch(ev: Event): void {

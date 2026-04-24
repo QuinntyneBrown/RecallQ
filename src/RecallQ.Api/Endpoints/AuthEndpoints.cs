@@ -19,6 +19,29 @@ public static class AuthEndpoints
     public record RegisterRequest(string? Email, string? Password);
     public record LoginRequest(string? Email, string? Password);
 
+    private static readonly (string Name, Entities.StackKind Kind, string Definition, int Order)[] DefaultStacks = new[]
+    {
+        ("AI founders",   Entities.StackKind.Query,          "AI founders",   0),
+        ("Intros owed",   Entities.StackKind.Classification, "intros_owed",   1),
+        ("Close friends", Entities.StackKind.Query,          "Close friends", 2),
+    };
+
+    private static async Task SeedDefaultStacksAsync(AppDbContext db, Guid userId)
+    {
+        foreach (var d in DefaultStacks)
+        {
+            db.Stacks.Add(new Entities.Stack
+            {
+                OwnerUserId = userId,
+                Name = d.Name,
+                Kind = d.Kind,
+                Definition = d.Definition,
+                SortOrder = d.Order,
+            });
+        }
+        await db.SaveChangesAsync();
+    }
+
     public static IEndpointRouteBuilder MapAuth(this IEndpointRouteBuilder app)
     {
         app.MapPost("/api/auth/register", async (RegisterRequest req, AppDbContext db, Argon2Hasher hasher) =>
@@ -36,6 +59,7 @@ public static class AuthEndpoints
             var user = new User { Email = email, PasswordHash = hasher.Hash(password) };
             db.Users.Add(user);
             await db.SaveChangesAsync();
+            await SeedDefaultStacksAsync(db, user.Id);
             return Results.Created($"/api/auth/users/{user.Id}", new { id = user.Id, email = user.Email });
         });
 

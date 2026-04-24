@@ -9,6 +9,7 @@ using RecallQ.Api.Chat;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
+using RecallQ.Api.Stacks;
 using RecallQ.Api.Summaries;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,8 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddSingleton(dataSource);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(dataSource, o => o.UseVector()));
+    options.UseNpgsql(dataSource, o => o.UseVector())
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.ManyServiceProvidersCreatedWarning)));
 
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 
@@ -58,6 +60,10 @@ builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Reader);
 builder.Services.AddHostedService<SummaryWorker>();
+
+builder.Services.AddSingleton<StackCountCacheOptions>();
+builder.Services.AddSingleton<StackCountCache>();
+builder.Services.AddScoped<StackCountCalculator>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -143,6 +149,7 @@ app.MapAdmin();
 app.MapSearch();
 app.MapAsk();
 app.MapSummaries();
+app.MapStacks();
 
 app.Run();
 

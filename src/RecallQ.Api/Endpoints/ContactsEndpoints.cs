@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Entities;
 using RecallQ.Api.Security;
+using RecallQ.Api.Stacks;
 
 namespace RecallQ.Api.Endpoints;
 
@@ -28,7 +29,7 @@ public static class ContactsEndpoints
     {
         app.MapPost("/api/contacts", [Authorize] async (
             CreateContactRequest req, AppDbContext db, ICurrentUser current,
-            ChannelWriter<EmbeddingJob> embeddingWriter) =>
+            ChannelWriter<EmbeddingJob> embeddingWriter, StackCountCache stackCache) =>
         {
             var errors = new Dictionary<string, string[]>();
             var displayName = (req.DisplayName ?? "").Trim();
@@ -55,6 +56,7 @@ public static class ContactsEndpoints
             };
             db.Contacts.Add(contact);
             await db.SaveChangesAsync();
+            stackCache.InvalidateOwner(current.UserId!.Value);
             await embeddingWriter.WriteAsync(new EmbeddingJob(contact.Id, contact.OwnerUserId, "contact"));
             return Results.Created($"/api/contacts/{contact.Id}", ContactDto.From(contact));
         });

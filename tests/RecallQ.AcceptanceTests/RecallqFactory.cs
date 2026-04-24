@@ -58,7 +58,8 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
             var dataSource = dsBuilder.Build();
 
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(dataSource, o => o.UseVector()));
+                options.UseNpgsql(dataSource, o => o.UseVector())
+                       .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.ManyServiceProvidersCreatedWarning)));
 
             var hosted = services.Where(d =>
                 d.ImplementationType == typeof(NullEmbeddingConsumer)
