@@ -241,6 +241,39 @@ public class AskTests : IClassFixture<AskFactory>
     }
 
     [Fact]
+    public async Task Followups_event_emitted_with_list()
+    {
+        _factory.ChatClient.CompletionResponse = "[\"a\",\"b\",\"c\"]";
+        var (client, cookie) = await RegisterLogin();
+        using var req = AskRequest(cookie, "hi");
+        using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var frames = await ReadSseFrames(res);
+        var fu = frames.FirstOrDefault(f => f.eventName == "followups");
+        Assert.False(string.IsNullOrEmpty(fu.data), "expected followups frame");
+        using var doc = JsonDocument.Parse(fu.data);
+        var items = doc.RootElement.GetProperty("items").EnumerateArray().Select(e => e.GetString()).ToArray();
+        Assert.Equal(new[] { "a", "b", "c" }, items);
+        Assert.Contains(frames, f => f.eventName == "done");
+    }
+
+    [Fact]
+    public async Task Invalid_followup_json_yields_zero_chips()
+    {
+        _factory.ChatClient.CompletionResponse = "oh hi";
+        var (client, cookie) = await RegisterLogin();
+        using var req = AskRequest(cookie, "hi");
+        using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var frames = await ReadSseFrames(res);
+        var fu = frames.FirstOrDefault(f => f.eventName == "followups");
+        Assert.False(string.IsNullOrEmpty(fu.data), "expected followups frame");
+        using var doc = JsonDocument.Parse(fu.data);
+        Assert.Equal(0, doc.RootElement.GetProperty("items").GetArrayLength());
+        Assert.Contains(frames, f => f.eventName == "done");
+    }
+
+    [Fact]
     public async Task Question_not_in_logs()
     {
         _factory.LogMessages.Clear();

@@ -22,7 +22,7 @@ public static class AskEndpoints
         return app;
     }
 
-    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, CitationRetriever retriever, ICurrentUser current, ILoggerFactory lf)
+    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, CitationRetriever retriever, FollowUpGenerator followUpGen, ICurrentUser current, ILoggerFactory lf)
     {
         var logger = lf.CreateLogger("Ask");
         var q = (req?.Q ?? string.Empty).Trim();
@@ -54,8 +54,10 @@ public static class AskEndpoints
             new("user", q),
         };
 
+        var answer = new StringBuilder();
         await foreach (var token in client.StreamAsync(messages, http.RequestAborted))
         {
+            answer.Append(token);
             var json = JsonSerializer.Serialize(new { token });
             await http.Response.WriteAsync($"data: {json}\n\n", http.RequestAborted);
             await http.Response.Body.FlushAsync(http.RequestAborted);
@@ -63,19 +65,16 @@ public static class AskEndpoints
 
         if (citations.Count > 0)
         {
-            var items = citations.Select(c => new
-            {
-                contactId = c.ContactId,
-                contactName = c.ContactName,
-                snippet = c.Snippet,
-                similarity = c.Similarity,
-                source = c.Source,
-            });
+            var items = citations.Select(c => new { contactId = c.ContactId, contactName = c.ContactName, snippet = c.Snippet, similarity = c.Similarity, source = c.Source });
             var payload = JsonSerializer.Serialize(new { items });
-            await http.Response.WriteAsync("event: citations\n", http.RequestAborted);
-            await http.Response.WriteAsync($"data: {payload}\n\n", http.RequestAborted);
+            await http.Response.WriteAsync($"event: citations\ndata: {payload}\n\n", http.RequestAborted);
             await http.Response.Body.FlushAsync(http.RequestAborted);
         }
+
+        var followUps = await followUpGen.GenerateAsync(q, answer.ToString(), http.RequestAborted);
+        var fuPayload = JsonSerializer.Serialize(new { items = followUps });
+        await http.Response.WriteAsync($"event: followups\ndata: {fuPayload}\n\n", http.RequestAborted);
+        await http.Response.Body.FlushAsync(http.RequestAborted);
 
         await http.Response.WriteAsync("event: done\ndata: {}\n\n", http.RequestAborted);
         await http.Response.Body.FlushAsync(http.RequestAborted);

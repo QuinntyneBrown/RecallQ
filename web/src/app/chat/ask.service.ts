@@ -7,6 +7,7 @@ export interface AskMessage {
   text: string;
   streaming?: boolean;
   citations?: Citation[];
+  followUps?: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +35,12 @@ export class AskService {
   private setCitations(id: string, citations: Citation[]): void {
     this.messages.update(list =>
       list.map(m => (m.id === id ? { ...m, citations } : m)),
+    );
+  }
+
+  private setFollowUps(id: string, followUps: string[]): void {
+    this.messages.update(list =>
+      list.map(m => (m.id === id ? { ...m, followUps } : m)),
     );
   }
 
@@ -85,6 +92,13 @@ export class AskService {
             else if (line.startsWith('data:')) data = line.slice('data:'.length).trim();
           }
           if (eventName === 'done') { done = true; break; }
+          if (eventName === 'followups') {
+            try {
+              const parsed = JSON.parse(data) as { items?: string[] };
+              if (parsed.items?.length) this.setFollowUps(assistantMsg.id, parsed.items);
+            } catch { /* ignore */ }
+            continue;
+          }
           if (eventName === 'citations') {
             try {
               const parsed = JSON.parse(data) as { items?: Citation[] };

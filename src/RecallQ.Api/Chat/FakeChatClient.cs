@@ -9,6 +9,7 @@ public class FakeChatClient : IChatClient
     public string Model => "fake-chat";
     public TimeSpan TokenDelay { get; set; } = TimeSpan.Zero;
     public IReadOnlyList<string> Tokens { get; set; } = DefaultTokens;
+    public string CompletionResponse { get; set; } = "[\"What about Series A?\",\"Who's closing this week?\",\"Recent AI investors?\"]";
 
     public async IAsyncEnumerable<string> StreamAsync(IReadOnlyList<ChatMessage> messages, [EnumeratorCancellation] CancellationToken ct)
     {
@@ -19,4 +20,7 @@ public class FakeChatClient : IChatClient
             yield return t;
         }
     }
+
+    public Task<string> CompleteAsync(IReadOnlyList<ChatMessage> messages, CancellationToken ct)
+        => Task.FromResult(CompletionResponse);
 }

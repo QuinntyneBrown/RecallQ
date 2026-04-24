@@ -68,4 +68,37 @@ public class OpenAIChatClient : IChatClient
             if (!string.IsNullOrEmpty(token)) yield return token!;
         }
     }
+
+    public async Task<string> CompleteAsync(IReadOnlyList<ChatMessage> messages, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(_options.ApiKey))
+            throw new InvalidOperationException("OpenAI API key not configured");
+
+        using var req = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
+        req.Content = JsonContent.Create(new
+        {
+            model = _options.ChatModel,
+            stream = false,
+            max_tokens = 40,
+            temperature = 0.2,
+            messages = messages.Select(m => new { role = m.Role, content = m.Content }).ToArray(),
+        });
+
+        using var res = await _http.SendAsync(req, ct);
+        res.EnsureSuccessStatusCode();
+        var body = await res.Content.ReadAsStringAsync(ct);
+        using var doc = JsonDocument.Parse(body);
+        if (doc.RootElement.TryGetProperty("choices", out var choices) && choices.GetArrayLength() > 0)
+        {
+            var choice = choices[0];
+            if (choice.TryGetProperty("message", out var msg) &&
+                msg.TryGetProperty("content", out var content) &&
+                content.ValueKind == JsonValueKind.String)
+            {
+                return content.GetString() ?? string.Empty;
+            }
+        }
+        return string.Empty;
+    }
 }

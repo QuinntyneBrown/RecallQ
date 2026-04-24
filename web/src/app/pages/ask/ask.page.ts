@@ -2,11 +2,12 @@ import { AfterViewChecked, Component, ElementRef, ViewChild, inject } from '@ang
 import { Location } from '@angular/common';
 import { AskService } from '../../chat/ask.service';
 import { CitationCardComponent } from '../../ui/citation-card/citation-card.component';
+import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.component';
 
 @Component({
   selector: 'app-ask-page',
   standalone: true,
-  imports: [CitationCardComponent],
+  imports: [CitationCardComponent, FollowUpChipComponent],
   template: `
     <section class="ask-shell">
       <header class="top-bar">
@@ -36,6 +37,16 @@ import { CitationCardComponent } from '../../ui/citation-card/citation-card.comp
                   @for (c of m.citations; track c.contactId; let i = $index) {
                     <app-citation-card [citation]="c" [top]="i === 0"/>
                   }
+                </div>
+              }
+              @if (m.followUps?.length) {
+                <div class="follow-up-section">
+                  <p class="follow-up-label">FOLLOW-UP</p>
+                  <div class="follow-up-chips">
+                    @for (t of m.followUps; track t) {
+                      <app-follow-up-chip [text]="t" (picked)="handleFollowUp($event)"/>
+                    }
+                  </div>
                 </div>
               }
             </div>
@@ -134,6 +145,15 @@ import { CitationCardComponent } from '../../ui/citation-card/citation-card.comp
     }
     @keyframes blink { to { visibility: hidden; } }
     .citations { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .follow-up-section { margin-top: 12px; }
+    .follow-up-label {
+      font-family: var(--font-mono, monospace);
+      letter-spacing: 1.3px;
+      color: var(--foreground-muted);
+      font-size: 11px;
+      margin: 0 0 6px 0;
+    }
+    .follow-up-chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .error {
       align-self: flex-start;
       color: var(--accent-secondary);
@@ -207,4 +227,8 @@ export class AskPage implements AfterViewChecked {
   back(): void { this.location.back(); }
 
   newSession(): void { this.ask.reset(); }
+
+  async handleFollowUp(text: string): Promise<void> {
+    await this.ask.send(text);
+  }
 }
