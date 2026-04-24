@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+@import "@phosphor-icons/web/regular/style.css";
+@import "./app/tokens.css";
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface-primary);
+  color: var(--foreground-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

@@ -60,7 +60,9 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] `tokens.spec.ts` passes.
-- [ ] `T003-shell.spec.ts` passes and renders the screenshot.
-- [ ] No literal hex codes in `status-bar`, `home-indicator`, `bottom-nav` except inside gradient tuples.
-- [ ] Three verification passes complete clean.
+- [x] `tokens.spec.ts` passes.
+- [x] `T003-shell.spec.ts` passes and renders the screenshot.
+- [x] No literal hex codes in `status-bar`, `home-indicator`, `bottom-nav` except inside gradient tuples.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
