@@ -62,6 +62,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] `npx playwright test` passes and produces `T002-harness.png`.
-- [ ] `pages/`, `flows/`, `fixtures/`, `tests/` directories exist with at least one file each (or placeholder `.gitkeep` for not-yet-populated folders).
-- [ ] Three verification passes complete clean.
+- [x] `npx playwright test` passes and produces `T002-harness.png`.
+- [x] `pages/`, `flows/`, `fixtures/`, `tests/` directories exist with at least one file each (or placeholder `.gitkeep` for not-yet-populated folders).
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
