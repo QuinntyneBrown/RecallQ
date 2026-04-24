@@ -9,7 +9,7 @@ export const routes: Routes = [
   { path: 'home', canMatch: [authGuard], loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage) },
   { path: 'contacts/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-contact/add-contact.page').then(m => m.AddContactPage) },
   { path: 'search', canMatch: [authGuard], loadComponent: () => import('./pages/search/search.page').then(m => m.SearchResultsPage) },
-  { path: 'ask', canMatch: [authGuard], loadComponent: () => import('./pages/ask/ask.page').then(m => m.AskPlaceholderPage) },
+  { path: 'ask', canMatch: [authGuard], loadComponent: () => import('./pages/ask/ask.page').then(m => m.AskPage) },
   { path: 'contacts/:id/interactions/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-interaction/add-interaction.page').then(m => m.AddInteractionPage) },
   { path: 'contacts/:id/activity', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/all-activity.page').then(m => m.AllActivityPage) },
   { path: 'contacts/:id', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/contact-detail.page').then(m => m.ContactDetailPage) },

@@ -40,6 +40,18 @@ public static class LoginRateLimit
                     AutoReplenishment = true
                 });
             });
+            options.AddPolicy("ask", httpCtx =>
+            {
+                var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 20,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                    AutoReplenishment = true
+                });
+            });
         });
         return services;
     }

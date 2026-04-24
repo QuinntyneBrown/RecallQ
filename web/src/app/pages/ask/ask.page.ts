@@ -1,17 +1,200 @@
-import { Component } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { Location } from '@angular/common';
+import { AskService } from '../../chat/ask.service';
 
 @Component({
-  selector: 'app-ask-placeholder-page',
+  selector: 'app-ask-page',
   standalone: true,
   template: `
-    <section class="ask">
-      <h1>Ask mode</h1>
-      <p>Ask mode coming soon.</p>
+    <section class="ask-shell">
+      <header class="top-bar">
+        <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+          <i class="ph ph-arrow-left"></i>
+        </button>
+        <h1><i class="ph ph-sparkle"></i> Ask RecallQ</h1>
+        <button type="button" class="icon-btn" aria-label="New session" (click)="newSession()">
+          <i class="ph ph-plus"></i>
+        </button>
+      </header>
+
+      <div class="chat-list" #list>
+        @if (messages().length === 0) {
+          <div data-testid="greet-bubble" class="bubble assistant-bubble">
+            Hi — ask me anything about your contacts.
+          </div>
+        }
+        @for (m of messages(); track m.id) {
+          @if (m.role === 'user') {
+            <div data-testid="user-bubble" class="bubble user-bubble">{{ m.text }}</div>
+          } @else {
+            <div data-testid="assistant-bubble" class="bubble assistant-bubble">
+              {{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
+            </div>
+          }
+        }
+        @if (error()) {
+          <div class="error" role="alert">{{ error() }}</div>
+        }
+      </div>
+
+      <div class="input-bar" data-testid="input-bar">
+        <button type="button" class="icon-btn" aria-label="Add context" disabled>
+          <i class="ph ph-plus"></i>
+        </button>
+        <input #inp type="text" aria-label="Ask anything" placeholder="Ask anything"
+               (keyup.enter)="submit(inp)" [disabled]="pending()" />
+        <button type="button" class="icon-btn" aria-label="Voice" disabled>
+          <i class="ph ph-microphone"></i>
+        </button>
+        <button type="button" class="send-btn" aria-label="Send"
+                [disabled]="pending()" (click)="submit(inp)">
+          <i class="ph ph-paper-plane-tilt"></i>
+        </button>
+      </div>
     </section>
   `,
   styles: [`
-    .ask { padding: 24px; color: var(--foreground-primary); }
-    p { color: var(--foreground-secondary); }
+    :host { display: block; height: 100%; }
+    .ask-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      color: var(--foreground-primary);
+      background: var(--surface-primary);
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .top-bar h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .icon-btn {
+      background: transparent;
+      border: 0;
+      color: var(--foreground-primary);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .icon-btn:hover:not(:disabled) { background: var(--surface-elevated); }
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      max-width: 78%;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .user-bubble {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: var(--foreground-primary);
+    }
+    .assistant-bubble {
+      align-self: flex-start;
+      background: var(--surface-elevated);
+      color: var(--foreground-primary);
+    }
+    .cursor {
+      display: inline-block;
+      margin-left: 2px;
+      animation: blink 1s steps(2, start) infinite;
+    }
+    @keyframes blink { to { visibility: hidden; } }
+    .error {
+      align-self: flex-start;
+      color: var(--accent-secondary);
+      font-size: 13px;
+    }
+    .input-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 12px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border-subtle);
+      background: var(--surface-secondary);
+      position: sticky;
+      bottom: 0;
+    }
+    .input-bar input {
+      flex: 1;
+      background: var(--surface-elevated);
+      color: var(--foreground-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 10px 14px;
+      font-size: 14px;
+      outline: none;
+    }
+    .input-bar input::placeholder { color: var(--foreground-muted); }
+    .send-btn {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      border: 0;
+      color: var(--foreground-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   `],
 })
-export class AskPlaceholderPage {}
+export class AskPage implements AfterViewChecked {
+  private readonly ask = inject(AskService);
+  private readonly location = inject(Location);
+
+  readonly messages = this.ask.messages;
+  readonly pending = this.ask.pending;
+  readonly error = this.ask.error;
+
+  @ViewChild('list') list?: ElementRef<HTMLElement>;
+  private lastLen = -1;
+
+  ngAfterViewChecked(): void {
+    const len = this.messages().reduce((n, m) => n + m.text.length, 0);
+    if (len !== this.lastLen && this.list) {
+      this.lastLen = len;
+      const el = this.list.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+
+  async submit(input: HTMLInputElement): Promise<void> {
+    const q = input.value;
+    if (!q.trim() || this.pending()) return;
+    input.value = '';
+    await this.ask.send(q);
+  }
+
+  back(): void { this.location.back(); }
+
+  newSession(): void { this.ask.reset(); }
+}

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using RecallQ.Api;
+using RecallQ.Api.Chat;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
@@ -40,10 +41,12 @@ var useFake = string.Equals(embeddingsProvider, "fake", StringComparison.Ordinal
 if (useFake)
 {
     builder.Services.AddSingleton<IEmbeddingClient, FakeEmbeddingClient>();
+    builder.Services.AddSingleton<IChatClient, FakeChatClient>();
 }
 else
 {
     builder.Services.AddHttpClient<IEmbeddingClient, OpenAIEmbeddingClient>();
+    builder.Services.AddHttpClient<IChatClient, OpenAIChatClient>();
 }
 builder.Services.AddHostedService<EmbeddingWorker>();
 builder.Services.AddSingleton<EmbeddingBackfillRunner>();
@@ -135,6 +138,7 @@ app.MapContacts();
 app.MapInteractions();
 app.MapAdmin();
 app.MapSearch();
+app.MapAsk();
 
 app.Run();
 
