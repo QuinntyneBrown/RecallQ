@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ViewChild, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { SearchService, SearchResult, SearchSort } from '../../search/search.service';
@@ -15,6 +15,7 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
   standalone: true,
   imports: [
     ScrollingModule,
+    RouterLink,
     QueryChipComponent,
     ResultCardComponent,
     FeaturedResultCardComponent,
@@ -23,63 +24,105 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
   ],
   template: `
     <section class="page">
-      <div class="toolbar">
-        @if (q()) {
-          <app-query-chip [q]="q()"></app-query-chip>
-        }
-        @if (stackName()) {
-          <span class="stack-chip" data-testid="stack-chip">Stack: {{ stackName() }}</span>
-        }
-        <app-sort-menu [sort]="sort()" (sortChange)="onSortChange($event)"></app-sort-menu>
-      </div>
-      <div class="meta">
-        <span data-testid="match-count">{{ contactsMatched() }} contacts matched</span>
-      </div>
-
-      @if (error()) {
-        <div class="error" role="alert">{{ error() }}</div>
-      }
-
-      @if (!loading() && !error() && results().length === 0) {
-        <app-zero-state></app-zero-state>
-      }
-
-      @if (results().length > 0) {
-        @if (featured(); as f) {
-          @if (contactFor(f.contactId); as c) {
-            <app-featured-result-card [result]="f" [contact]="c"></app-featured-result-card>
+      <div class="list-pane" data-testid="results-list-pane">
+        <div class="toolbar">
+          @if (q()) {
+            <app-query-chip [q]="q()"></app-query-chip>
           }
-        }
-        <cdk-virtual-scroll-viewport
-          itemSize="96"
-          class="results-viewport"
-          data-testid="results-viewport"
-          (scrolledIndexChange)="onScrolledIndexChange($event)"
-        >
-          <ng-container *cdkVirtualFor="let r of standardResults(); trackBy: trackById">
-            @if (contactFor(r.contactId); as c) {
-              <app-result-card [result]="r" [contact]="c"></app-result-card>
-            }
-          </ng-container>
-        </cdk-virtual-scroll-viewport>
-      }
-
-      @if (loading()) {
-        <div class="skeletons" aria-live="polite">
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
+          @if (stackName()) {
+            <span class="stack-chip" data-testid="stack-chip">Stack: {{ stackName() }}</span>
+          }
+          <app-sort-menu [sort]="sort()" (sortChange)="onSortChange($event)"></app-sort-menu>
         </div>
-      }
+        <div class="meta">
+          <span data-testid="match-count">{{ contactsMatched() }} contacts matched</span>
+        </div>
+
+        @if (error()) {
+          <div class="error" role="alert">{{ error() }}</div>
+        }
+
+        @if (!loading() && !error() && results().length === 0) {
+          <app-zero-state></app-zero-state>
+        }
+
+        @if (results().length > 0) {
+          @if (featured(); as f) {
+            @if (contactFor(f.contactId); as c) {
+              <app-featured-result-card [result]="f" [contact]="c" (select)="onSelect($event)"></app-featured-result-card>
+            }
+          }
+          <cdk-virtual-scroll-viewport
+            itemSize="96"
+            class="results-viewport"
+            data-testid="results-viewport"
+            (scrolledIndexChange)="onScrolledIndexChange($event)"
+          >
+            <ng-container *cdkVirtualFor="let r of standardResults(); trackBy: trackById">
+              @if (contactFor(r.contactId); as c) {
+                <app-result-card [result]="r" [contact]="c" (select)="onSelect($event)"></app-result-card>
+              }
+            </ng-container>
+          </cdk-virtual-scroll-viewport>
+        }
+
+        @if (loading()) {
+          <div class="skeletons" aria-live="polite">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+        }
+      </div>
+
+      <aside class="detail-pane" data-testid="results-detail-pane">
+        @if (selectedContactId() && selectedContact(); as c) {
+          <div class="detail-card" data-testid="detail-summary">
+            <div class="detail-head">
+              <span class="avatar-lg" aria-hidden="true">{{ c.initials }}</span>
+              <div class="detail-text">
+                <h2 class="detail-name" data-testid="detail-name">{{ c.displayName }}</h2>
+                @if (c.role || c.organization) {
+                  <p class="detail-sub">{{ subLineFor(c) }}</p>
+                }
+              </div>
+            </div>
+            <a class="open-link" [routerLink]="['/contacts', c.id]" data-testid="open-full-profile">
+              Open full profile →
+            </a>
+          </div>
+        } @else {
+          <div data-testid="select-placeholder" class="placeholder">
+            Select a contact to see details
+          </div>
+        }
+      </aside>
     </section>
   `,
   styles: [`
     .page {
       padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      color: var(--foreground-primary);
+      align-items: start;
+    }
+    .list-pane {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      color: var(--foreground-primary);
+      min-width: 0;
+    }
+    .detail-pane {
+      display: none;
+      min-width: 0;
+    }
+    @media (min-width: 992px) {
+      .page {
+        grid-template-columns: minmax(360px, 400px) 1fr;
+      }
+      .detail-pane { display: block; }
     }
     .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .stack-chip {
@@ -125,6 +168,42 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+    .placeholder {
+      padding: 24px;
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-lg);
+      color: var(--foreground-secondary);
+      text-align: center;
+      background: var(--surface-elevated);
+    }
+    .detail-card {
+      padding: 20px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .detail-head { display: flex; align-items: center; gap: 16px; }
+    .avatar-lg {
+      width: 72px; height: 72px;
+      border-radius: var(--radius-full);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 24px;
+      color: var(--foreground-primary);
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid));
+    }
+    .detail-text { min-width: 0; }
+    .detail-name { margin: 0; font-size: 20px; font-weight: 600; }
+    .detail-sub { margin: 4px 0 0 0; color: var(--foreground-secondary); font-size: 14px; }
+    .open-link {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .open-link:hover { text-decoration: underline; }
   `],
 })
 export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
@@ -145,6 +224,9 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
   readonly featured = computed<SearchResult | null>(() => this.results()[0] ?? null);
   readonly standardResults = computed<SearchResult[]>(() => this.results().slice(1));
 
+  readonly selectedContactId = signal<string | null>(null);
+  readonly selectedContact = signal<ResultCardContact | null>(null);
+
   @ViewChild(CdkVirtualScrollViewport) viewport?: CdkVirtualScrollViewport;
   private viewportSub?: Subscription;
   private sub?: Subscription;
@@ -163,7 +245,6 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // The viewport may not exist yet if no results. Poll via queueMicrotask each update.
     setTimeout(() => this.attachViewportScroll(), 0);
   }
 
@@ -192,6 +273,27 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
       queryParams: { sort },
       queryParamsHandling: 'merge',
     });
+  }
+
+  onSelect(contactId: string): void {
+    this.selectedContactId.set(contactId);
+    const cached = this.contactsMap().get(contactId);
+    if (cached) {
+      this.selectedContact.set(cached);
+    } else {
+      this.selectedContact.set(null);
+      void this.contactsService.get(contactId).then(c => {
+        if (!c || this.selectedContactId() !== contactId) return;
+        this.selectedContact.set({
+          id: c.id,
+          displayName: c.displayName,
+          initials: c.initials,
+          role: c.role,
+          organization: c.organization,
+          tags: c.tags,
+        });
+      });
+    }
   }
 
   trackById = (_: number, r: SearchResult): string => r.contactId;
@@ -228,5 +330,9 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
 
   contactFor(id: string): ResultCardContact | null {
     return this.contactsMap().get(id) ?? null;
+  }
+
+  subLineFor(c: ResultCardContact): string {
+    return [c.role, c.organization].filter(p => p && p.length > 0).join(' · ');
   }
 }

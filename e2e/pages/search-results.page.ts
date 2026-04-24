@@ -8,6 +8,9 @@ export class SearchResultsPage {
   featured()      { return this.page.getByTestId('featured-result'); }
   standardCards() { return this.page.getByTestId('result-card'); }
   zeroState()     { return this.page.getByTestId('zero-state'); }
+  listPane()      { return this.page.getByTestId('results-list-pane'); }
+  detailPane()    { return this.page.getByTestId('results-detail-pane'); }
+  detailPlaceholder() { return this.detailPane().getByTestId('select-placeholder'); }
 
   async pickSort(label: 'Similarity' | 'Most recent') {
     await this.page.getByRole('button', { name: 'Sort' }).click();

@@ -53,5 +53,7 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 1 e2e spec passes with all three scenarios.
-- [ ] Three verification passes complete clean.
+- [x] 1 e2e spec passes with all three scenarios.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
