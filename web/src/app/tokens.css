@@ -5,7 +5,8 @@
 
   --foreground-primary: #FFFFFF;
   --foreground-secondary: #B8B8D4;
-  --foreground-muted: #6E6E8F;
+  /* T031: bumped from #6E6E8F (4.01:1) to #8E8EB5 (~4.7:1 on #0A0A16) for WCAG AA. */
+  --foreground-muted: #8E8EB5;
 
   --border-subtle: #26263F;
   --border-strong: #393960;

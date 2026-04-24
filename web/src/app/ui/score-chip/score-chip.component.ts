@@ -34,9 +34,11 @@ import { computeTier } from './score-chip.util';
       background: color-mix(in srgb, var(--accent-secondary) 18%, transparent);
       color: var(--accent-secondary);
     }
+    /* T031: lift low-tier text color to --foreground-secondary (#B8B8D4) so the chip passes
+       WCAG AA against its tinted background. Using --foreground-muted gave 4.05:1 over the mixed bg. */
     .chip.low {
       background: color-mix(in srgb, var(--foreground-muted) 18%, transparent);
-      color: var(--foreground-muted);
+      color: var(--foreground-secondary);
     }
   `],
 })

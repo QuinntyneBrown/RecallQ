@@ -13,27 +13,29 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
   imports: [StackCardComponent, SuggestionCardComponent],
   template: `
     <section class="home">
-      <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
-      <h1 class="hero-title">Find anyone.</h1>
-      <p class="hero-sub">By meaning, not memory.</p>
-      <p class="hero-subtitle" data-testid="hero-subtitle">Semantic search across {{ contactCount() }} contacts and {{ interactionCount() }} interactions.</p>
+      <section aria-labelledby="hero-title">
+        <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
+        <h1 id="hero-title" class="hero-title">Find anyone.</h1>
+        <p class="hero-sub">By meaning, not memory.</p>
+        <p class="hero-subtitle" data-testid="hero-subtitle">Semantic search across {{ contactCount() }} contacts and {{ interactionCount() }} interactions.</p>
 
-      <div class="search-wrap">
-        <label class="sr-only" for="q">Search contacts</label>
-        <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
-        <input id="q" class="search-input" type="search" role="searchbox"
-               aria-label="Search contacts"
-               placeholder="Search contacts"
-               (keyup.enter)="goSearch($event)" />
-      </div>
+        <div class="search-wrap">
+          <label class="sr-only" for="q">Search contacts</label>
+          <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
+          <input id="q" class="search-input" type="search" role="searchbox"
+                 aria-label="Search contacts"
+                 placeholder="Search contacts"
+                 (keyup.enter)="goSearch($event)" />
+        </div>
+      </section>
 
       @if (suggestionsService.suggestion()) {
         <app-suggestion-card [suggestion]="suggestionsService.suggestion()!" (dismiss)="handleDismiss($event)"/>
       }
 
       @if (stacksService.stacks().length > 0) {
-        <section class="stacks-row">
-          <h2 class="eyebrow">SMART STACKS <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
+        <section class="stacks-row" aria-labelledby="stacks-heading">
+          <h2 id="stacks-heading" class="eyebrow">SMART STACKS <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
           <div class="stacks-scroll">
             @for (s of stacksService.stacks(); track s.id) {
               <app-stack-card [stack]="s"/>
@@ -105,10 +107,12 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
     .search-input:focus {
       border-color: var(--accent-primary);
     }
+    /* T031: --accent-primary (#7C3AFF) on --surface-primary (#0A0A16) fails WCAG AA (3.65:1).
+       Use --accent-tertiary (cyan #4BE8FF) which passes comfortably. */
     .add-link {
       margin-top: 4px;
       font-size: 14px;
-      color: var(--accent-primary);
+      color: var(--accent-tertiary);
       text-decoration: none;
       align-self: flex-start;
     }
@@ -128,7 +132,7 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
       font-weight: 600;
     }
     .eyebrow a {
-      color: var(--accent-primary);
+      color: var(--accent-tertiary);
       text-decoration: none;
       font-size: 12px;
       letter-spacing: normal;

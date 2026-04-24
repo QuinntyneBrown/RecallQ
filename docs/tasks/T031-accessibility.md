@@ -50,6 +50,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] axe scan passes on all key pages (no violations).
-- [ ] Keyboard walk matches the documented tab order.
-- [ ] Three verification passes complete clean.
+- [x] axe scan passes on all key pages (no violations).
+- [x] Keyboard walk matches the documented tab order.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

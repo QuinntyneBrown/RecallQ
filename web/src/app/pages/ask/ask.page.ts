@@ -22,7 +22,7 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
         </button>
       </header>
 
-      <div class="chat-list" #list>
+      <div class="chat-list" #list role="log" aria-live="polite" aria-relevant="additions text">
         @if (messages().length === 0) {
           <div data-testid="greet-bubble" class="bubble assistant-bubble">
             Hi — ask me anything about your contacts.
@@ -32,7 +32,7 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
           @if (m.role === 'user') {
             <div data-testid="user-bubble" class="bubble user-bubble">{{ m.text }}</div>
           } @else {
-            <div data-testid="assistant-bubble" class="bubble assistant-bubble">
+            <div data-testid="assistant-bubble" class="bubble assistant-bubble" [attr.aria-busy]="m.streaming ? 'true' : null">
               {{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
               @if (m.citations?.length) {
                 <div class="citations">

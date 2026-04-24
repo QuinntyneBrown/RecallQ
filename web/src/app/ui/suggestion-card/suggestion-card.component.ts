@@ -58,10 +58,13 @@ import { Suggestion } from '../../suggestions/suggestions.service';
     @media (prefers-reduced-motion: reduce) {
       .dot { animation: none; }
     }
+    /* T031: white text on the 3-stop gradient is borderline against the pink end-stop (#FF5EE7).
+       Bumping font-weight to 500 improves perceived contrast while keeping the visual identity. */
     .body {
       margin: 0;
       font-size: 15px;
       line-height: 1.4;
+      font-weight: 500;
     }
     .actions {
       display: flex;

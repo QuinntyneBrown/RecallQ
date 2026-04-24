@@ -9,3 +9,33 @@ html, body {
   color: var(--foreground-primary);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
+/* T031: Global focus ring. Uses --accent-tertiary (cyan) for high contrast on dark surfaces. */
+:focus-visible {
+  outline: 2px solid var(--accent-tertiary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* T031: Several components reset outline: none on inputs/buttons. Re-apply the visible focus ring
+   globally so keyboard users always see a focus indicator. */
+input:focus-visible,
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="link"]:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-tertiary);
+  outline-offset: 2px;
+}
+
+/* T031: Respect reduced-motion preferences — disable animations, transitions, and smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
