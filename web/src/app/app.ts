@@ -3,16 +3,18 @@ import { RouterOutlet } from '@angular/router';
 import { StatusBarComponent } from './ui/status-bar/status-bar.component';
 import { BottomNavComponent } from './ui/bottom-nav/bottom-nav.component';
 import { HomeIndicatorComponent } from './ui/home-indicator/home-indicator.component';
+import { ToastHostComponent } from './ui/toast/toast.component';
 import { HealthService } from './health.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, StatusBarComponent, BottomNavComponent, HomeIndicatorComponent],
+  imports: [RouterOutlet, StatusBarComponent, BottomNavComponent, HomeIndicatorComponent, ToastHostComponent],
   template: `
     <app-status-bar/>
     <main class="content"><router-outlet/></main>
     <app-bottom-nav/>
+    <app-toast-host/>
     <app-home-indicator/>
   `,
   styles: [`

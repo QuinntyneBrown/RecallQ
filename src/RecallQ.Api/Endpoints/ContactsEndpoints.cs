@@ -79,6 +79,8 @@ public static class ContactsEndpoints
             var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
             if (c is null) return Results.NotFound();
             if (req.Starred.HasValue) c.Starred = req.Starred.Value;
+            if (req.Emails is not null) c.Emails = req.Emails;
+            if (req.Phones is not null) c.Phones = req.Phones;
             await db.SaveChangesAsync();
             var total = await db.Interactions.CountAsync(i => i.ContactId == id);
             var rows = await db.Interactions.Where(i => i.ContactId == id)

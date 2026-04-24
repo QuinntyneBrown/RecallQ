@@ -3,11 +3,16 @@ import { ActivatedRoute } from '@angular/router';
 import { ContactsService, ContactDetailDto, SummaryResponse } from '../../contacts/contacts.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
 import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-card/relationship-summary-card.component';
+import { QuickActionTileComponent } from '../../ui/quick-action-tile/quick-action-tile.component';
+import { Dialog } from '@angular/cdk/dialog';
+import { AddEmailModal } from '../../ui/modals/add-email.modal';
+import { AddPhoneModal } from '../../ui/modals/add-phone.modal';
+import { ToastService } from '../../ui/toast/toast.service';
 
 @Component({
   selector: 'app-contact-detail-page',
   standalone: true,
-  imports: [TimelineItemComponent, RelationshipSummaryCardComponent],
+  imports: [TimelineItemComponent, RelationshipSummaryCardComponent, QuickActionTileComponent],
   template: `
     <section class="page">
       @if (contact(); as c) {
@@ -45,10 +50,32 @@ import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-
         </header>
 
         <div class="actions">
-          <button type="button" disabled><i class="ph ph-chat-circle"></i><span>Message</span></button>
-          <button type="button" disabled><i class="ph ph-phone"></i><span>Call</span></button>
-          <button type="button" disabled><i class="ph ph-user-plus"></i><span>Intro</span></button>
-          <button type="button" disabled><i class="ph ph-sparkle"></i><span>Ask AI</span></button>
+          <app-quick-action-tile
+            icon="envelope"
+            label="Message"
+            ariaLabel="Email this contact"
+            [active]="hasEmail()"
+            (tileClick)="onMessage()"
+          />
+          <app-quick-action-tile
+            icon="phone"
+            label="Call"
+            ariaLabel="Call this contact"
+            [active]="hasPhone()"
+            (tileClick)="onCall()"
+          />
+          <app-quick-action-tile
+            icon="user-plus"
+            label="Intro"
+            ariaLabel="Intro"
+            [disabled]="true"
+          />
+          <app-quick-action-tile
+            icon="sparkle"
+            label="Ask AI"
+            ariaLabel="Ask AI"
+            [disabled]="true"
+          />
         </div>
 
         <div class="summary-wrap">
@@ -138,17 +165,6 @@ import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
       padding: 0 24px;
     }
-    .actions button {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      padding: 10px 6px;
-      background: var(--surface-elevated);
-      color: var(--foreground-primary);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      font-size: 12px;
-      cursor: not-allowed; opacity: 0.85;
-    }
-    .actions .ph { font-size: 18px; }
     .summary-wrap { padding: 0 24px; }
     .activity { padding: 0 24px; }
     .activity-head {
@@ -167,12 +183,16 @@ import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-
 export class ContactDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly contacts = inject(ContactsService);
+  private readonly dialog = inject(Dialog);
+  private readonly toast = inject(ToastService);
   readonly contact = signal<ContactDetailDto | null>(null);
   readonly notFound = signal(false);
   readonly contactId = signal<string | null>(null);
   readonly summary = signal<SummaryResponse>({ status: 'pending' });
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
   readonly starred = computed(() => this.contact()?.starred ?? false);
+  readonly hasEmail = computed(() => (this.contact()?.emails?.length ?? 0) > 0);
+  readonly hasPhone = computed(() => (this.contact()?.phones?.length ?? 0) > 0);
   readonly roleLine = computed(() => {
     const c = this.contact();
     if (!c) return '';
@@ -214,6 +234,66 @@ export class ContactDetailPage implements OnInit {
   }
 
   back() { history.back(); }
+
+  private navigateExternal(href: string) {
+    const hooked = (window as unknown as { __rqNav?: (h: string) => boolean | void }).__rqNav?.(href);
+    if (hooked !== true) {
+      window.location.href = href;
+    }
+  }
+
+  async onMessage() {
+    const c = this.contact();
+    if (!c) return;
+    if (this.hasEmail()) {
+      this.navigateExternal('mailto:' + c.emails[0]);
+      return;
+    }
+    const ref = this.dialog.open<string | undefined>(AddEmailModal, {
+      ariaLabelledBy: 'add-email-title',
+    });
+    ref.closed.subscribe(async (value) => {
+      const v = (value ?? '').trim();
+      if (!v) return;
+      try {
+        const updated = await this.contacts.patch(c.id, { emails: [v] });
+        this.contact.set(updated);
+        this.onMessage();
+      } catch {}
+    });
+  }
+
+  async onCall() {
+    const c = this.contact();
+    if (!c) return;
+    if (!this.hasPhone()) {
+      const ref = this.dialog.open<string | undefined>(AddPhoneModal, {
+        ariaLabelledBy: 'add-phone-title',
+      });
+      ref.closed.subscribe(async (value) => {
+        const v = (value ?? '').trim();
+        if (!v) return;
+        try {
+          const updated = await this.contacts.patch(c.id, { phones: [v] });
+          this.contact.set(updated);
+          this.onCall();
+        } catch {}
+      });
+      return;
+    }
+    const phone = c.phones[0];
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+      this.navigateExternal('tel:' + phone);
+    } else {
+      try {
+        await navigator.clipboard.writeText(phone);
+        this.toast.show('Phone number copied');
+      } catch {
+        this.toast.show('Phone number copied');
+      }
+    }
+  }
 
   async toggleStar() {
     const c = this.contact();

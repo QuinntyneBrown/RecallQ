@@ -14,4 +14,6 @@ export class ContactDetailPage {
   statSentiment()    { return this.page.getByTestId('stat-sentiment'); }
   statSinceLast()    { return this.page.getByTestId('stat-since-last'); }
   async tapRefreshSummary() { await this.page.getByRole('button', { name: 'Refresh summary' }).click(); }
+  messageTile() { return this.page.getByRole('button', { name: 'Email this contact' }); }
+  callTile()    { return this.page.getByRole('button', { name: 'Call this contact' }); }
 }

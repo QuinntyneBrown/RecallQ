@@ -24,6 +24,8 @@ export interface ContactDetailDto extends ContactDto {
 
 export interface PatchContactPayload {
   starred?: boolean;
+  emails?: string[];
+  phones?: string[];
 }
 
 export interface CreateContactPayload {

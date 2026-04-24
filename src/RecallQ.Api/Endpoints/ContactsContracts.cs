@@ -2,7 +2,7 @@ using RecallQ.Api.Entities;
 
 namespace RecallQ.Api.Endpoints;
 
-public record PatchContactRequest(bool? Starred);
+public record PatchContactRequest(bool? Starred, string[]? Emails, string[]? Phones);
 
 public record ContactDetailDto(
     Guid Id, string DisplayName, string Initials, string? Role, string? Organization,

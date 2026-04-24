@@ -54,5 +54,7 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 4 e2e assertions pass (covering each quadrant of email/phone × present/absent and mobile/desktop).
-- [ ] Three verification passes complete clean.
+- [x] 4 e2e assertions pass (covering each quadrant of email/phone × present/absent and mobile/desktop).
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
