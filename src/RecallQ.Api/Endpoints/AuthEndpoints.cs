@@ -1,0 +1,70 @@
+using System.Security.Claims;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RecallQ.Api.Entities;
+using RecallQ.Api.Security;
+
+namespace RecallQ.Api.Endpoints;
+
+public static class AuthEndpoints
+{
+    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
+    private static readonly byte[] InvalidCredentialsBody =
+        System.Text.Encoding.UTF8.GetBytes("{\"error\":\"invalid_credentials\"}");
+
+    public record RegisterRequest(string? Email, string? Password);
+    public record LoginRequest(string? Email, string? Password);
+
+    public static IEndpointRouteBuilder MapAuth(this IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/auth/register", async (RegisterRequest req, AppDbContext db, Argon2Hasher hasher) =>
+        {
+            var email = (req.Email ?? "").Trim().ToLowerInvariant();
+            var password = req.Password ?? "";
+            if (string.IsNullOrWhiteSpace(email) || !EmailRegex.IsMatch(email))
+                return Results.BadRequest(new { error = "invalid_email" });
+            if (password.Length < 12 || !password.Any(char.IsLetter) || !password.Any(char.IsDigit))
+                return Results.BadRequest(new { error = "weak_password" });
+
+            var exists = await db.Users.AnyAsync(u => u.Email == email);
+            if (exists) return Results.Conflict(new { error = "email_taken" });
+
+            var user = new User { Email = email, PasswordHash = hasher.Hash(password) };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+            return Results.Created($"/api/auth/users/{user.Id}", new { id = user.Id, email = user.Email });
+        });
+
+        app.MapPost("/api/auth/login", async (LoginRequest req, AppDbContext db, Argon2Hasher hasher, HttpContext http) =>
+        {
+            var email = (req.Email ?? "").Trim().ToLowerInvariant();
+            var password = req.Password ?? "";
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user is null || !hasher.Verify(password, user.PasswordHash))
+            {
+                http.Response.StatusCode = 401;
+                http.Response.ContentType = "application/json";
+                await http.Response.Body.WriteAsync(InvalidCredentialsBody);
+                return;
+            }
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email)
+            }, CookieAuthenticationDefaults.AuthenticationScheme);
+            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            http.Response.StatusCode = 200;
+            await http.Response.WriteAsJsonAsync(new { id = user.Id, email = user.Email });
+        }).RequireRateLimiting(LoginRateLimit.PolicyName);
+
+        app.MapGet("/api/auth/me", [Authorize] (ICurrentUser current) =>
+            Results.Ok(new { id = current.UserId, email = current.Email }));
+
+        return app;
+    }
+}

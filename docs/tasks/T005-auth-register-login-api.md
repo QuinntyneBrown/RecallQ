@@ -57,7 +57,9 @@ Not applicable — no UI.
 
 ## Definition of Done
 
-- [ ] All 8 acceptance tests pass.
-- [ ] `curl -c jar.txt -d '{"email":"a@b.c","password":"correcthorsebattery"}' -H 'Content-Type: application/json' /api/auth/register` then `/api/auth/login` issues a cookie.
-- [ ] Running the failing-login test 6 times returns 429 on the 6th.
-- [ ] Three verification passes complete clean.
+- [x] All 8 acceptance tests pass.
+- [x] `curl -c jar.txt -d '{"email":"a@b.c","password":"correcthorsebattery"}' -H 'Content-Type: application/json' /api/auth/register` then `/api/auth/login` issues a cookie.
+- [x] Running the failing-login test 6 times returns 429 on the 6th.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

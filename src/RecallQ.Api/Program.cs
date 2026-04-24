@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using RecallQ.Api;
 using RecallQ.Api.Endpoints;
+using RecallQ.Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,26 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString, o => o.UseVector()));
 
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddSingleton<Argon2Hasher>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "rq_auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SecurePolicy = builder.Environment.IsProduction()
+            ? CookieSecurePolicy.Always
+            : CookieSecurePolicy.SameAsRequest;
+        options.Cookie.Path = "/";
+        options.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
+        options.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
+    });
+builder.Services.AddAuthorization();
+builder.Services.AddLoginRateLimit();
 
 const string DevCorsPolicy = "DevCors";
 builder.Services.AddCors(options =>
@@ -23,6 +45,19 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.EnsureCreatedAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Database initialization skipped.");
+    }
+}
+
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
@@ -30,9 +65,14 @@ if (app.Environment.IsProduction())
 }
 
 app.UseCors(DevCorsPolicy);
+app.UseLoginEmailExtractor();
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapPing();
+app.MapAuth();
 
 app.Run();
 
