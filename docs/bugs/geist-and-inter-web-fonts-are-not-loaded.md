@@ -1,5 +1,6 @@
 # Geist and Inter web fonts are not loaded
 
+**Status:** Complete — `index.html` now loads Geist / Geist Mono / Inter from Google Fonts (with preconnect); `styles.css` applies the Geist stack to headings.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012, L2-048, L2-060.
 **Severity:** High — every screen renders with system fallbacks, breaking design fidelity globally.
