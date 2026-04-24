@@ -1,0 +1,28 @@
+@startuml sequence_observability
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Observability - request + metric
+
+actor Client
+participant "CorrelationMiddleware" as CM
+participant "Endpoint" as EP
+participant "Metrics" as M
+participant "Serilog" as L
+participant "prometheus-net /metrics" as P
+participant "AppDbContext" as CTX
+
+Client -> CM: HTTP (X-Correlation-Id?)
+CM -> CM: ensure GUID
+CM -> EP: next()
+EP -> L: log("start", correlationId=..)
+EP -> CTX: query
+EP -> M: recallq_api_latency.Observe(dur, endpoint, status)
+EP -> L: log("complete", correlationId=..)
+EP --> Client: response + X-Correlation-Id
+
+participant "Scraper" as S
+S -> P: GET /metrics
+P --> S: histograms + counters
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml sequence_paginate
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Sort + Infinite scroll
+
+actor User
+participant "SearchResultsPage" as UI
+participant "SearchApi" as SVC
+participant "POST /api/search" as API
+
+User -> UI: tap Sort, pick "Most recent"
+UI -> UI: sort.set('recency'); reset page=1
+UI -> SVC: search({q, sort:recency, page:1})
+SVC -> API: POST
+API --> SVC: 200 { nextPage:2, results:[50] }
+SVC --> UI: results.set(...)
+UI --> User: rows reordered newest-first
+
+User -> UI: scroll near bottom
+UI -> UI: loadMore()
+UI -> SVC: search({page:2})
+SVC -> API: POST
+API --> SVC: 200 { nextPage:3, results:[50] }
+SVC --> UI: results.append(...)
+UI --> User: more rows appear
+
+@enduml

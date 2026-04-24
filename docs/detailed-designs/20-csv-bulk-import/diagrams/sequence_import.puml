@@ -1,0 +1,36 @@
+@startuml sequence_import
+!theme plain
+skinparam sequenceMessageAlign center
+
+title CSV Bulk Import
+
+actor User
+participant "ImportPage" as UI
+participant "POST /api/import/contacts" as API
+participant "CsvHelper" as CSV
+participant "AppDbContext" as CTX
+queue "Embedding queue" as Q
+database "contacts" as DB
+
+User -> UI: pick CSV, submit
+UI -> API: multipart upload
+API -> CSV: parse rows
+CSV --> API: IEnumerable<CsvContactRow>
+loop per row
+    API -> API: validate
+    alt valid
+        API -> CTX: Contacts.Add(row)
+    else invalid
+        API -> API: errors += {ix, reason}
+    end
+end
+API -> CTX: SaveChangesAsync
+CTX -> DB: bulk INSERT
+DB --> CTX: ok
+loop per imported
+    API -> Q: Write(EmbeddingJob)
+end
+API --> UI: 201 { imported, failed, errors }
+UI --> User: summary + error list
+
+@enduml

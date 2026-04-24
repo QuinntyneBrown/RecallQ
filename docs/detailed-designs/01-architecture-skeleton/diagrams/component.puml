@@ -1,0 +1,32 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Architecture Skeleton - Components
+
+Container_Boundary(api, "RecallQ.Api") {
+    Component(program, "Program.cs", ".NET", "Wires DI, auth, endpoints")
+    Component(ping, "PingEndpoint", "Minimal API", "GET /api/ping")
+    Component(health, "HealthEndpoint", "HealthChecks", "GET /health")
+    Component(ctx, "AppDbContext", "EF Core", "Empty in this slice")
+}
+
+Container_Boundary(spa, "RecallQ.Web") {
+    Component(shell, "AppComponent", "Angular", "Root shell")
+    Component(tokens, "tokens.css", "CSS", "Design-system variables")
+    Component(chrome, "status-bar / home-indicator / bottom-nav", "Angular standalone", "Mobile chrome stubs")
+    Component(health_svc, "HealthService", "HttpClient", "Calls /api/ping on load")
+}
+
+ContainerDb(db, "PostgreSQL + pgvector", "Postgres 16")
+
+Rel(program, ping, "registers")
+Rel(program, health, "registers")
+Rel(program, ctx, "registers")
+Rel(health, ctx, "SELECT 1")
+Rel(ctx, db, "Npgsql")
+Rel(shell, chrome, "includes")
+Rel(shell, tokens, "loads")
+Rel(health_svc, ping, "GET", "HTTPS")
+
+@enduml

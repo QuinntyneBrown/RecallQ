@@ -1,0 +1,22 @@
+@startuml sequence_ask_from_contact
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask AI from Contact Detail
+
+actor User
+participant "ContactDetailPage" as CD
+participant "AskModePage" as AM
+participant "POST /api/ask" as API
+
+User -> CD: tap Ask AI
+CD -> AM: navigate /ask?contactId=...
+AM -> AM: seed input = "What should I say to {name} next?"
+AM -> AM: focus input
+User -> AM: edit or accept, tap Send
+AM -> API: POST {question, contactId}
+API -> API: bias retrieval toward contactId
+API --> AM: SSE stream
+AM --> User: streaming answer
+
+@enduml

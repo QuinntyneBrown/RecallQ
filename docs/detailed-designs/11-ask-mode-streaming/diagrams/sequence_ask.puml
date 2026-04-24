@@ -1,0 +1,37 @@
+@startuml sequence_ask
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask - Streaming
+
+actor User
+participant "AskModePage" as UI
+participant "POST /api/ask" as API
+participant "IEmbeddingClient" as EC
+participant "AppDbContext" as CTX
+database "pgvector" as DB
+participant "PromptBuilder" as PB
+participant "IChatClient" as CC
+participant "LLM provider" as P
+
+User -> UI: type question, send
+UI -> API: POST /api/ask {question}
+API -> EC: EmbedAsync(q)
+EC --> API: qv
+API -> CTX: SqlQuery top-8 hits
+CTX -> DB: CTE search
+DB --> CTX: rows
+API -> PB: System(hits)
+PB --> API: system prompt
+API -> CC: StreamAsync(system, question)
+CC -> P: chat.completions.stream
+loop tokens
+  P --> CC: token
+  CC --> API: token
+  API --> UI: event: token
+end
+P --> CC: [DONE]
+CC --> API: end
+API --> UI: event: done
+
+@enduml

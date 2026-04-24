@@ -1,0 +1,29 @@
+@startuml sequence_log
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Log Interaction
+
+actor User
+participant "AddInteractionPage" as UI
+participant "InteractionsApi" as SVC
+participant "POST /api/contacts/{id}/interactions" as API
+participant "AppDbContext" as CTX
+queue "Embedding queue" as EQ
+queue "Summary queue" as SQ
+database "interactions" as DB
+
+User -> UI: choose type, write content, submit
+UI -> SVC: log(contactId, payload)
+SVC -> API: POST
+API -> API: validate
+API -> CTX: Interactions.Add(ix)
+CTX -> DB: INSERT
+DB --> CTX: ok
+API -> EQ: enqueue(EmbeddingJob{interactionId})
+API -> SQ: enqueue(SummaryRefresh{contactId})
+API --> SVC: 201 InteractionDto
+SVC --> UI: dto
+UI --> User: back to contact detail, new item at top
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Authentication - Domain
+
+class User {
+    +Id: Guid
+    +Email: string
+    +PasswordHash: string
+    +CreatedAt: DateTime
+}
+
+interface ICurrentUser {
+    +Id: Guid
+    +IsAuthenticated: bool
+}
+
+class Argon2Hasher {
+    +Hash(pw: string): string
+    +Verify(pw: string, hash: string): bool
+}
+
+class AuthEndpoints {
+    +MapAuth(app): void
+    -Register(req): IResult
+    -Login(req): IResult
+    -Logout(): IResult
+}
+
+AuthEndpoints --> User
+AuthEndpoints --> Argon2Hasher
+AuthEndpoints --> ICurrentUser
+
+@enduml

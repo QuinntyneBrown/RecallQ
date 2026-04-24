@@ -1,0 +1,38 @@
+@startuml sequence_stacks
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Smart Stacks
+
+actor User
+participant "HomePage" as UI
+participant "GET /api/stacks" as API
+participant "MemoryCache" as CACHE
+participant "AppDbContext" as CTX
+database "contacts + embeddings" as DB
+
+User -> UI: load home
+UI -> API: GET /api/stacks
+API -> CTX: stacks for me
+CTX -> DB: SELECT
+DB --> CTX: rows
+loop per stack
+    API -> CACHE: get count(userId, stackId)
+    alt hit
+        CACHE --> API: count
+    else miss
+        API -> CTX: count contacts by kind
+        CTX -> DB: SELECT / semantic search
+        DB --> CTX: n
+        API -> CACHE: set 5min
+    end
+end
+API --> UI: StackDto[]
+
+User -> UI: tap AI founders card
+UI -> UI: navigate /search?stackId=...
+UI -> API: GET /api/stacks/:id/contacts
+API --> UI: contacts
+UI --> User: list of contacts
+
+@enduml

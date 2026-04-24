@@ -1,0 +1,31 @@
+@startuml sequence_actions
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Quick Actions - Message / Call
+
+actor User
+participant "ContactDetailPage" as UI
+participant "Browser" as B
+participant "Clipboard" as CLIP
+
+== Message ==
+User -> UI: tap Message
+alt email present
+    UI -> B: location = mailto:email
+else no email
+    UI -> UI: open AddEmailModal
+    User -> UI: enter email, save
+    UI -> B: PATCH /api/contacts/:id {emails:[..]}
+end
+
+== Call ==
+User -> UI: tap Call
+alt mobile
+    UI -> B: location = tel:phone
+else desktop
+    UI -> CLIP: writeText(phone)
+    UI --> User: toast "Phone copied"
+end
+
+@enduml

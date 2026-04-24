@@ -1,0 +1,27 @@
+@startuml sequence_create
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Create Contact
+
+actor User
+participant "AddContactPage" as UI
+participant "ContactsApi" as SVC
+participant "POST /api/contacts" as API
+participant "AppDbContext" as CTX
+queue "Channel<EmbeddingJob>" as Q
+database "contacts" as DB
+
+User -> UI: fills form, taps Save
+UI -> SVC: create(payload)
+SVC -> API: POST /api/contacts
+API -> API: validate request
+API -> CTX: Contacts.Add(contact)
+CTX -> DB: INSERT
+DB --> CTX: ok
+API -> Q: Write(EmbeddingJob{contactId})
+API --> SVC: 201 ContactDto
+SVC --> UI: dto
+UI --> User: navigate to /contacts/:id
+
+@enduml

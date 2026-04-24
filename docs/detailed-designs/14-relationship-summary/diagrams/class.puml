@@ -1,0 +1,39 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Relationship Summary - Domain
+
+enum Sentiment {
+    Warm
+    Neutral
+    Cool
+}
+
+class RelationshipSummary {
+    +ContactId: Guid <<PK>>
+    +OwnerUserId: Guid
+    +Paragraph: string
+    +Sentiment: Sentiment
+    +InteractionCount: int
+    +LastInteractionAt: DateTime?
+    +ModelId: string
+    +GeneratedAt: DateTime
+    +Stale: bool
+}
+
+class SummaryRefreshJob {
+    +ContactId: Guid
+    +Priority: int
+}
+
+class SummaryWorker {
+    +ExecuteAsync(ct)
+    -Generate(ContactId)
+}
+
+SummaryWorker --> RelationshipSummary
+SummaryWorker --> SummaryRefreshJob
+RelationshipSummary --> Sentiment
+
+@enduml

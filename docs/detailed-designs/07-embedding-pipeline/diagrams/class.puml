@@ -1,0 +1,49 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Embedding Pipeline - Domain
+
+class EmbeddingJob {
+    +ContactId: Guid?
+    +InteractionId: Guid?
+}
+
+class ContactEmbedding {
+    +ContactId: Guid <<PK>>
+    +OwnerUserId: Guid
+    +ModelId: string
+    +SourceHash: string
+    +Embedding: Vector(1536)
+    +Failed: bool
+    +CreatedAt: DateTime
+}
+
+class InteractionEmbedding {
+    +InteractionId: Guid <<PK>>
+    +OwnerUserId: Guid
+    +ContactId: Guid
+    +ModelId: string
+    +SourceHash: string
+    +Embedding: Vector(1536)
+    +Failed: bool
+    +CreatedAt: DateTime
+}
+
+interface IEmbeddingClient {
+    +ModelId: string
+    +EmbedAsync(text): float[]
+    +EmbedBatchAsync(texts): float[][]
+}
+
+class EmbeddingWorker {
+    +ExecuteAsync(ct): Task
+    -Process(job): Task
+}
+
+EmbeddingWorker --> IEmbeddingClient
+EmbeddingWorker --> EmbeddingJob
+EmbeddingWorker --> ContactEmbedding
+EmbeddingWorker --> InteractionEmbedding
+
+@enduml

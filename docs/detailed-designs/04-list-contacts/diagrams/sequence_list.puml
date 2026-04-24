@@ -1,0 +1,24 @@
+@startuml sequence_list
+!theme plain
+skinparam sequenceMessageAlign center
+
+title List Contacts
+
+actor User
+participant "HomePage" as UI
+participant "ContactsApi" as SVC
+participant "GET /api/contacts" as API
+participant "AppDbContext" as CTX
+database "contacts" as DB
+
+User -> UI: open /home
+UI -> SVC: list({pageSize:1})
+SVC -> API: GET /api/contacts?page=1&pageSize=1
+API -> CTX: Contacts.CountAsync()
+CTX -> DB: SELECT COUNT(*) WHERE owner=@me
+DB --> CTX: 1284
+API --> SVC: { items:[...], totalCount:1284 }
+SVC --> UI: count()=1284
+UI --> User: "Semantic search across 1,284 contacts..."
+
+@enduml

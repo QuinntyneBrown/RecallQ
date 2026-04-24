@@ -1,0 +1,34 @@
+@startuml sequence_pipeline
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Embedding Pipeline
+
+participant "ContactsEndpoint" as EP
+queue "Channel<EmbeddingJob>" as CH
+participant "EmbeddingWorker" as W
+participant "AppDbContext" as CTX
+participant "IEmbeddingClient" as EC
+database "Postgres + pgvector" as DB
+participant "Provider" as P
+
+EP -> CH: Write(EmbeddingJob{contactId})
+activate W
+CH -> W: ReadAllAsync()
+W -> CTX: load contact text
+CTX -> DB: SELECT
+DB --> CTX: row
+W -> W: sourceHash = SHA256(text)
+W -> CTX: existing? same hash+model?
+CTX -> DB: SELECT
+DB --> CTX: miss
+W -> EC: EmbedAsync(text)
+EC -> P: HTTPS POST /embeddings
+P --> EC: float[1536]
+EC --> W: vector
+W -> CTX: UPSERT ContactEmbedding
+CTX -> DB: INSERT/UPDATE
+DB --> CTX: ok
+deactivate W
+
+@enduml

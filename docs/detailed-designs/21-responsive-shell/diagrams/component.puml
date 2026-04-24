@@ -1,0 +1,24 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Responsive Shell - Layouts by breakpoint
+
+Container_Boundary(shell, "AppShellComponent") {
+    Component(bp, "BreakpointService", "Signals", "xs/sm/md/lg/xl")
+    Component(nav_mobile, "BottomNav", "Angular", "visible XS/SM")
+    Component(sidebar, "Sidebar", "Angular", "visible MD+")
+    Component(list, "ListPane", "Angular", "visible LG/XL")
+    Component(detail, "DetailPane", "Angular", "visible LG/XL")
+    Component(single, "SingleColumn", "Angular", "XS/SM/MD content")
+    Component(feed, "HomeFeedPane", "Angular", "replaces list when no search at XL")
+}
+
+Rel(bp, nav_mobile, "shows / hides")
+Rel(bp, sidebar, "shows / hides")
+Rel(bp, list, "shows / hides")
+Rel(bp, detail, "shows / hides")
+Rel(bp, single, "active XS..MD")
+Rel(bp, feed, "active XL when idle")
+
+@enduml

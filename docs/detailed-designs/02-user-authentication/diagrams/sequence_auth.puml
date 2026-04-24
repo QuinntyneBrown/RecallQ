@@ -1,0 +1,37 @@
+@startuml sequence_auth
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Register + Login
+
+actor User
+participant "Angular" as SPA
+participant "AuthEndpoints" as API
+participant "Argon2Hasher" as H
+participant "AppDbContext" as CTX
+database "users" as DB
+
+== Register ==
+User -> SPA: submit registration
+SPA -> API: POST /api/auth/register
+API -> CTX: exists(email)?
+CTX -> DB: SELECT
+DB --> CTX: none
+API -> H: Hash(pw)
+H --> API: argon2id$...
+API -> CTX: INSERT user
+CTX -> DB: INSERT
+DB --> CTX: id
+API --> SPA: 201
+
+== Login ==
+User -> SPA: submit login
+SPA -> API: POST /api/auth/login
+API -> CTX: find by email
+CTX -> DB: SELECT
+DB --> CTX: user row
+API -> H: Verify(pw, hash)
+H --> API: true
+API --> SPA: 200 Set-Cookie rq_sid=...
+
+@enduml

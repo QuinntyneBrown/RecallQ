@@ -1,0 +1,36 @@
+@startuml sequence_detail
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Contact Detail
+
+actor User
+participant "ContactDetailPage" as UI
+participant "ContactsApi" as SVC
+participant "GET /api/contacts/{id}" as API
+participant "AppDbContext" as CTX
+database "contacts + interactions" as DB
+
+User -> UI: tap a result card
+UI -> SVC: get(id, take=3)
+SVC -> API: GET /api/contacts/:id?take=3
+API -> CTX: Contacts.FirstOrDefault(id)
+CTX -> DB: SELECT contact
+DB --> CTX: row
+API -> CTX: Interactions.OrderByDesc(occurredAt).Take(3)
+CTX -> DB: SELECT interactions
+DB --> CTX: 3 rows
+API --> SVC: ContactDetailDto
+SVC --> UI: dto
+UI --> User: hero + tags + timeline render
+
+User -> UI: tap star
+UI -> SVC: update(id, {starred:true})
+SVC -> API: PATCH /api/contacts/:id
+API -> CTX: UPDATE starred
+CTX -> DB: UPDATE
+DB --> CTX: ok
+API --> SVC: 200
+SVC --> UI: star stays filled
+
+@enduml

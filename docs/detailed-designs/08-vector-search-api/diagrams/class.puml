@@ -1,0 +1,45 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Vector Search - Request/Response
+
+class SearchRequest {
+    +Q: string
+    +Page: int
+    +PageSize: int
+    +Sort: SortMode
+}
+
+enum SortMode {
+    Similarity
+    Recency
+}
+
+class SearchResponse {
+    +Query: string
+    +TotalCount: int
+    +Page: int
+    +PageSize: int
+    +NextPage: int?
+    +Results: List<SearchResultDto>
+}
+
+class SearchResultDto {
+    +ContactId: Guid
+    +DisplayName: string
+    +Initials: string
+    +Role: string?
+    +Organization: string?
+    +AvatarColorA: string
+    +AvatarColorB: string
+    +Similarity: double
+    +MatchedText: string
+    +MatchedSource: string
+    +MatchedInteractionId: Guid?
+}
+
+SearchResponse --> SearchResultDto
+SearchRequest --> SortMode
+
+@enduml

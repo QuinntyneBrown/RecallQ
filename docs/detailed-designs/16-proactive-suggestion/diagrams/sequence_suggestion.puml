@@ -1,0 +1,33 @@
+@startuml sequence_suggestion
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Proactive Suggestion
+
+participant "SuggestionDetector\n(BackgroundService)" as D
+participant "AppDbContext" as CTX
+database "suggestions" as DB
+actor User
+participant "HomePage" as UI
+participant "GET /api/suggestions" as API
+
+D -> CTX: load last 14d interactions per user
+D -> D: apply heuristics
+D -> CTX: UPSERT Suggestion (by Key)
+CTX -> DB: INSERT/UPDATE
+
+User -> UI: load home
+UI -> API: GET /api/suggestions
+API -> CTX: active (DismissedAt is null, age<7d)
+CTX -> DB: SELECT
+DB --> API: row
+API --> UI: suggestion
+UI --> User: render gradient card
+
+User -> UI: tap Dismiss
+UI -> API: POST /api/suggestions/{key}/dismiss
+API -> CTX: UPDATE DismissedAt
+API --> UI: 204
+UI -> UI: hide card
+
+@enduml

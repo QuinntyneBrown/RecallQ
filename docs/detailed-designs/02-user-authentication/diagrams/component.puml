@@ -1,0 +1,25 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Authentication - Components
+
+Container_Boundary(api, "RecallQ.Api") {
+    Component(auth, "AuthEndpoints", "Minimal API", "register / login / logout / me")
+    Component(hasher, "Argon2Hasher", "Konscious", "Hash + verify")
+    Component(current, "ICurrentUser", "scoped", "Owner id per request")
+    Component(revoke, "SessionRevocationStore", "in-memory", "Revoked session ids")
+    Component(ratelim, "RateLimiter", "builtin", "5/60s per email+IP")
+    Component(ctx, "AppDbContext", "EF Core", "users table + query filter")
+}
+
+ContainerDb(db, "users", "Postgres")
+
+Rel(auth, hasher, "hash / verify")
+Rel(auth, ctx, "insert / select")
+Rel(auth, ratelim, "decorated")
+Rel(auth, revoke, "check / revoke")
+Rel(ctx, current, "reads Id for filters")
+Rel(ctx, db, "SQL")
+
+@enduml

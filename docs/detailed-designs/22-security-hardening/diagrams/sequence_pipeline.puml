@@ -1,0 +1,29 @@
+@startuml sequence_pipeline
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Hardened request pipeline
+
+actor User
+participant "TLS termination" as TLS
+participant "Security headers" as SH
+participant "Rate limiter" as RL
+participant "Auth cookie reader" as AUTH
+participant "Endpoint handler" as EP
+participant "Validation guards" as V
+participant "DbContext (global filter)" as CTX
+database "Postgres" as DB
+
+User -> TLS: HTTPS
+TLS -> SH: plain HTTP inside process
+SH -> RL: +HSTS, CSP, nosniff
+RL -> AUTH: under policy budget?
+AUTH -> EP: ctx.User populated
+EP -> V: validate request
+V -> CTX: SELECT (scoped by OwnerUserId)
+CTX -> DB: SQL with owner filter
+DB --> CTX: rows (same user only)
+CTX --> EP: dto
+EP --> User: 200 + security headers
+
+@enduml

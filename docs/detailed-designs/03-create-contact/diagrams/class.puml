@@ -1,0 +1,52 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Create Contact - Domain
+
+class Contact {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +DisplayName: string
+    +Initials: string
+    +Role: string?
+    +Organization: string?
+    +Location: string?
+    +Tags: List<string>
+    +Emails: List<string>
+    +Phones: List<string>
+    +AvatarColorA: string
+    +AvatarColorB: string
+    +Starred: bool
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class CreateContactRequest {
+    +DisplayName: string
+    +Initials: string
+    +Role: string?
+    +Organization: string?
+    +Location: string?
+    +Tags: string[]
+    +Emails: string[]
+    +Phones: string[]
+    +AvatarColorA: string?
+    +AvatarColorB: string?
+}
+
+class EmbeddingJob {
+    +ContactId: Guid?
+    +InteractionId: Guid?
+}
+
+class ContactsEndpoints {
+    +MapContacts(app): void
+    -Create(req): IResult
+}
+
+ContactsEndpoints --> Contact
+ContactsEndpoints --> CreateContactRequest
+ContactsEndpoints --> EmbeddingJob
+
+@enduml

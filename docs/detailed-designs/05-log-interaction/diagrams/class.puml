@@ -1,0 +1,33 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Interactions - Domain
+
+enum InteractionType {
+    Email
+    Call
+    Meeting
+    Note
+}
+
+class Interaction {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +ContactId: Guid
+    +Type: InteractionType
+    +Subject: string?
+    +Content: string
+    +OccurredAt: DateTime
+    +CreatedAt: DateTime
+}
+
+class Contact {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +DisplayName: string
+}
+
+Contact "1" -- "*" Interaction : has
+
+@enduml

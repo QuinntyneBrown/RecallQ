@@ -1,0 +1,21 @@
+@startuml sequence_citations
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask - Citations
+
+participant "AskModePage" as UI
+participant "POST /api/ask" as API
+participant "IChatClient" as CC
+
+... streaming tokens (slice 11) ...
+CC --> API: end
+API --> UI: event: citations\ndata: [c1, c2, c3]
+UI -> UI: append mini-cards to last assistant message
+API --> UI: event: done
+
+actor User
+User -> UI: tap citation card
+UI -> UI: router.navigate(/contacts/:id)
+
+@enduml

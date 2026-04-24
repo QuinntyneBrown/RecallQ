@@ -1,0 +1,22 @@
+@startuml sequence_followups
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Ask - Follow-up chips
+
+participant "AskModePage" as UI
+participant "POST /api/ask" as API
+participant "IChatClient" as CC
+
+... streaming answer + citations ...
+API -> CC: non-stream chat for 3 followups
+CC --> API: JSON ["q1","q2","q3"]
+API --> UI: event: followups
+UI -> UI: render 3 FollowUpChip
+API --> UI: event: done
+
+actor User
+User -> UI: tap "Draft pitch to Sarah"
+UI -> UI: submit("Draft pitch to Sarah")
+
+@enduml

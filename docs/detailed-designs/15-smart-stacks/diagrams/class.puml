@@ -1,0 +1,34 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+
+title Smart Stacks - Domain
+
+enum StackKind {
+    Tag
+    Query
+    Classification
+}
+
+class Stack {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +Name: string
+    +Kind: StackKind
+    +Value: string
+    +AccentColor: string
+    +SortOrder: int
+    +UpdatedAt: DateTime
+}
+
+class StackDto {
+    +Id: Guid
+    +Name: string
+    +AccentColor: string
+    +Count: int
+}
+
+Stack --> StackKind
+StackDto <.. Stack : "mapped"
+
+@enduml

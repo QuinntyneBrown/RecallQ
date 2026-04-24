@@ -1,0 +1,34 @@
+@startuml sequence_intro
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Intro Draft
+
+actor User
+participant "IntroModal" as UI
+participant "POST /api/intro-drafts" as API
+participant "AppDbContext" as CTX
+participant "IChatClient" as CC
+participant "Browser" as B
+participant "Clipboard" as CLIP
+
+User -> UI: tap Intro, pick contactB
+User -> UI: tap Generate draft
+UI -> API: POST {contactAId, contactBId}
+API -> CTX: load A, B, summaries
+CTX --> API: rows
+API -> CC: CompleteAsync(prompt)
+CC --> API: subject + body
+API --> UI: {subject, body}
+UI --> User: editable draft
+
+alt Copy
+    User -> UI: tap Copy
+    UI -> CLIP: writeText(body)
+    UI --> User: toast "Draft copied"
+else Send via email
+    User -> UI: tap Send
+    UI -> B: mailto:a,b?subject=..&body=..
+end
+
+@enduml

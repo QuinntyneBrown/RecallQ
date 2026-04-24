@@ -1,0 +1,26 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Search Results UI - Components
+
+Container_Boundary(page, "SearchResultsPage") {
+    Component(header, "Header (back + Results)", "Angular", "top bar")
+    Component(chip, "QueryChip", "Angular", "editable q; updates URL")
+    Component(meta, "MetaBand", "Angular", "count + sort pill")
+    Component(featured, "FeaturedResultCard", "Angular", "first result, gradient, WHY THIS MATCH")
+    Component(list, "ResultList", "Angular", "standard ResultCards")
+    Component(score, "ScoreChip", "Angular", "High / Mid / Low variants")
+    Component(pills, "InteractionPills", "Angular", "Ix Email/Call/Meeting/Note")
+    Component(zero, "ZeroState", "Angular", "No contacts matched + Ask button")
+    Component(api, "SearchApi", "HttpClient", "POST /api/search")
+}
+
+Rel(chip, api, "debounced search")
+Rel(meta, api, "sort toggle")
+Rel(list, score, "per row")
+Rel(list, pills, "per row")
+Rel(featured, score, "uses")
+Rel(featured, pills, "uses")
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml sequence_ping
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Skeleton - Health ping
+
+actor User
+participant "Angular shell" as SPA
+participant "HealthService" as HS
+participant "GET /api/ping" as API
+database "Postgres" as DB
+
+User -> SPA: Load app
+SPA -> HS: check()
+HS -> API: GET /api/ping
+API --> HS: 200 "pong"
+HS --> SPA: online = true
+SPA --> User: green dot in bottom nav
+
+SPA -> API: GET /health
+API -> DB: SELECT 1
+DB --> API: 1
+API --> SPA: 200
+
+@enduml

@@ -1,0 +1,24 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Accessibility - Home focus order
+
+Container_Boundary(home, "HomePage landmarks") {
+    Component(hdr, "header (banner)", "a11y", "logo, notif, profile")
+    Component(main, "main", "a11y", "search + suggestion + stacks")
+    Component(search, "search input", "a11y", "aria-label Search contacts")
+    Component(chips, "suggestion chips (listbox)", "a11y", "Recent, Starred, This week, Filter")
+    Component(ai, "AI suggestion card", "a11y", "primary + dismiss")
+    Component(stacks, "Smart Stacks row (list)", "a11y", "3+ stack cards")
+    Component(nav, "nav (bottom)", "a11y", "Home / Search / Ask / Profile")
+    Component(live, "aria-live region", "a11y", "Ask chat updates")
+}
+
+Rel(hdr, search, "Tab →")
+Rel(search, chips, "Tab →")
+Rel(chips, ai, "Tab →")
+Rel(ai, stacks, "Tab →")
+Rel(stacks, nav, "Tab →")
+
+@enduml

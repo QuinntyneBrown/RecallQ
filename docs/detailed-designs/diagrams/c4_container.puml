@@ -1,0 +1,26 @@
+@startuml c4_container
+!theme plain
+!include <C4/C4_Container>
+
+title RecallQ - Containers
+
+Person(user, "Knowledge worker")
+
+System_Boundary(recallq, "RecallQ") {
+    Container(spa, "Angular SPA", "Angular standalone components + Signals", "Mobile-first UI matching ui-design.pen")
+    Container(api, "ASP.NET Core API", ".NET, Minimal APIs", "Auth, contacts, interactions, search, ask, summaries")
+    Container(worker, "Embedding worker", "IHostedService in the API process", "Async embedding generation and summary refresh")
+    ContainerDb(db, "PostgreSQL + pgvector", "Postgres 16", "Users, contacts, interactions, embeddings, summaries, stacks")
+}
+
+System_Ext(llm, "LLM / Embedding Provider", "OpenAI-compatible")
+
+Rel(user, spa, "Uses", "HTTPS")
+Rel(spa, api, "JSON + SSE", "HTTPS")
+Rel(api, db, "EF Core + Npgsql", "SQL")
+Rel(api, worker, "Enqueues jobs", "in-process channel")
+Rel(worker, db, "Reads source, writes vectors", "SQL")
+Rel(api, llm, "Chat completions (streaming)", "HTTPS")
+Rel(worker, llm, "Embeddings", "HTTPS")
+
+@enduml

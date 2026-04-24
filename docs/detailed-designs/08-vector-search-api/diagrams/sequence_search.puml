@@ -1,0 +1,30 @@
+@startuml sequence_search
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Vector Search
+
+actor User
+participant "Angular" as SPA
+participant "POST /api/search" as API
+participant "IEmbeddingClient" as EC
+participant "AppDbContext" as CTX
+database "pgvector HNSW" as DB
+participant "Provider" as P
+
+User -> SPA: submit query
+SPA -> API: POST /api/search { q }
+API -> API: validate q, rate limit
+API -> EC: EmbedAsync(q)
+EC -> P: POST /embeddings
+P --> EC: float[1536]
+EC --> API: qv
+API -> CTX: SqlQuery<Row>(CTE)
+CTX -> DB: WITH contact_hits ... ORDER BY similarity
+DB --> CTX: ranked rows (best per contact)
+CTX --> API: rows
+API -> API: trim matchedText to 240 chars
+API --> SPA: SearchResponse
+SPA --> User: results list
+
+@enduml

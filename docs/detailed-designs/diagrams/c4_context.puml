@@ -1,0 +1,20 @@
+@startuml c4_context
+!theme plain
+!include <C4/C4_Context>
+
+title RecallQ - System Context
+
+Person(user, "Knowledge worker", "Searches their contacts and interactions by meaning")
+
+System(recallq, "RecallQ", "Mobile-first web app for semantic contact search")
+
+System_Ext(llm, "LLM / Embedding Provider", "OpenAI or compatible: embeddings + chat completions")
+System_Ext(mail, "Mail client", "mailto: handler on device")
+System_Ext(phone, "Phone dialer", "tel: handler on device")
+
+Rel(user, recallq, "Uses on phone / desktop", "HTTPS")
+Rel(recallq, llm, "Generates embeddings and chat answers", "HTTPS")
+Rel(user, mail, "Composes email from quick action", "mailto:")
+Rel(user, phone, "Starts call from quick action", "tel:")
+
+@enduml

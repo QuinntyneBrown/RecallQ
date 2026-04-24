@@ -1,0 +1,40 @@
+@startuml sequence_summary
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Relationship Summary
+
+actor User
+participant "ContactDetailPage" as UI
+participant "GET /api/contacts/{id}/summary" as API
+participant "AppDbContext" as CTX
+queue "SummaryQueue" as Q
+participant "SummaryWorker" as W
+participant "IChatClient" as CC
+
+User -> UI: open detail
+UI -> API: GET summary
+API -> CTX: SELECT summary
+alt cached < 1h
+    CTX --> API: row
+    API --> UI: 200 { paragraph, stats, stale:false }
+else stale / missing
+    API -> Q: enqueue SummaryRefreshJob
+    API --> UI: 200 existing (or 204)
+    UI -> UI: poll every 1.5s (max 15s)
+    W -> Q: ReadAllAsync
+    W -> CTX: load contact + last 20 interactions
+    W -> CC: CompleteAsync(system,user)
+    CC --> W: {paragraph, sentiment}
+    W -> CTX: UPSERT summary
+    UI -> API: GET summary (poll)
+    API -> CTX: SELECT
+    CTX --> API: fresh row
+    API --> UI: 200 fresh
+end
+
+User -> UI: tap Refresh
+UI -> API: POST /api/.../summary:refresh
+API --> UI: 202 (or 429)
+
+@enduml
