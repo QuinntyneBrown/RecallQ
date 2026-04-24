@@ -36,4 +36,10 @@
   --stack-border: color-mix(in srgb, var(--accent-primary) 40%, transparent);
 
   --on-accent: #FFFFFF;
+
+  --bp-xs: 0;
+  --bp-sm: 576px;
+  --bp-md: 768px;
+  --bp-lg: 992px;
+  --bp-xl: 1280px;
 }

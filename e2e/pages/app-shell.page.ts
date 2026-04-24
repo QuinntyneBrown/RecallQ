@@ -27,4 +27,12 @@ export class AppShellPage {
     const dot = await this.healthDot();
     return dot.evaluate(el => getComputedStyle(el).backgroundColor !== 'rgba(0, 0, 0, 0)');
   }
+
+  sidebar() {
+    return this.page.getByRole('navigation', { name: 'Sidebar' });
+  }
+
+  isBottomNavVisible() {
+    return this.page.getByRole('navigation', { name: 'Main' }).isVisible();
+  }
 }

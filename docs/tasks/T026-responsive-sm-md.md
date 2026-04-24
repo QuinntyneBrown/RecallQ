@@ -63,5 +63,7 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 2 unit tests + 1 e2e pass.
-- [ ] Three verification passes complete clean.
+- [x] 2 unit tests + 1 e2e pass.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
