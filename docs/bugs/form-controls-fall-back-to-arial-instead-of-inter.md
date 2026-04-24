@@ -1,5 +1,6 @@
 # Form controls fall back to Arial instead of Inter
 
+**Status:** Complete — global `input, button, select, textarea { font-family: inherit; font-size: inherit; }` reset added to `frontend/src/styles.css`.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012, L2-048.
 **Severity:** Medium — every `<input>`, `<button>`, `<select>`, `<textarea>` in the app renders in Arial.
