@@ -65,6 +65,31 @@ public static class ContactsEndpoints
             return c is null ? Results.NotFound() : Results.Ok(ContactDto.From(c));
         });
 
+        app.MapGet("/api/contacts", [Authorize] async (
+            AppDbContext db, int? page, int? pageSize, string? sort) =>
+        {
+            var p = page is null or < 1 ? 1 : page.Value;
+            var ps = pageSize is null or < 1 ? 20 : Math.Min(pageSize.Value, 100);
+            var query = db.Contacts.AsQueryable();
+            query = (sort ?? "createdAt_desc") switch
+            {
+                "createdAt_asc" => query.OrderBy(c => c.CreatedAt),
+                "name_asc" => query.OrderBy(c => c.DisplayName),
+                "name_desc" => query.OrderByDescending(c => c.DisplayName),
+                _ => query.OrderByDescending(c => c.CreatedAt),
+            };
+            var totalCount = await query.CountAsync();
+            var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync();
+            var items = rows.Select(ContactDto.From).ToArray();
+            return Results.Ok(new { items, totalCount, page = p, pageSize = ps });
+        });
+
+        app.MapGet("/api/contacts/count", [Authorize] async (AppDbContext db) =>
+        {
+            var contacts = await db.Contacts.CountAsync();
+            return Results.Ok(new { contacts, interactions = 0 });
+        });
+
         return app;
     }
 }

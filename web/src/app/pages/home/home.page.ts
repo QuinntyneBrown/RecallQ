@@ -1,18 +1,142 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
+import { ContactsService } from '../../contacts/contacts.service';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  template: `<section class="home"><h1>Home</h1></section>`,
+  template: `
+    <section class="home">
+      <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
+      <h1 class="hero-title">Find anyone.</h1>
+      <p class="hero-sub">By meaning, not memory.</p>
+      <p class="hero-subtitle" data-testid="hero-subtitle">Semantic search across {{ contactCount() }} contacts and {{ interactionCount() }} interactions.</p>
+
+      <div class="search-wrap">
+        <label class="sr-only" for="q">Search contacts</label>
+        <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
+        <input id="q" class="search-input" type="search" role="searchbox"
+               aria-label="Search contacts"
+               placeholder="Search contacts"
+               (keyup.enter)="goSearch($event)" />
+      </div>
+
+      <a class="add-link" href="/contacts/new" (click)="goAdd($event)">Add contact</a>
+    </section>
+  `,
   styles: [`
     .home {
       padding: 24px;
       color: var(--foreground-primary);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    h1 {
+    .greeting {
       margin: 0;
-      font-size: 28px;
+      font-size: 14px;
+      color: var(--foreground-muted);
+    }
+    .hero-title {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .hero-sub {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--foreground-muted);
+    }
+    .hero-subtitle {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: var(--foreground-secondary);
+    }
+    .search-wrap {
+      position: relative;
+      margin-top: 8px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--foreground-muted);
+      font-size: 20px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 56px;
+      border-radius: var(--radius-full);
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 0 24px 0 52px;
+      color: var(--foreground-primary);
+      font-size: 16px;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    .search-input:focus {
+      border-color: var(--accent-primary);
+    }
+    .add-link {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--accent-primary);
+      text-decoration: none;
+      align-self: flex-start;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
   `],
 })
-export class HomePage {}
+export class HomePage implements OnInit {
+  private readonly auth = inject(AuthService);
+  private readonly contactsService = inject(ContactsService);
+  private readonly router = inject(Router);
+
+  readonly contactCount = this.contactsService.contactCount;
+  readonly interactionCount = this.contactsService.interactionCount;
+
+  readonly greetingName = computed(() => {
+    const s = this.auth.authState();
+    if (!s) return '';
+    return s.email.split('@')[0];
+  });
+
+  readonly timeOfDay = computed(() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'morning';
+    if (h < 18) return 'afternoon';
+    return 'evening';
+  });
+
+  ngOnInit(): void {
+    void this.contactsService.refreshCount();
+  }
+
+  goSearch(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    const q = input.value.trim();
+    void this.router.navigate(['/search'], { queryParams: { q } });
+  }
+
+  goAdd(ev: Event): void {
+    ev.preventDefault();
+    void this.router.navigate(['/contacts/new']);
+  }
+}

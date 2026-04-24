@@ -59,6 +59,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 4 API tests + 1 e2e pass.
-- [ ] With 3 contacts seeded, the subtitle reads "3 contacts and 0 interactions".
-- [ ] Three verification passes complete clean.
+- [x] 4 API tests + 1 e2e pass.
+- [x] With 3 contacts seeded, the subtitle reads "3 contacts and 0 interactions".
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

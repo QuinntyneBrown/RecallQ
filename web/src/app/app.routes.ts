@@ -8,6 +8,7 @@ export const routes: Routes = [
   { path: 'logout', loadComponent: () => import('./pages/logout/logout.page').then(m => m.LogoutPage) },
   { path: 'home', canMatch: [authGuard], loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage) },
   { path: 'contacts/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-contact/add-contact.page').then(m => m.AddContactPage) },
+  { path: 'search', canMatch: [authGuard], loadComponent: () => import('./pages/search/search.page').then(m => m.SearchPlaceholderPage) },
   { path: 'contacts/:id', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/contact-detail.page').then(m => m.ContactDetailPage) },
   { path: '**', redirectTo: 'login' },
 ];
