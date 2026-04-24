@@ -59,10 +59,29 @@ public static class ContactsEndpoints
             return Results.Created($"/api/contacts/{contact.Id}", ContactDto.From(contact));
         });
 
-        app.MapGet("/api/contacts/{id:guid}", [Authorize] async (Guid id, AppDbContext db) =>
+        app.MapGet("/api/contacts/{id:guid}", [Authorize] async (Guid id, AppDbContext db, int? take) =>
         {
             var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
-            return c is null ? Results.NotFound() : Results.Ok(ContactDto.From(c));
+            if (c is null) return Results.NotFound();
+            var n = take is null or < 1 ? 3 : Math.Min(take.Value, 50);
+            var total = await db.Interactions.CountAsync(i => i.ContactId == id);
+            var rows = await db.Interactions.Where(i => i.ContactId == id)
+                .OrderByDescending(i => i.OccurredAt).Take(n).ToListAsync();
+            var recent = rows.Select(InteractionDto.From).ToArray();
+            return Results.Ok(ContactDetailDto.From(c, recent, total));
+        });
+
+        app.MapPatch("/api/contacts/{id:guid}", [Authorize] async (
+            Guid id, PatchContactRequest req, AppDbContext db) =>
+        {
+            var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+            if (c is null) return Results.NotFound();
+            if (req.Starred.HasValue) c.Starred = req.Starred.Value;
+            await db.SaveChangesAsync();
+            var total = await db.Interactions.CountAsync(i => i.ContactId == id);
+            var rows = await db.Interactions.Where(i => i.ContactId == id)
+                .OrderByDescending(i => i.OccurredAt).Take(3).ToListAsync();
+            return Results.Ok(ContactDetailDto.From(c, rows.Select(InteractionDto.From).ToArray(), total));
         });
 
         app.MapGet("/api/contacts", [Authorize] async (

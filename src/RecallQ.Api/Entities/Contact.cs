@@ -14,5 +14,6 @@ public class Contact
     public string[] Phones { get; set; } = Array.Empty<string>();
     public string? AvatarColorA { get; set; }
     public string? AvatarColorB { get; set; }
+    public bool Starred { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

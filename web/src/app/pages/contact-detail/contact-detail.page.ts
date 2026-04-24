@@ -1,53 +1,189 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ContactsService, ContactDto } from '../../contacts/contacts.service';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ContactsService, ContactDetailDto } from '../../contacts/contacts.service';
+import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
 
 @Component({
   selector: 'app-contact-detail-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [TimelineItemComponent],
   template: `
     <section class="page">
-      <h1>Contact</h1>
-      <p class="soon">coming soon</p>
-      @if (contactId()) {
-        <a class="log-link" [routerLink]="['/contacts', contactId(), 'interactions', 'new']">Log interaction</a>
-      }
       @if (contact(); as c) {
-        <dl>
-          <dt>Display name</dt><dd>{{ c.displayName }}</dd>
-          <dt>Initials</dt><dd>{{ c.initials }}</dd>
-          @if (c.role) { <dt>Role</dt><dd>{{ c.role }}</dd> }
-          @if (c.organization) { <dt>Organization</dt><dd>{{ c.organization }}</dd> }
-          @if (c.location) { <dt>Location</dt><dd>{{ c.location }}</dd> }
-          @if (c.tags?.length) { <dt>Tags</dt><dd>{{ c.tags.join(', ') }}</dd> }
-          @if (c.emails?.length) { <dt>Emails</dt><dd>{{ c.emails.join(', ') }}</dd> }
-          @if (c.phones?.length) { <dt>Phones</dt><dd>{{ c.phones.join(', ') }}</dd> }
-        </dl>
+        <header class="hero">
+          <div class="topbar">
+            <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+              <i class="ph ph-caret-left"></i>
+            </button>
+            <div class="spacer"></div>
+            <button type="button" class="icon-btn" aria-label="Star contact" (click)="toggleStar()">
+              <i class="ph"
+                 [class.ph-star]="!starred()"
+                 [class.ph-star-fill]="starred()"
+                 [style.color]="starred() ? 'var(--star-fill)' : 'var(--foreground-primary)'"></i>
+            </button>
+            <button type="button" class="icon-btn" aria-label="More">
+              <i class="ph ph-dots-three"></i>
+            </button>
+          </div>
+
+          <div class="hero-content">
+            <div class="avatar" data-testid="hero-avatar">{{ c.initials }}</div>
+            <h1 data-testid="hero-name">{{ c.displayName }}</h1>
+            @if (roleLine()) {
+              <p data-testid="hero-role">{{ roleLine() }}</p>
+            }
+            @if (c.tags?.length) {
+              <ul data-testid="hero-tags" role="list" class="chips">
+                @for (tag of c.tags; track tag) {
+                  <li role="listitem"><span class="chip">{{ tag }}</span></li>
+                }
+              </ul>
+            }
+          </div>
+        </header>
+
+        <div class="actions">
+          <button type="button" disabled><i class="ph ph-chat-circle"></i><span>Message</span></button>
+          <button type="button" disabled><i class="ph ph-phone"></i><span>Call</span></button>
+          <button type="button" disabled><i class="ph ph-user-plus"></i><span>Intro</span></button>
+          <button type="button" disabled><i class="ph ph-sparkle"></i><span>Ask AI</span></button>
+        </div>
+
+        <div class="card">
+          <p>Relationship summary coming soon</p>
+        </div>
+
+        <section class="activity">
+          <div class="activity-head">
+            <h2>Recent activity</h2>
+            @if (c.interactionTotal > 3) {
+              <a [attr.href]="'/contacts/' + c.id + '/activity'" role="link">See all {{ c.interactionTotal }}</a>
+            }
+          </div>
+          @if (c.recentInteractions?.length) {
+            <ul data-testid="timeline" role="list" class="timeline">
+              @for (item of c.recentInteractions; track item.id) {
+                <li role="listitem" class="timeline-item">
+                  <app-timeline-item [item]="item"></app-timeline-item>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="empty">No interactions yet.</p>
+          }
+        </section>
+      } @else if (notFound()) {
+        <p class="err">Contact not found.</p>
       }
-      @if (notFound()) { <p class="err">Contact not found.</p> }
     </section>
   `,
   styles: [`
-    .page { padding: 24px; max-width: 390px; margin: 0 auto; color: var(--foreground-primary); }
-    h1 { margin: 0 0 8px; font-size: 28px; }
-    .soon { color: var(--foreground-secondary); margin: 0 0 16px; }
-    dl { display: grid; grid-template-columns: 120px 1fr; gap: 8px 16px; margin: 0; }
-    dt { color: var(--foreground-secondary); font-size: 14px; }
-    dd { margin: 0; }
-    .err { color: var(--accent-secondary); }
-    .log-link {
-      display: inline-block; margin-bottom: 12px;
-      color: var(--accent-primary); text-decoration: none; font-size: 14px;
+    .page {
+      max-width: 390px; margin: 0 auto;
+      color: var(--foreground-primary);
+      display: flex; flex-direction: column; gap: 16px;
+      padding-bottom: 24px;
     }
+    .hero {
+      position: relative;
+      min-height: 260px;
+      padding: 56px 24px 24px;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      background: linear-gradient(180deg,
+        var(--hero-from) 0%,
+        var(--hero-mid) 60%,
+        var(--hero-to) 100%);
+      overflow: hidden;
+    }
+    .topbar {
+      position: absolute; top: 12px; left: 12px; right: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .topbar .spacer { flex: 1 1 auto; }
+    .icon-btn {
+      width: 36px; height: 36px; border: 0; background: transparent;
+      color: var(--foreground-primary); border-radius: var(--radius-full);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .icon-btn:hover { background: rgba(255,255,255,0.1); }
+    .icon-btn .ph { font-size: 22px; }
+    .hero-content { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 8px; }
+    .avatar {
+      width: 96px; height: 96px; border-radius: var(--radius-full);
+      background: linear-gradient(var(--accent-gradient-start), var(--accent-gradient-end));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--foreground-primary);
+      font-family: Geist, system-ui, sans-serif;
+      font-weight: 700; font-size: 28px;
+    }
+    h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 28px; color: var(--foreground-primary); }
+    [data-testid="hero-role"] { margin: 0; color: var(--foreground-primary); opacity: 0.9; font-size: 14px; }
+    .chips {
+      list-style: none; padding: 0; margin: 8px 0 0;
+      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+    }
+    .chip {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.15);
+      color: var(--foreground-primary);
+      font-size: 12px;
+    }
+    .actions {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      padding: 0 24px;
+    }
+    .actions button {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 6px;
+      background: var(--surface-elevated);
+      color: var(--foreground-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      cursor: not-allowed; opacity: 0.85;
+    }
+    .actions .ph { font-size: 18px; }
+    .card {
+      margin: 0 24px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      color: var(--foreground-secondary);
+    }
+    .card p { margin: 0; }
+    .activity { padding: 0 24px; }
+    .activity-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .activity-head h2 { margin: 0; font-size: 18px; font-family: Geist, system-ui, sans-serif; }
+    .activity-head a { color: var(--accent-primary); text-decoration: none; font-size: 14px; }
+    .timeline { list-style: none; padding: 0; margin: 0; }
+    .timeline-item { border-bottom: 1px solid var(--border-subtle); }
+    .timeline-item:last-child { border-bottom: 0; }
+    .empty { color: var(--foreground-secondary); }
+    .err { color: var(--accent-secondary); padding: 24px; }
   `],
 })
 export class ContactDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly contacts = inject(ContactsService);
-  readonly contact = signal<ContactDto | null>(null);
+  readonly contact = signal<ContactDetailDto | null>(null);
   readonly notFound = signal(false);
   readonly contactId = signal<string | null>(null);
+  readonly starred = computed(() => this.contact()?.starred ?? false);
+  readonly roleLine = computed(() => {
+    const c = this.contact();
+    if (!c) return '';
+    const parts = [c.role, c.organization].filter(p => p && p.trim().length);
+    return parts.join(' · ');
+  });
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -56,5 +192,20 @@ export class ContactDetailPage implements OnInit {
     const result = await this.contacts.get(id);
     if (result) this.contact.set(result);
     else this.notFound.set(true);
+  }
+
+  back() { history.back(); }
+
+  async toggleStar() {
+    const c = this.contact();
+    if (!c) return;
+    const next = !c.starred;
+    this.contact.set({ ...c, starred: next });
+    try {
+      const updated = await this.contacts.patch(c.id, { starred: next });
+      this.contact.set(updated);
+    } catch {
+      this.contact.set(c);
+    }
   }
 }

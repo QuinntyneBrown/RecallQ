@@ -63,7 +63,9 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 3 API tests + 1 e2e pass.
-- [ ] Detail hero renders gradient, avatar, name, role, tags.
-- [ ] Timeline shows up to 3 items at XS with "See all N".
-- [ ] Three verification passes complete clean.
+- [x] 3 API tests + 1 e2e pass.
+- [x] Detail hero renders gradient, avatar, name, role, tags.
+- [x] Timeline shows up to 3 items at XS with "See all N".
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

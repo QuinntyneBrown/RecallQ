@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { InteractionDto } from '../interactions/interactions.service';
 
 export interface ContactDto {
   id: string;
@@ -13,6 +14,16 @@ export interface ContactDto {
   avatarColorA: string | null;
   avatarColorB: string | null;
   createdAt: string;
+}
+
+export interface ContactDetailDto extends ContactDto {
+  starred: boolean;
+  recentInteractions: InteractionDto[];
+  interactionTotal: number;
+}
+
+export interface PatchContactPayload {
+  starred?: boolean;
 }
 
 export interface CreateContactPayload {
@@ -66,11 +77,22 @@ export class ContactsService {
     throw new Error('create_failed_' + res.status);
   }
 
-  async get(id: string): Promise<ContactDto | null> {
+  async get(id: string): Promise<ContactDetailDto | null> {
     const res = await fetch(`/api/contacts/${id}`, { credentials: 'include' });
-    if (res.status === 200) return (await res.json()) as ContactDto;
+    if (res.status === 200) return (await res.json()) as ContactDetailDto;
     if (res.status === 404) return null;
     throw new Error('get_failed_' + res.status);
+  }
+
+  async patch(id: string, payload: PatchContactPayload): Promise<ContactDetailDto> {
+    const res = await fetch(`/api/contacts/${id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 200) return (await res.json()) as ContactDetailDto;
+    throw new Error('patch_failed_' + res.status);
   }
 
   async list(page = 1, pageSize = 20, sort = 'createdAt_desc'): Promise<ContactListResult> {

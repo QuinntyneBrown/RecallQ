@@ -67,7 +67,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(DevCorsPolicy, policy => policy
         .WithOrigins("http://localhost:4200")
-        .WithMethods("GET", "POST")
+        .WithMethods("GET", "POST", "PATCH", "DELETE")
         .AllowAnyHeader());
 });
 

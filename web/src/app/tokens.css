@@ -15,6 +15,12 @@
   --accent-tertiary: #4BE8FF;
 
   --success: #3DFFB3;
+  --star-fill: #FFB23D;
+
+  /* heroBg gradient stops sourced from ui-design.pen node cNcxs (linear 180deg) */
+  --hero-from: #7C3AFF;
+  --hero-mid: #BF40FF;
+  --hero-to: #0A0A16;
 
   --accent-gradient-start: #7C3AFF;
   --accent-gradient-mid: #BF40FF;

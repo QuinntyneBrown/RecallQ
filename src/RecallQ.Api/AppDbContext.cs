@@ -45,6 +45,7 @@ public class AppDbContext : DbContext
         contact.Property(c => c.Phones).HasColumnName("phones");
         contact.Property(c => c.AvatarColorA).HasColumnName("avatar_color_a");
         contact.Property(c => c.AvatarColorB).HasColumnName("avatar_color_b");
+        contact.Property(c => c.Starred).HasColumnName("starred").HasDefaultValue(false);
         contact.Property(c => c.CreatedAt).HasColumnName("created_at");
         contact.HasIndex(c => c.OwnerUserId);
         contact.HasQueryFilter(c => c.OwnerUserId == _currentUser.UserId);
