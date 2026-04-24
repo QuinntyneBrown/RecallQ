@@ -4,11 +4,13 @@ import { AuthService } from '../../auth/auth.service';
 import { ContactsService } from '../../contacts/contacts.service';
 import { StacksService } from '../../stacks/stacks.service';
 import { StackCardComponent } from '../../ui/stack-card/stack-card.component';
+import { SuggestionsService } from '../../suggestions/suggestions.service';
+import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-card.component';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [StackCardComponent],
+  imports: [StackCardComponent, SuggestionCardComponent],
   template: `
     <section class="home">
       <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
@@ -24,6 +26,10 @@ import { StackCardComponent } from '../../ui/stack-card/stack-card.component';
                placeholder="Search contacts"
                (keyup.enter)="goSearch($event)" />
       </div>
+
+      @if (suggestionsService.suggestion()) {
+        <app-suggestion-card [suggestion]="suggestionsService.suggestion()!" (dismiss)="handleDismiss($event)"/>
+      }
 
       @if (stacksService.stacks().length > 0) {
         <section class="stacks-row">
@@ -151,6 +157,7 @@ export class HomePage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly contactsService = inject(ContactsService);
   protected readonly stacksService = inject(StacksService);
+  protected readonly suggestionsService = inject(SuggestionsService);
   private readonly router = inject(Router);
 
   readonly contactCount = this.contactsService.contactCount;
@@ -172,6 +179,11 @@ export class HomePage implements OnInit {
   ngOnInit(): void {
     void this.contactsService.refreshCount();
     void this.stacksService.refresh();
+    void this.suggestionsService.refresh();
+  }
+
+  handleDismiss(key: string): void {
+    void this.suggestionsService.dismiss(key);
   }
 
   goSearch(ev: Event): void {

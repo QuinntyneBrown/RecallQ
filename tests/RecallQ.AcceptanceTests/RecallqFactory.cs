@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using RecallQ.Api;
 using RecallQ.Api.Embeddings;
+using RecallQ.Api.Suggestions;
 using RecallQ.Api.Summaries;
 using Testcontainers.PostgreSql;
 
@@ -67,6 +68,13 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 || d.ImplementationType == typeof(EmbeddingWorker)
                 || d.ImplementationType == typeof(SummaryWorker)).ToList();
             foreach (var d in hosted) services.Remove(d);
+
+            // Remove the SuggestionDetector hosted service so it doesn't run during tests;
+            // tests invoke DetectOnceAsync directly on the resolved singleton.
+            var detectorHosted = services.Where(d =>
+                d.ServiceType == typeof(IHostedService)
+                && d.ImplementationType == typeof(SuggestionDetectorHostedService)).ToList();
+            foreach (var d in detectorHosted) services.Remove(d);
 
             services.AddSingleton(CapturedJobs);
             services.AddSingleton(SummaryRefreshJobs);

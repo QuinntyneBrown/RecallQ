@@ -10,6 +10,7 @@ using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
 using RecallQ.Api.Stacks;
+using RecallQ.Api.Suggestions;
 using RecallQ.Api.Summaries;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +61,10 @@ builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Reader);
 builder.Services.AddHostedService<SummaryWorker>();
+
+builder.Services.AddSingleton(new SuggestionDetectorOptions());
+builder.Services.AddSingleton<SuggestionDetector>();
+builder.Services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, SuggestionDetectorHostedService>();
 
 builder.Services.AddSingleton<StackCountCacheOptions>();
 builder.Services.AddSingleton<StackCountCache>();
@@ -150,6 +155,7 @@ app.MapSearch();
 app.MapAsk();
 app.MapSummaries();
 app.MapStacks();
+app.MapSuggestions();
 
 app.Run();
 

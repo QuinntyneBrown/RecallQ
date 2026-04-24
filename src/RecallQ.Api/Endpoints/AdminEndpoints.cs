@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Security;
+using RecallQ.Api.Suggestions;
 
 namespace RecallQ.Api.Endpoints;
 
@@ -22,6 +23,13 @@ public static class AdminEndpoints
             var userId = current.UserId!.Value;
             runner.StartInBackground(userId);
             return Results.Accepted(value: new { status = "accepted", ownerUserId = userId });
+        });
+
+        group.MapPost("/detect-suggestions", [Authorize] async (ICurrentUser current, SuggestionDetector detector, CancellationToken ct) =>
+        {
+            var userId = current.UserId!.Value;
+            await detector.DetectOnceAsync(userId, ct);
+            return Results.Ok(new { status = "ok", ownerUserId = userId });
         });
 
         return app;

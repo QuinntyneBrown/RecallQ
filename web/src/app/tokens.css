@@ -34,4 +34,6 @@
   --citation-border-top: #7C3AFF44;
 
   --stack-border: color-mix(in srgb, var(--accent-primary) 40%, transparent);
+
+  --on-accent: #FFFFFF;
 }

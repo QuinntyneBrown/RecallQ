@@ -10,4 +10,7 @@ export class HomePage {
   async tapStack(name: string) {
     await this.page.getByTestId('stack-card').filter({ hasText: name }).first().click();
   }
+  suggestionCard() { return this.page.getByTestId('suggestion-card'); }
+  async tapSuggestionPrimary() { return this.suggestionCard().getByRole('link').click(); }
+  async tapSuggestionDismiss() { return this.suggestionCard().getByRole('button', { name: 'Dismiss' }).click(); }
 }

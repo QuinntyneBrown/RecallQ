@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<BackfillCursor> BackfillCursors => Set<BackfillCursor>();
     public DbSet<RelationshipSummary> RelationshipSummaries => Set<RelationshipSummary>();
     public DbSet<Stack> Stacks => Set<Stack>();
+    public DbSet<Suggestion> Suggestions => Set<Suggestion>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -154,5 +155,21 @@ public class AppDbContext : DbContext
         stack.Property(s => s.CreatedAt).HasColumnName("created_at");
         stack.HasIndex(s => new { s.OwnerUserId, s.SortOrder });
         stack.HasQueryFilter(s => s.OwnerUserId == _currentUser.UserId);
+
+        var sug = builder.Entity<Suggestion>();
+        sug.ToTable("suggestions");
+        sug.HasKey(s => s.Id);
+        sug.Property(s => s.Id).HasColumnName("id");
+        sug.Property(s => s.OwnerUserId).HasColumnName("owner_user_id");
+        sug.Property(s => s.Key).HasColumnName("key").IsRequired();
+        sug.Property(s => s.Kind).HasColumnName("kind").IsRequired();
+        sug.Property(s => s.Title).HasColumnName("title").IsRequired();
+        sug.Property(s => s.Body).HasColumnName("body").IsRequired();
+        sug.Property(s => s.ActionLabel).HasColumnName("action_label").IsRequired();
+        sug.Property(s => s.ActionHref).HasColumnName("action_href").IsRequired();
+        sug.Property(s => s.CreatedAt).HasColumnName("created_at");
+        sug.Property(s => s.DismissedAt).HasColumnName("dismissed_at");
+        sug.HasIndex(s => new { s.OwnerUserId, s.Key });
+        sug.HasQueryFilter(s => s.OwnerUserId == _currentUser.UserId);
     }
 }

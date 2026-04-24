@@ -47,6 +47,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
       stdout: 'pipe',
+      env: { ADMIN_ENABLED: 'true' },
     },
   ],
 });
