@@ -7,7 +7,9 @@ import { QuickActionTileComponent } from '../../ui/quick-action-tile/quick-actio
 import { Dialog } from '@angular/cdk/dialog';
 import { AddEmailModal } from '../../ui/modals/add-email.modal';
 import { AddPhoneModal } from '../../ui/modals/add-phone.modal';
+import { IntroModal } from '../../ui/modals/intro.modal';
 import { ToastService } from '../../ui/toast/toast.service';
+import { navigateExternal } from '../../shared/navigate-external';
 
 @Component({
   selector: 'app-contact-detail-page',
@@ -65,10 +67,10 @@ import { ToastService } from '../../ui/toast/toast.service';
             (tileClick)="onCall()"
           />
           <app-quick-action-tile
-            icon="user-plus"
+            icon="users"
             label="Intro"
-            ariaLabel="Intro"
-            [disabled]="true"
+            ariaLabel="Draft intro"
+            (tileClick)="onIntro()"
           />
           <app-quick-action-tile
             icon="sparkle"
@@ -235,11 +237,17 @@ export class ContactDetailPage implements OnInit {
 
   back() { history.back(); }
 
+  onIntro() {
+    const c = this.contact();
+    if (!c) return;
+    this.dialog.open<void>(IntroModal, {
+      data: { contact: c },
+      ariaLabelledBy: 'intro-modal-title',
+    });
+  }
+
   private navigateExternal(href: string) {
-    const hooked = (window as unknown as { __rqNav?: (h: string) => boolean | void }).__rqNav?.(href);
-    if (hooked !== true) {
-      window.location.href = href;
-    }
+    navigateExternal(href);
   }
 
   async onMessage() {

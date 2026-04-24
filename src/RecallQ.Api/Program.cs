@@ -56,6 +56,7 @@ builder.Services.AddHostedService<EmbeddingWorker>();
 builder.Services.AddSingleton<EmbeddingBackfillRunner>();
 builder.Services.AddScoped<CitationRetriever>();
 builder.Services.AddScoped<FollowUpGenerator>();
+builder.Services.AddScoped<IntroDraftGenerator>();
 
 builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
@@ -156,6 +157,7 @@ app.MapAsk();
 app.MapSummaries();
 app.MapStacks();
 app.MapSuggestions();
+app.MapIntroDrafts();
 
 app.Run();
 
