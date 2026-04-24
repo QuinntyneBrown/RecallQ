@@ -113,9 +113,9 @@ if (app.Environment.IsProduction())
 
 app.UseCors(DevCorsPolicy);
 app.UseLoginEmailExtractor();
-app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapHealthChecks("/health");
 app.MapPing();

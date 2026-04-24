@@ -1,6 +1,10 @@
-using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Pgvector;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Security;
 
@@ -8,34 +12,86 @@ namespace RecallQ.Api.Endpoints;
 
 public static class SearchEndpoints
 {
+    private const string Sql = @"
+WITH hits AS (
+  SELECT c.id AS ""ContactId"", 'contact'::text AS ""MatchedSource"",
+         (1 - (ce.embedding <=> CAST(@q AS vector)))::real AS ""Similarity"",
+         c.display_name || COALESCE(' · ' || c.role, '') || COALESCE(' · ' || c.organization, '') AS ""MatchedText"",
+         NULL::timestamptz AS ""OccurredAt""
+  FROM contact_embeddings ce JOIN contacts c ON c.id = ce.contact_id
+  WHERE ce.owner_user_id = @owner AND ce.failed = FALSE
+  UNION ALL
+  SELECT i.contact_id, 'interaction'::text,
+         (1 - (ie.embedding <=> CAST(@q AS vector)))::real,
+         COALESCE(i.subject || E'\n', '') || i.content,
+         i.occurred_at
+  FROM interaction_embeddings ie JOIN interactions i ON i.id = ie.interaction_id
+  WHERE ie.owner_user_id = @owner AND ie.failed = FALSE
+),
+collapsed AS (
+  SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt""
+  FROM hits ORDER BY ""ContactId"", ""Similarity"" DESC
+)
+SELECT ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt""
+FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit OFFSET @offset";
+
+    public record SearchRequest(string? Q, int? Page, int? PageSize);
+    public record SearchRow(Guid ContactId, string MatchedSource, float Similarity, string MatchedText, DateTime? OccurredAt);
+
     public static IEndpointRouteBuilder MapSearch(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/search", [Authorize] async (
-            string? q, AppDbContext db, ICurrentUser current,
-            IEmbeddingClient client, EmbeddingBackfillRunner runner) =>
-        {
-            var userId = current.UserId!.Value;
-            var currentModel = client.Model;
-
-            var ceTotal = await db.ContactEmbeddings.IgnoreQueryFilters()
-                .Where(e => e.OwnerUserId == userId).CountAsync();
-            var ceMatch = await db.ContactEmbeddings.IgnoreQueryFilters()
-                .Where(e => e.OwnerUserId == userId && e.Model == currentModel).CountAsync();
-            var ieTotal = await db.InteractionEmbeddings.IgnoreQueryFilters()
-                .Where(e => e.OwnerUserId == userId).CountAsync();
-            var ieMatch = await db.InteractionEmbeddings.IgnoreQueryFilters()
-                .Where(e => e.OwnerUserId == userId && e.Model == currentModel).CountAsync();
-
-            var total = ceTotal + ieTotal;
-            var match = ceMatch + ieMatch;
-            if (total > 0 && match * 2 < total)
-            {
-                runner.StartInBackground(userId);
-                return Results.Json(new { message = "Embeddings are being regenerated" }, statusCode: StatusCodes.Status503ServiceUnavailable);
-            }
-
-            return Results.Ok(new { items = Array.Empty<object>(), placeholder = true, q });
-        });
+        app.MapPost("/api/search", (SearchRequest req, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
+            => Handle(req?.Q, req?.Page, req?.PageSize, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
+        app.MapGet("/api/search", (string? q, int? page, int? pageSize, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
+            => Handle(q, page, pageSize, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
         return app;
+    }
+
+    private static async Task<IResult> Handle(string? rawQ, int? pageIn, int? pageSizeIn, AppDbContext db, ICurrentUser current,
+        IEmbeddingClient client, EmbeddingBackfillRunner runner, ILoggerFactory lf)
+    {
+        var logger = lf.CreateLogger("Search");
+        var q = (rawQ ?? "").Trim();
+        if (q.Length == 0) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query is required." } });
+        if (q.Length > 500) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query must be <= 500 chars." } });
+        var page = pageIn is null or < 1 ? 1 : pageIn.Value;
+        var pageSize = pageSizeIn is null or < 1 ? 50 : Math.Min(pageSizeIn.Value, 50);
+        var hashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(q))).ToLowerInvariant()[..12];
+        logger.LogInformation("Search q_len={len} q_hash={hash}", q.Length, hashHex);
+
+        var userId = current.UserId!.Value;
+        var ceTotal = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
+        var ceMatch = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
+        var ieTotal = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
+        var ieMatch = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
+        var total = ceTotal + ieTotal;
+        if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), nextPage = (int?)null, contactsMatched = 0 });
+        if ((ceMatch + ieMatch) * 2 < total)
+        {
+            runner.StartInBackground(userId);
+            return Results.Json(new { message = "Embeddings are being regenerated" }, statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
+        var vec = new Vector(await client.EmbedAsync(q, default));
+        var rows = await db.Database.SqlQueryRaw<SearchRow>(Sql,
+            new NpgsqlParameter("q", vec), new NpgsqlParameter("owner", userId),
+            new NpgsqlParameter("limit", pageSize), new NpgsqlParameter("offset", (page - 1) * pageSize)).ToListAsync();
+
+        var mapped = rows.Select(r => new {
+            contactId = r.ContactId, matchedSource = r.MatchedSource,
+            similarity = Math.Round(r.Similarity, 2),
+            matchedText = Truncate((r.MatchedText ?? "").Trim(), 240),
+            occurredAt = r.OccurredAt
+        }).ToList();
+        return Results.Ok(new { results = mapped, nextPage = rows.Count == pageSize ? page + 1 : (int?)null, contactsMatched = rows.Count });
+    }
+
+    private static string Truncate(string text, int max)
+    {
+        if (text.Length <= max) return text;
+        var slice = text[..(max - 1)];
+        var sp = slice.LastIndexOf(' ');
+        slice = sp > 0 ? slice[..sp] : slice;
+        return slice.TrimEnd(' ', '\t', '\n', '\r', '.', ',', ';', ':', '!', '?') + "…";
     }
 }

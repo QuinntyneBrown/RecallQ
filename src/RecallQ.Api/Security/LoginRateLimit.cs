@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
@@ -23,6 +24,18 @@ public static class LoginRateLimit
                 {
                     PermitLimit = 5,
                     Window = TimeSpan.FromSeconds(60),
+                    QueueLimit = 0,
+                    AutoReplenishment = true
+                });
+            });
+            options.AddPolicy("search", httpCtx =>
+            {
+                var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 60,
+                    Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0,
                     AutoReplenishment = true
                 });
