@@ -12,7 +12,48 @@ namespace RecallQ.Api.Endpoints;
 
 public static class SearchEndpoints
 {
-    private const string Sql = @"
+    public record SearchRequest(string? Q, int? Page, int? PageSize, string? Sort);
+    public record SearchRow(Guid ContactId, string MatchedSource, float Similarity, string MatchedText, DateTime? OccurredAt);
+
+    public static IEndpointRouteBuilder MapSearch(this IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/search", (SearchRequest req, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
+            => Handle(req?.Q, req?.Page, req?.PageSize, req?.Sort, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
+        app.MapGet("/api/search", (string? q, int? page, int? pageSize, string? sort, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
+            => Handle(q, page, pageSize, sort, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
+        return app;
+    }
+
+    private static async Task<IResult> Handle(string? rawQ, int? pageIn, int? pageSizeIn, string? sortIn, AppDbContext db, ICurrentUser current,
+        IEmbeddingClient client, EmbeddingBackfillRunner runner, ILoggerFactory lf)
+    {
+        var logger = lf.CreateLogger("Search");
+        var q = (rawQ ?? "").Trim();
+        if (q.Length == 0) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query is required." } });
+        if (q.Length > 500) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query must be <= 500 chars." } });
+        var sort = string.IsNullOrWhiteSpace(sortIn) ? "similarity" : sortIn.Trim().ToLowerInvariant();
+        if (sort != "similarity" && sort != "recent")
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["sort"] = new[] { "sort must be 'similarity' or 'recent'." } });
+        var page = pageIn is null or < 1 ? 1 : pageIn.Value;
+        var pageSize = pageSizeIn is null or < 1 ? 50 : Math.Min(pageSizeIn.Value, 50);
+        var hashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(q))).ToLowerInvariant()[..12];
+        logger.LogInformation("Search q_len={len} q_hash={hash} sort={sort}", q.Length, hashHex, sort);
+
+        var userId = current.UserId!.Value;
+        var ceTotal = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
+        var ceMatch = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
+        var ieTotal = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
+        var ieMatch = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
+        var total = ceTotal + ieTotal;
+        if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), nextPage = (int?)null, contactsMatched = 0 });
+        if ((ceMatch + ieMatch) * 2 < total)
+        {
+            runner.StartInBackground(userId);
+            return Results.Json(new { message = "Embeddings are being regenerated" }, statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+
+        var orderBy = sort == "recent" ? @"""OccurredAt"" DESC NULLS LAST, ""Similarity"" DESC" : @"""Similarity"" DESC";
+        var sql = $@"
 WITH hits AS (
   SELECT c.id AS ""ContactId"", 'contact'::text AS ""MatchedSource"",
          (1 - (ce.embedding <=> CAST(@q AS vector)))::real AS ""Similarity"",
@@ -33,47 +74,10 @@ collapsed AS (
   FROM hits ORDER BY ""ContactId"", ""Similarity"" DESC
 )
 SELECT ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt""
-FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit OFFSET @offset";
-
-    public record SearchRequest(string? Q, int? Page, int? PageSize);
-    public record SearchRow(Guid ContactId, string MatchedSource, float Similarity, string MatchedText, DateTime? OccurredAt);
-
-    public static IEndpointRouteBuilder MapSearch(this IEndpointRouteBuilder app)
-    {
-        app.MapPost("/api/search", (SearchRequest req, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
-            => Handle(req?.Q, req?.Page, req?.PageSize, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
-        app.MapGet("/api/search", (string? q, int? page, int? pageSize, AppDbContext db, ICurrentUser cu, IEmbeddingClient c, EmbeddingBackfillRunner r, ILoggerFactory lf)
-            => Handle(q, page, pageSize, db, cu, c, r, lf)).RequireAuthorization().RequireRateLimiting("search");
-        return app;
-    }
-
-    private static async Task<IResult> Handle(string? rawQ, int? pageIn, int? pageSizeIn, AppDbContext db, ICurrentUser current,
-        IEmbeddingClient client, EmbeddingBackfillRunner runner, ILoggerFactory lf)
-    {
-        var logger = lf.CreateLogger("Search");
-        var q = (rawQ ?? "").Trim();
-        if (q.Length == 0) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query is required." } });
-        if (q.Length > 500) return Results.ValidationProblem(new Dictionary<string, string[]> { ["q"] = new[] { "Query must be <= 500 chars." } });
-        var page = pageIn is null or < 1 ? 1 : pageIn.Value;
-        var pageSize = pageSizeIn is null or < 1 ? 50 : Math.Min(pageSizeIn.Value, 50);
-        var hashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(q))).ToLowerInvariant()[..12];
-        logger.LogInformation("Search q_len={len} q_hash={hash}", q.Length, hashHex);
-
-        var userId = current.UserId!.Value;
-        var ceTotal = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
-        var ceMatch = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
-        var ieTotal = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
-        var ieMatch = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
-        var total = ceTotal + ieTotal;
-        if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), nextPage = (int?)null, contactsMatched = 0 });
-        if ((ceMatch + ieMatch) * 2 < total)
-        {
-            runner.StartInBackground(userId);
-            return Results.Json(new { message = "Embeddings are being regenerated" }, statusCode: StatusCodes.Status503ServiceUnavailable);
-        }
+FROM collapsed ORDER BY {orderBy} LIMIT @limit OFFSET @offset";
 
         var vec = new Vector(await client.EmbedAsync(q, default));
-        var rows = await db.Database.SqlQueryRaw<SearchRow>(Sql,
+        var rows = await db.Database.SqlQueryRaw<SearchRow>(sql,
             new NpgsqlParameter("q", vec), new NpgsqlParameter("owner", userId),
             new NpgsqlParameter("limit", pageSize), new NpgsqlParameter("offset", (page - 1) * pageSize)).ToListAsync();
 

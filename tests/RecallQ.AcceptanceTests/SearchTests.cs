@@ -257,6 +257,57 @@ public class SearchTests : IClassFixture<EmbeddingWorkerFactory>
         Assert.Equal(HttpStatusCode.TooManyRequests, seen429);
     }
 
+    private static async Task CreateInteractionAt(HttpClient client, string cookie, Guid contactId, string content, DateTime occurredAt)
+    {
+        var payload = new { type = "note", occurredAt, subject = (string?)null, content };
+        using var req = new HttpRequestMessage(HttpMethod.Post, $"/api/contacts/{contactId}/interactions") { Content = JsonContent.Create(payload) };
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+    }
+
+    // Traces to: L2-018
+    [Fact]
+    public async Task Search_sort_recent_orders_by_occurredAt_desc()
+    {
+        await using var bf = new EmbeddingWorkerFactory { EmbeddingClientFactory = _ => new BagOfWordsEmbeddingClient() };
+        await ((IAsyncLifetime)bf).InitializeAsync();
+        try
+        {
+            var (client, userId, cookie) = await RegisterLoginOn(bf);
+            var a = await CreateContact(client, cookie, "Alpha");
+            var b = await CreateContact(client, cookie, "Bravo");
+            var c = await CreateContact(client, cookie, "Charlie");
+            await CreateInteractionAt(client, cookie, a, "foo bar baz topic", new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            await CreateInteractionAt(client, cookie, b, "foo bar baz topic", new DateTime(2025, 6, 15, 0, 0, 0, DateTimeKind.Utc));
+            await CreateInteractionAt(client, cookie, c, "foo bar baz topic", new DateTime(2023, 3, 5, 0, 0, 0, DateTimeKind.Utc));
+            await WaitForEmbeddingsOn(bf, userId, 3, 3);
+
+            using var req = new HttpRequestMessage(HttpMethod.Post, "/api/search")
+            { Content = JsonContent.Create(new { q = "foo bar baz topic", sort = "recent" }) };
+            req.Headers.Add("Cookie", cookie);
+            var res = await client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+            var results = body.GetProperty("results");
+            Assert.True(results.GetArrayLength() >= 3);
+            Assert.Equal(b, results[0].GetProperty("contactId").GetGuid());
+            // Third is oldest (2023)
+            Assert.Equal(c, results[2].GetProperty("contactId").GetGuid());
+        }
+        finally { await ((IAsyncLifetime)bf).DisposeAsync(); }
+    }
+
+    [Fact]
+    public async Task Search_sort_invalid_returns_400()
+    {
+        var (client, _, cookie) = await RegisterLogin();
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/search") { Content = JsonContent.Create(new { q = "foo", sort = "bogus" }) };
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+    }
+
     [Fact]
     public async Task Search_query_absent_from_logs()
     {

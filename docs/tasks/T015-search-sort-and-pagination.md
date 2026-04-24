@@ -60,6 +60,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 3 unit tests + 1 e2e pass.
-- [ ] `domCardCount()` ≤ 80 when total = 120.
-- [ ] Three verification passes complete clean.
+- [x] 3 unit tests + 1 e2e pass.
+- [x] `domCardCount()` ≤ 80 when total = 120.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
