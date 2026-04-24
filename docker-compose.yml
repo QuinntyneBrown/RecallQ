@@ -1,0 +1,17 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: recallq-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: recallq
+      POSTGRES_PASSWORD: recallq
+      POSTGRES_DB: recallq
+    ports:
+      - "5432:5432"
+    volumes:
+      - recallq-data:/var/lib/postgresql/data
+      - ./docker/init-pgvector.sql:/docker-entrypoint-initdb.d/01-init-pgvector.sql:ro
+
+volumes:
+  recallq-data:
