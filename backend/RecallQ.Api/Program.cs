@@ -175,6 +175,23 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+if (!app.Environment.IsProduction())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var hasher = scope.ServiceProvider.GetRequiredService<Argon2Hasher>();
+    const string devEmail = "quinntynebrown@gmail.com";
+    if (!await db.Users.AnyAsync(u => u.Email == devEmail))
+    {
+        db.Users.Add(new RecallQ.Api.Entities.User
+        {
+            Email = devEmail,
+            PasswordHash = hasher.Hash("password")
+        });
+        await db.SaveChangesAsync();
+    }
+}
+
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
