@@ -1,5 +1,6 @@
 # Button Primary shadow does not match ui-design.pen
 
+**Status:** Complete — button-primary.component.ts now uses `0 8px 24px -4px rgba(124, 58, 255, 0.40)`.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-012, L2-049, L2-050.
 **Severity:** Low — off-spec glow, visible on every Button Primary.

@@ -23,7 +23,7 @@ import { Component, Input } from '@angular/core';
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(124, 58, 255, 0.35);
+      box-shadow: 0 8px 24px -4px rgba(124, 58, 255, 0.40);
       width: 100%;
     }
     button:disabled {
