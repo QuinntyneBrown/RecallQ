@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -8,9 +8,13 @@ import { RouterLink } from '@angular/router';
   template: `
     <div class="zero" data-testid="zero-state">
       <i class="ph ph-magnifying-glass icon" aria-hidden="true"></i>
-      <h2 class="head">No contacts matched</h2>
-      <p class="body">Try a different query or open Ask mode.</p>
-      <a routerLink="/ask" class="link">Open Ask mode</a>
+      <h2 class="head">No matches yet</h2>
+      <p class="body">Your query didn't match any indexed contacts or interactions.</p>
+      <a
+        [routerLink]="['/ask']"
+        [queryParams]="q ? { q } : null"
+        class="link"
+      >Ask RecallQ</a>
     </div>
   `,
   styles: [`
@@ -30,4 +34,6 @@ import { RouterLink } from '@angular/router';
     .link { color: var(--accent-primary); text-decoration: none; font-weight: 600; }
   `],
 })
-export class ZeroStateComponent {}
+export class ZeroStateComponent {
+  @Input() q: string | null = null;
+}

@@ -1,5 +1,6 @@
 # Search zero-state "Ask mode" link does not seed the current query
 
+**Status:** Complete — `ZeroStateComponent` now takes a `q` input, renders "No matches yet" / "Ask RecallQ", and `search.page.ts` forwards the live query so the Ask link routes to `/ask?q=<query>`.
 **Flow:** [18 — Search Zero-Result State](../flows/18-search-zero-state/18-search-zero-state.md)
 **Traces:** L1-004, L1-005, L2-014.
 **Severity:** Medium-High — a visitor who just typed a query and hit zero matches taps the one suggested handoff and lands on a blank `/ask`. They must retype their question, breaking the flow Flow 18 step 4 is designed to preserve.

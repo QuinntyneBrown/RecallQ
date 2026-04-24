@@ -43,7 +43,7 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
         }
 
         @if (!loading() && !error() && results().length === 0) {
-          <app-zero-state></app-zero-state>
+          <app-zero-state [q]="q()"></app-zero-state>
         }
 
         @if (results().length > 0) {
