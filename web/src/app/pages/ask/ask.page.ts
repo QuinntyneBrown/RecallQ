@@ -1,6 +1,8 @@
-import { AfterViewChecked, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { AskService } from '../../chat/ask.service';
+import { ContactsService } from '../../contacts/contacts.service';
 import { CitationCardComponent } from '../../ui/citation-card/citation-card.component';
 import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.component';
 
@@ -62,6 +64,7 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
           <i class="ph ph-plus"></i>
         </button>
         <input #inp type="text" aria-label="Ask anything" placeholder="Ask anything"
+               [value]="draft()" (input)="draft.set($any($event.target).value)"
                (keyup.enter)="submit(inp)" [disabled]="pending()" />
         <button type="button" class="icon-btn" aria-label="Voice" disabled>
           <i class="ph ph-microphone"></i>
@@ -197,16 +200,35 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
     .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   `],
 })
-export class AskPage implements AfterViewChecked {
+export class AskPage implements AfterViewChecked, OnInit {
   private readonly ask = inject(AskService);
   private readonly location = inject(Location);
+  private readonly route = inject(ActivatedRoute);
+  private readonly contacts = inject(ContactsService);
 
   readonly messages = this.ask.messages;
   readonly pending = this.ask.pending;
   readonly error = this.ask.error;
+  readonly draft = signal('');
+  readonly currentContactId = signal<string | null>(null);
+  private seededOnce = false;
 
   @ViewChild('list') list?: ElementRef<HTMLElement>;
   private lastLen = -1;
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(async (params) => {
+      const contactId = params.get('contactId');
+      this.currentContactId.set(contactId);
+      if (contactId && !this.seededOnce && this.messages().length === 0) {
+        this.seededOnce = true;
+        try {
+          const c = await this.contacts.get(contactId);
+          if (c) this.draft.set(`What should I say to ${c.displayName} next?`);
+        } catch { /* ignore */ }
+      }
+    });
+  }
 
   ngAfterViewChecked(): void {
     const len = this.messages().reduce((n, m) => n + m.text.length, 0);
@@ -221,7 +243,8 @@ export class AskPage implements AfterViewChecked {
     const q = input.value;
     if (!q.trim() || this.pending()) return;
     input.value = '';
-    await this.ask.send(q);
+    this.draft.set('');
+    await this.ask.send(q, this.currentContactId());
   }
 
   back(): void { this.location.back(); }

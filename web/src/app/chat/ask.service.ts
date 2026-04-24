@@ -50,7 +50,7 @@ export class AskService {
     );
   }
 
-  async send(q: string): Promise<void> {
+  async send(q: string, contactId?: string | null): Promise<void> {
     const trimmed = q.trim();
     if (!trimmed || this.pending()) return;
     this.error.set(null);
@@ -61,11 +61,13 @@ export class AskService {
     this.messages.update(list => [...list, userMsg, assistantMsg]);
 
     try {
+      const body: { q: string; contactId?: string } = { q: trimmed };
+      if (contactId) body.contactId = contactId;
       const res = await fetch('/api/ask', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: trimmed }),
+        body: JSON.stringify(body),
       });
       if (!res.ok || !res.body) {
         this.error.set(`ask_failed_${res.status}`);

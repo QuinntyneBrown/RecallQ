@@ -12,4 +12,5 @@ export class AskModePage {
   citations()        { return this.page.getByTestId('citation-card'); }
   followUps()        { return this.page.getByTestId('follow-up-chip'); }
   async tapFollowUp(n: number) { await this.followUps().nth(n).click(); }
+  seededInputValue() { return this.page.getByRole('textbox', { name: 'Ask anything' }).inputValue(); }
 }

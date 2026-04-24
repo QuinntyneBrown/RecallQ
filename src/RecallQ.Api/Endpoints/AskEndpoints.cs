@@ -10,7 +10,7 @@ namespace RecallQ.Api.Endpoints;
 
 public static class AskEndpoints
 {
-    public record AskRequest(string? Q);
+    public record AskRequest(string? Q, Guid? ContactId);
 
     private const string SystemPrompt = "You are RecallQ, answer briefly based on what the user provides.";
 
@@ -22,7 +22,7 @@ public static class AskEndpoints
         return app;
     }
 
-    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, CitationRetriever retriever, FollowUpGenerator followUpGen, ICurrentUser current, ILoggerFactory lf)
+    private static async Task Handle(AskRequest? req, HttpContext http, IChatClient client, CitationRetriever retriever, FollowUpGenerator followUpGen, ICurrentUser current, AppDbContext db, ILoggerFactory lf)
     {
         var logger = lf.CreateLogger("Ask");
         var q = (req?.Q ?? string.Empty).Trim();
@@ -36,10 +36,21 @@ public static class AskEndpoints
         var hashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(q))).ToLowerInvariant()[..12];
         logger.LogInformation("Ask q_len={len} q_hash={hash}", q.Length, hashHex);
 
+        var sysBuilder = new StringBuilder();
+        if (req?.ContactId is Guid cid && current.UserId is Guid)
+        {
+            var c = db.Contacts.FirstOrDefault(x => x.Id == cid);
+            if (c is not null)
+            {
+                sysBuilder.AppendLine($"The user is focused on contact: {c.DisplayName} (role: {c.Role ?? "-"}, org: {c.Organization ?? "-"}).");
+            }
+        }
+        sysBuilder.Append(SystemPrompt);
+
         IReadOnlyList<Citation> citations = Array.Empty<Citation>();
         if (current.UserId is Guid ownerId)
         {
-            try { citations = await retriever.RetrieveAsync(ownerId, q, 3, http.RequestAborted); }
+            try { citations = await retriever.RetrieveAsync(ownerId, q, 3, http.RequestAborted, biasContactId: req?.ContactId); }
             catch (Exception ex) { logger.LogWarning(ex, "citation_retrieval_failed"); }
         }
 
@@ -50,7 +61,7 @@ public static class AskEndpoints
 
         var messages = new List<ChatMessage>
         {
-            new("system", SystemPrompt),
+            new("system", sysBuilder.ToString()),
             new("user", q),
         };
 

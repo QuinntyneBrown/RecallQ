@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       type="button"
       class="tile"
       [class.active]="active"
+      [class.gradient]="gradient"
       [disabled]="disabled"
       [attr.aria-label]="ariaLabel"
       (click)="onClick($event)"
@@ -34,6 +35,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     .tile:disabled { cursor: not-allowed; opacity: 0.55; }
     .tile:not(:disabled):hover { transform: translateY(-1px); }
     .tile.active { border-color: var(--accent-primary); }
+    .tile.gradient {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid), var(--accent-gradient-end));
+      color: var(--on-accent);
+      border-color: transparent;
+    }
     .tile .ph { font-size: 20px; }
   `],
 })
@@ -43,6 +49,7 @@ export class QuickActionTileComponent {
   @Input({ required: true }) ariaLabel!: string;
   @Input() disabled = false;
   @Input() active = false;
+  @Input() gradient = false;
   @Output() tileClick = new EventEmitter<void>();
 
   onClick(event: Event) {

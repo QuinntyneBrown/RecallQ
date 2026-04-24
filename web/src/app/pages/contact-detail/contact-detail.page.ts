@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContactsService, ContactDetailDto, SummaryResponse } from '../../contacts/contacts.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
 import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-card/relationship-summary-card.component';
@@ -75,8 +75,9 @@ import { navigateExternal } from '../../shared/navigate-external';
           <app-quick-action-tile
             icon="sparkle"
             label="Ask AI"
-            ariaLabel="Ask AI"
-            [disabled]="true"
+            ariaLabel="Ask AI about this contact"
+            [gradient]="true"
+            (tileClick)="onAskAi()"
           />
         </div>
 
@@ -184,6 +185,7 @@ import { navigateExternal } from '../../shared/navigate-external';
 })
 export class ContactDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly contacts = inject(ContactsService);
   private readonly dialog = inject(Dialog);
   private readonly toast = inject(ToastService);
@@ -236,6 +238,12 @@ export class ContactDetailPage implements OnInit {
   }
 
   back() { history.back(); }
+
+  onAskAi() {
+    const c = this.contact();
+    if (!c) return;
+    this.router.navigate(['/ask'], { queryParams: { contactId: c.id } });
+  }
 
   onIntro() {
     const c = this.contact();
