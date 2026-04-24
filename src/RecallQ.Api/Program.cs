@@ -33,7 +33,18 @@ builder.Services.AddSingleton(Channel.CreateUnbounded<EmbeddingJob>());
 builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
 builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("Embeddings:OpenAI"));
-builder.Services.AddHttpClient<IEmbeddingClient, OpenAIEmbeddingClient>();
+var embeddingsProvider = builder.Configuration["Embeddings:Provider"];
+var openAiKey = builder.Configuration["Embeddings:OpenAI:ApiKey"];
+var useFake = string.Equals(embeddingsProvider, "fake", StringComparison.OrdinalIgnoreCase)
+              || string.IsNullOrWhiteSpace(openAiKey);
+if (useFake)
+{
+    builder.Services.AddSingleton<IEmbeddingClient, FakeEmbeddingClient>();
+}
+else
+{
+    builder.Services.AddHttpClient<IEmbeddingClient, OpenAIEmbeddingClient>();
+}
 builder.Services.AddHostedService<EmbeddingWorker>();
 builder.Services.AddSingleton<EmbeddingBackfillRunner>();
 

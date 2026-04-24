@@ -1,0 +1,25 @@
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-query-chip',
+  standalone: true,
+  template: `<span data-testid="query-chip" class="query-chip">{{ q }}</span>`,
+  styles: [`
+    .query-chip {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 14px;
+      border-radius: var(--radius-full);
+      background: var(--surface-elevated);
+      color: var(--foreground-primary);
+      font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+  `],
+})
+export class QueryChipComponent {
+  @Input({ required: true }) q!: string;
+}

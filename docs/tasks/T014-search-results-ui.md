@@ -62,6 +62,8 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 3 unit tests + 2 e2e specs pass.
-- [ ] Tapping a result navigates to `/contacts/:id`.
-- [ ] Three verification passes complete clean.
+- [x] 3 unit tests + 2 e2e specs pass.
+- [x] Tapping a result navigates to `/contacts/:id`.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**
