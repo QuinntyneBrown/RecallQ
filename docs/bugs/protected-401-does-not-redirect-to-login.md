@@ -1,5 +1,6 @@
 # 401 on a protected endpoint does not redirect to `/login`
 
+**Status:** Complete — `app.config.ts` now installs `installApiInterceptor` during bootstrap, which clears the auth signal and routes to `/login` on any non-auth `/api/*` 401.
 **Flow:** [04 — Authenticated Request](../flows/04-authenticated-request/04-authenticated-request.md)
 **Traces:** L1-013, L2-003, L2-056.
 **Severity:** High — a user whose session lapses mid-use sees raw `xxx_failed_401` error strings instead of being asked to sign in.
