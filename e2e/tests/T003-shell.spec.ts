@@ -2,9 +2,13 @@
 // Task: T003
 import { test, expect } from '@playwright/test';
 import { AppShellPage } from '../pages/app-shell.page';
+import { registerAndLogin } from '../flows/register.flow';
 import { screenshot } from '../fixtures/screenshot';
 
 test('mobile shell renders status bar, bottom nav, home indicator', async ({ page }) => {
+  const email = `t003-${Date.now()}-${Math.floor(Math.random() * 10000)}@example.com`;
+  await registerAndLogin(page, email, 'correcthorse12');
+
   const shell = new AppShellPage(page);
   await shell.goto();
 

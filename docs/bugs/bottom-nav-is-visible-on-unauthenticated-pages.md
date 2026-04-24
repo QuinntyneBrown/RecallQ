@@ -1,5 +1,6 @@
 # Bottom nav is visible on unauthenticated pages
 
+**Status:** Complete — chrome gated on `auth.isAuthenticated()` in `frontend/src/app/app.ts`.
 **Flow:** [01 — User Registration](../flows/01-user-registration/01-user-registration.md)
 **Traces:** L1-001, L1-011, L2-003.
 **Severity:** Medium — broken UX; tapping a nav tab bounces the user back to login.

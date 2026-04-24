@@ -7,6 +7,7 @@ import { ToastHostComponent } from './ui/toast/toast.component';
 import { SidebarComponent } from './ui/sidebar/sidebar.component';
 import { HealthService } from './health.service';
 import { BreakpointService } from './shell/breakpoint.service';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,11 +22,11 @@ import { BreakpointService } from './shell/breakpoint.service';
   ],
   template: `
     <app-status-bar class="status"/>
-    @if (breakpoints.md()) {
+    @if (breakpoints.md() && auth.isAuthenticated()) {
       <app-sidebar class="sidebar"/>
     }
     <main class="content"><router-outlet/></main>
-    @if (!breakpoints.md()) {
+    @if (!breakpoints.md() && auth.isAuthenticated()) {
       <app-bottom-nav class="bottom"/>
       <app-home-indicator class="home-ind"/>
     }
@@ -96,6 +97,7 @@ export class App implements OnInit {
   protected readonly title = signal('web');
   private readonly health = inject(HealthService);
   protected readonly breakpoints = inject(BreakpointService);
+  protected readonly auth = inject(AuthService);
 
   ngOnInit(): void {
     this.health.start();
