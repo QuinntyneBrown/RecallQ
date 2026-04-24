@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecallQ.Api.Entities;
 using RecallQ.Api.Security;
@@ -55,7 +54,8 @@ public static class AuthEndpoints
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("sid", Guid.NewGuid().ToString())
             }, CookieAuthenticationDefaults.AuthenticationScheme);
             await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
             http.Response.StatusCode = 200;
@@ -64,6 +64,14 @@ public static class AuthEndpoints
 
         app.MapGet("/api/auth/me", [Authorize] (ICurrentUser current) =>
             Results.Ok(new { id = current.UserId, email = current.Email }));
+
+        app.MapPost("/api/auth/logout", [Authorize] async (HttpContext http, SessionRevocationStore store) =>
+        {
+            var sid = http.User.FindFirst("sid")?.Value;
+            if (Guid.TryParse(sid, out var sessionId)) store.Revoke(sessionId);
+            await http.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Results.NoContent();
+        });
 
         return app;
     }

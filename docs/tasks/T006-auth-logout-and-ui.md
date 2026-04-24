@@ -74,7 +74,9 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 2 API tests + 1 e2e spec pass.
-- [ ] Navigating to `/home` while anonymous redirects to `/login`.
-- [ ] After logout, the cookie is cleared and `/api/auth/me` returns 401.
-- [ ] Three verification passes complete clean.
+- [x] 2 API tests + 1 e2e spec pass.
+- [x] Navigating to `/home` while anonymous redirects to `/login`.
+- [x] After logout, the cookie is cleared and `/api/auth/me` returns 401.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

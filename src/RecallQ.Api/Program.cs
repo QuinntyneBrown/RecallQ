@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RecallQ.Api;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
@@ -17,6 +19,7 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddSingleton<Argon2Hasher>();
+builder.Services.AddSingleton<SessionRevocationStore>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -30,6 +33,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.Path = "/";
         options.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
         options.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
+        options.Events.OnValidatePrincipal = async ctx =>
+        {
+            var sidClaim = ctx.Principal?.FindFirst("sid")?.Value;
+            if (Guid.TryParse(sidClaim, out var sid))
+            {
+                var store = ctx.HttpContext.RequestServices.GetRequiredService<SessionRevocationStore>();
+                if (store.IsRevoked(sid))
+                {
+                    ctx.RejectPrincipal();
+                    await ctx.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                }
+            }
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddLoginRateLimit();

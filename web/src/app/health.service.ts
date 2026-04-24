@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export const API_BASE = 'http://localhost:5151';
+export const API_BASE = '';
 
 @Injectable({ providedIn: 'root' })
 export class HealthService {
@@ -9,7 +9,7 @@ export class HealthService {
 
   async check(): Promise<void> {
     try {
-      const res = await fetch(`${API_BASE}/api/ping`);
+      const res = await fetch(`/api/ping`);
       if (res.ok) {
         const text = (await res.text()).trim();
         this.online.set(text === 'pong');
