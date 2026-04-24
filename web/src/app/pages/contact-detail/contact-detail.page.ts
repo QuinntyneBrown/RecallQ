@@ -1,12 +1,13 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ContactsService, ContactDetailDto } from '../../contacts/contacts.service';
+import { ContactsService, ContactDetailDto, SummaryResponse } from '../../contacts/contacts.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
+import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-card/relationship-summary-card.component';
 
 @Component({
   selector: 'app-contact-detail-page',
   standalone: true,
-  imports: [TimelineItemComponent],
+  imports: [TimelineItemComponent, RelationshipSummaryCardComponent],
   template: `
     <section class="page">
       @if (contact(); as c) {
@@ -50,8 +51,8 @@ import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.comp
           <button type="button" disabled><i class="ph ph-sparkle"></i><span>Ask AI</span></button>
         </div>
 
-        <div class="card">
-          <p>Relationship summary coming soon</p>
+        <div class="summary-wrap">
+          <app-relationship-summary-card [summary]="summary()" (refresh)="onRefreshSummary()" />
         </div>
 
         <section class="activity">
@@ -148,15 +149,7 @@ import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.comp
       cursor: not-allowed; opacity: 0.85;
     }
     .actions .ph { font-size: 18px; }
-    .card {
-      margin: 0 24px;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      color: var(--foreground-secondary);
-    }
-    .card p { margin: 0; }
+    .summary-wrap { padding: 0 24px; }
     .activity { padding: 0 24px; }
     .activity-head {
       display: flex; align-items: baseline; justify-content: space-between;
@@ -177,6 +170,8 @@ export class ContactDetailPage implements OnInit {
   readonly contact = signal<ContactDetailDto | null>(null);
   readonly notFound = signal(false);
   readonly contactId = signal<string | null>(null);
+  readonly summary = signal<SummaryResponse>({ status: 'pending' });
+  private pollTimer: ReturnType<typeof setTimeout> | null = null;
   readonly starred = computed(() => this.contact()?.starred ?? false);
   readonly roleLine = computed(() => {
     const c = this.contact();
@@ -190,8 +185,32 @@ export class ContactDetailPage implements OnInit {
     if (!id) return;
     this.contactId.set(id);
     const result = await this.contacts.get(id);
-    if (result) this.contact.set(result);
-    else this.notFound.set(true);
+    if (result) {
+      this.contact.set(result);
+      this.loadSummary();
+    } else this.notFound.set(true);
+  }
+
+  private async loadSummary(attempt = 0) {
+    const id = this.contactId();
+    if (!id) return;
+    try {
+      const s = await this.contacts.getSummary(id);
+      this.summary.set(s);
+      if (s.status === 'pending' && attempt < 10) {
+        this.pollTimer = setTimeout(() => this.loadSummary(attempt + 1), 3000);
+      }
+    } catch {
+      // leave as-is
+    }
+  }
+
+  async onRefreshSummary() {
+    const id = this.contactId();
+    if (!id) return;
+    this.summary.set({ status: 'pending' });
+    try { await this.contacts.refreshSummary(id); } catch {}
+    this.loadSummary(0);
   }
 
   back() { history.back(); }

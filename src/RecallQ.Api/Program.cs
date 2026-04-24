@@ -9,6 +9,7 @@ using RecallQ.Api.Chat;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Endpoints;
 using RecallQ.Api.Security;
+using RecallQ.Api.Summaries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,7 @@ builder.Services.AddScoped<FollowUpGenerator>();
 builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Reader);
-builder.Services.AddHostedService<NullSummaryConsumer>();
+builder.Services.AddHostedService<SummaryWorker>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -141,6 +142,7 @@ app.MapInteractions();
 app.MapAdmin();
 app.MapSearch();
 app.MapAsk();
+app.MapSummaries();
 
 app.Run();
 

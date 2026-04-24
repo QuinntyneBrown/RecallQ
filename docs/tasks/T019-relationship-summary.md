@@ -59,5 +59,7 @@ Apply the [verification template](README.md#verification-template). Extra checks
 
 ## Definition of Done
 
-- [ ] 5 API tests + 1 e2e pass.
-- [ ] Three verification passes complete clean.
+- [x] 5 API tests + 1 e2e pass.
+- [x] Three verification passes complete clean.
+
+**Status: Complete**

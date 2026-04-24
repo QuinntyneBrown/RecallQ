@@ -51,6 +51,15 @@ export interface ContactCounts {
   interactions: number;
 }
 
+export type SummaryResponse = {
+  status: 'ready' | 'pending' | 'not_enough_data';
+  paragraph?: string;
+  sentiment?: string;
+  interactionCount?: number;
+  lastInteractionAt?: string;
+  updatedAt?: string;
+};
+
 export class ContactsValidationError extends Error {
   constructor(public readonly errors: Record<string, string[]>) {
     super('validation_failed');
@@ -106,6 +115,20 @@ export class ContactsService {
     const res = await fetch('/api/contacts/count', { credentials: 'include' });
     if (res.status !== 200) throw new Error('count_failed_' + res.status);
     return (await res.json()) as ContactCounts;
+  }
+
+  async getSummary(contactId: string): Promise<SummaryResponse> {
+    const res = await fetch(`/api/contacts/${contactId}/summary`, { credentials: 'include' });
+    if (res.status !== 200) throw new Error('summary_failed_' + res.status);
+    return (await res.json()) as SummaryResponse;
+  }
+
+  async refreshSummary(contactId: string): Promise<void> {
+    const res = await fetch(`/api/contacts/${contactId}/summary:refresh`, {
+      method: 'POST', credentials: 'include',
+    });
+    if (res.status === 202 || res.status === 429) return;
+    throw new Error('refresh_summary_failed_' + res.status);
   }
 
   async refreshCount(): Promise<void> {

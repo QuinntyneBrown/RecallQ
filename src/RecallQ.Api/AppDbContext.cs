@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<ContactEmbedding> ContactEmbeddings => Set<ContactEmbedding>();
     public DbSet<InteractionEmbedding> InteractionEmbeddings => Set<InteractionEmbedding>();
     public DbSet<BackfillCursor> BackfillCursors => Set<BackfillCursor>();
+    public DbSet<RelationshipSummary> RelationshipSummaries => Set<RelationshipSummary>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -119,5 +120,25 @@ public class AppDbContext : DbContext
         bc.Property(x => x.StartedAt).HasColumnName("started_at");
         bc.Property(x => x.UpdatedAt).HasColumnName("updated_at");
         bc.Property(x => x.Completed).HasColumnName("completed").HasDefaultValue(false);
+
+        var rs = builder.Entity<RelationshipSummary>();
+        rs.ToTable("relationship_summaries");
+        rs.HasKey(x => x.ContactId);
+        rs.Property(x => x.ContactId).HasColumnName("contact_id");
+        rs.Property(x => x.OwnerUserId).HasColumnName("owner_user_id");
+        rs.Property(x => x.Paragraph).HasColumnName("paragraph");
+        rs.Property(x => x.Sentiment).HasColumnName("sentiment").IsRequired();
+        rs.Property(x => x.InteractionCount).HasColumnName("interaction_count");
+        rs.Property(x => x.LastInteractionAt).HasColumnName("last_interaction_at");
+        rs.Property(x => x.UpdatedAt).HasColumnName("updated_at");
+        rs.Property(x => x.LastRefreshRequestedAt).HasColumnName("last_refresh_requested_at");
+        rs.Property(x => x.Model).HasColumnName("model").IsRequired();
+        rs.Property(x => x.SourceHash).HasColumnName("source_hash").IsRequired();
+        rs.HasIndex(x => x.OwnerUserId);
+        rs.HasOne<Contact>()
+            .WithOne()
+            .HasForeignKey<RelationshipSummary>(x => x.ContactId)
+            .OnDelete(DeleteBehavior.Cascade);
+        rs.HasQueryFilter(x => x.OwnerUserId == _currentUser.UserId);
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using RecallQ.Api;
 using RecallQ.Api.Embeddings;
+using RecallQ.Api.Summaries;
 using Testcontainers.PostgreSql;
 
 namespace RecallQ.AcceptanceTests;
@@ -26,7 +27,9 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public readonly ConcurrentBag<EmbeddingJob> CapturedJobs = new();
     public readonly ConcurrentBag<SummaryRefreshJob> SummaryRefreshJobs = new();
     public bool UseRealEmbeddingWorker { get; set; } = false;
+    public bool UseRealSummaryWorker { get; set; } = false;
     public Func<IServiceProvider, IEmbeddingClient>? EmbeddingClientFactory { get; set; }
+    public Func<IServiceProvider, RecallQ.Api.Chat.IChatClient>? ChatClientFactory { get; set; }
 
     public async Task InitializeAsync()
     {
@@ -60,12 +63,27 @@ public class RecallqFactory : WebApplicationFactory<Program>, IAsyncLifetime
             var hosted = services.Where(d =>
                 d.ImplementationType == typeof(NullEmbeddingConsumer)
                 || d.ImplementationType == typeof(NullSummaryConsumer)
-                || d.ImplementationType == typeof(EmbeddingWorker)).ToList();
+                || d.ImplementationType == typeof(EmbeddingWorker)
+                || d.ImplementationType == typeof(SummaryWorker)).ToList();
             foreach (var d in hosted) services.Remove(d);
 
             services.AddSingleton(CapturedJobs);
             services.AddSingleton(SummaryRefreshJobs);
-            services.AddHostedService<CapturingSummaryConsumer>();
+
+            if (UseRealSummaryWorker)
+            {
+                var chatDescriptors = services.Where(d => d.ServiceType == typeof(RecallQ.Api.Chat.IChatClient)).ToList();
+                foreach (var d in chatDescriptors) services.Remove(d);
+                if (ChatClientFactory is not null)
+                    services.AddSingleton<RecallQ.Api.Chat.IChatClient>(ChatClientFactory);
+                else
+                    services.AddSingleton<RecallQ.Api.Chat.IChatClient, RecallQ.Api.Chat.FakeChatClient>();
+                services.AddHostedService<SummaryWorker>();
+            }
+            else
+            {
+                services.AddHostedService<CapturingSummaryConsumer>();
+            }
 
             if (UseRealEmbeddingWorker)
             {
