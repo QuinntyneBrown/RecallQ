@@ -28,7 +28,7 @@ public class SolutionSmokeTests : IClassFixture<RecallqFactory>
     public void Solution_contains_exactly_one_api_project()
     {
         var root = FindRepoRoot();
-        var srcDir = Path.Combine(root, "src");
+        var srcDir = Path.Combine(root, "backend");
         var csprojs = Directory.GetFiles(srcDir, "*.csproj", SearchOption.AllDirectories);
         Assert.Single(csprojs);
         Assert.Equal("RecallQ.Api.csproj", Path.GetFileName(csprojs[0]));
@@ -39,7 +39,7 @@ public class SolutionSmokeTests : IClassFixture<RecallqFactory>
     {
         var root = FindRepoRoot();
         var forbidden = new[] { "MediatR", "AutoMapper", "Repository<", "UnitOfWork", "@ngrx" };
-        var dirsToScan = new[] { "src", "web" };
+        var dirsToScan = new[] { "backend", "frontend" };
         var extensions = new[] { ".cs", ".csproj", ".ts", ".json", ".html" };
 
         foreach (var dir in dirsToScan)
@@ -69,7 +69,7 @@ public class SolutionSmokeTests : IClassFixture<RecallqFactory>
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "RecallQ.sln")))
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "docker-compose.yml")))
             dir = dir.Parent;
         if (dir is null) throw new InvalidOperationException("Repo root not found");
         return dir.FullName;

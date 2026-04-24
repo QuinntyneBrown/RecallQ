@@ -15,10 +15,10 @@ Radically simple knowledge capture + semantic recall.
 docker compose up -d
 
 # 2. Run the API (listens on http://localhost:5000 by default)
-dotnet run --project src/RecallQ.Api
+dotnet run --project backend/RecallQ.Api/RecallQ.Api.csproj
 
 # 3. Run the Angular frontend (listens on http://localhost:4200)
-cd web
+cd frontend
 npm install
 ng serve
 ```
@@ -34,7 +34,7 @@ Testcontainers, so Docker must be running.
 
 ## Layout
 
-- `src/RecallQ.Api/` — ASP.NET Core minimal API + EF Core + pgvector.
+- `backend/RecallQ.Api/` — ASP.NET Core minimal API + EF Core + pgvector.
 - `tests/RecallQ.AcceptanceTests/` — xUnit acceptance tests.
-- `web/` — Angular workspace.
+- `frontend/` — Angular workspace.
 - `docker-compose.yml` — local Postgres with pgvector.
