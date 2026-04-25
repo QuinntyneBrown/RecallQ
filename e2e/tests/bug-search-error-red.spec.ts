@@ -31,5 +31,5 @@ test('search error banner paints red, not magenta', async ({ page }) => {
   // background uses #FF6B6B at 15% alpha. Chromium serialises the
   // color-mix as `color(srgb r g b / a)`. Just check it includes the
   // #FF6B6B channel signature.
-  expect(styles.backgroundColor).toMatch(/(255,\s*107,\s*107|0\.99\d+\s+0\.41\d+\s+0\.41\d+)/);
+  expect(styles.backgroundColor).toMatch(/(255,\s*107,\s*107|1\s+0\.41\d+\s+0\.41\d+)/);
 });
