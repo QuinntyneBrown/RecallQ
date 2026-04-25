@@ -14,7 +14,10 @@ export const appConfig: ApplicationConfig = {
       const router = inject(Router);
       installApiInterceptor(() => {
         auth.authState.set(null);
-        void router.navigateByUrl('/login');
+        const url = router.url;
+        const usable = url && url !== '/' && !url.startsWith('/login');
+        const target = usable ? `/login?returnUrl=${encodeURIComponent(url)}` : '/login';
+        void router.navigateByUrl(target);
       });
       return auth.bootstrap();
     }),

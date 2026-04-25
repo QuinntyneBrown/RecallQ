@@ -2,7 +2,7 @@
 
 **Flow:** 04 — Authenticated Request (with login flow 02)
 **Severity:** Medium-High (UX, parity with auth-guard fix)
-**Status:** Open
+**Status:** Complete — `app.config.ts` now reads `router.url` inside the `installApiInterceptor` callback, treats `/`, `/login*`, and empty as "no returnUrl", and otherwise builds `/login?returnUrl=<encoded url>`. Sessions that expire mid-session land on `/login` with the original page preserved, so the existing returnUrl handling on `LoginPage` brings the user back after re-auth.
 
 ## Symptom
 
