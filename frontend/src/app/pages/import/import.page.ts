@@ -19,6 +19,20 @@ export class ImportPage {
   onFileChange(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     const f = input.files && input.files[0] ? input.files[0] : null;
+    this.acceptFile(f);
+  }
+
+  onDragOver(ev: DragEvent): void {
+    ev.preventDefault();
+  }
+
+  onDrop(ev: DragEvent): void {
+    ev.preventDefault();
+    const f = ev.dataTransfer?.files?.[0] ?? null;
+    this.acceptFile(f);
+  }
+
+  private acceptFile(f: File | null): void {
     this.file.set(f);
     this.result.set(null);
     this.error.set(null);

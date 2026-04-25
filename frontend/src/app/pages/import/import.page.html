@@ -1,7 +1,8 @@
 <section class="page">
   <h1>Import Contacts</h1>
 
-  <label for="csv-file" class="drop-zone" data-testid="drop-zone">
+  <label for="csv-file" class="drop-zone" data-testid="drop-zone"
+         (dragover)="onDragOver($event)" (drop)="onDrop($event)">
     <input id="csv-file" type="file" accept=".csv"
            aria-label="CSV file" (change)="onFileChange($event)" hidden>
     @if (file()) {

@@ -2,7 +2,7 @@
 
 **Flow:** 31 — CSV Bulk Import
 **Severity:** Medium-High (false UI affordance)
-**Status:** Open
+**Status:** Complete — `ImportPage` now exposes `onDragOver`/`onDrop` handlers and a shared `acceptFile` helper; `import.page.html` binds `(dragover)` and `(drop)` on the drop-zone label so dragged CSVs are captured and the browser's default file-navigation is suppressed.
 
 ## Symptom
 
