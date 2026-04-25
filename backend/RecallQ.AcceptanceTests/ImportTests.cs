@@ -70,7 +70,7 @@ public class ImportTests : IClassFixture<RecallqFactory>
         using var req = new HttpRequestMessage(HttpMethod.Post, "/api/import/contacts") { Content = form };
         req.Headers.Add("Cookie", cookie);
         var res = await client.SendAsync(req);
-        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
         var body = await res.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal(500, body.GetProperty("imported").GetInt32());
         Assert.Equal(0, body.GetProperty("failed").GetInt32());
@@ -103,7 +103,7 @@ public class ImportTests : IClassFixture<RecallqFactory>
         using var req = new HttpRequestMessage(HttpMethod.Post, "/api/import/contacts") { Content = form };
         req.Headers.Add("Cookie", cookie);
         var res = await client.SendAsync(req);
-        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
         var body = await res.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal(4, body.GetProperty("imported").GetInt32());
         Assert.Equal(1, body.GetProperty("failed").GetInt32());
