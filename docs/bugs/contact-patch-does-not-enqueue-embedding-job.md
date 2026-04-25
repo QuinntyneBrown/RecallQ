@@ -2,7 +2,7 @@
 
 **Flow:** 08 — Update Contact (with embedding pipeline 32)
 **Severity:** Medium-High (search index goes stale on every PATCH)
-**Status:** Open
+**Status:** Complete — `PATCH /api/contacts/{id}` now injects `ChannelWriter<EmbeddingJob>` and `ICurrentUser` and writes a `new EmbeddingJob(c.Id, current.UserId!.Value, "contact")` after `SaveChangesAsync`. Flow 32's hash-based idempotency in `EmbeddingWorker` short-circuits PATCHes that don't actually mutate embedded text, so the new write is free in the no-op case.
 
 ## Symptom
 
