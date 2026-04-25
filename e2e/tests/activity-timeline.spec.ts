@@ -19,12 +19,19 @@ test('flow 12: activity timeline shows recent interactions inline', async ({ pag
 
   // Create a few interactions
   for (let i = 0; i < 3; i++) {
-    const logButton = page.getByRole('button', { name: /log|add.*interaction/i });
+    const logButton = page.getByRole('button', { name: /log/i });
     if (await logButton.isVisible()) {
       await logButton.click();
-      await page.getByLabel(/type/i).selectOption('note');
-      await page.getByLabel(/content|message/i).fill(`Activity ${i + 1}`);
-      await page.getByRole('button', { name: /save|submit/i }).click();
+      // Select note type via radio button
+      await page.getByRole('radio', { name: /note/i }).click();
+      // Fill subject
+      await page.getByLabel('Subject').fill(`Activity ${i + 1}`);
+      // Fill content
+      await page.getByLabel('Content').fill(`Test content ${i + 1}`);
+      // Click Save button
+      await page.getByRole('button', { name: /save/i }).click();
+      // Wait to return to contact detail page
+      await page.waitForURL(/\/contacts\/\w+-\w+-\w+-\w+-\w+$/);
     }
   }
 
