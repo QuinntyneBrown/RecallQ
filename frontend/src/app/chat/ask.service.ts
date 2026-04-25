@@ -70,7 +70,13 @@ export class AskService {
         body: JSON.stringify(body),
       });
       if (!res.ok || !res.body) {
-        this.error.set(`ask_failed_${res.status}`);
+        if (res.status === 429) {
+          this.error.set('Too many questions — try again in a minute.');
+        } else if (res.status === 400) {
+          this.error.set('Question is empty or too long.');
+        } else {
+          this.error.set('Could not reach the assistant. Please try again.');
+        }
         this.finishStreaming(assistantMsg.id);
         return;
       }
