@@ -85,6 +85,17 @@ public class AskTests : IClassFixture<AskFactory>
     }
 
     [Fact]
+    public async Task Ask_token_frames_carry_event_token_name()
+    {
+        var (client, cookie) = await RegisterLogin();
+        using var req = AskRequest(cookie, "hello there");
+        using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var raw = await res.Content.ReadAsStringAsync();
+        Assert.Contains("event: token\ndata:", raw);
+    }
+
+    [Fact]
     public async Task First_token_within_1500ms_p95()
     {
         var (client, cookie) = await RegisterLogin();
