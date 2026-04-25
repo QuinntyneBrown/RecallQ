@@ -135,6 +135,43 @@ public class ImportTests : IClassFixture<RecallqFactory>
         Assert.Contains("displayName", first.GetProperty("reason").GetString());
     }
 
+    // Bug: docs/bugs/import-contacts-missing-default-avatar-colors.md
+    [Fact]
+    public async Task Imported_contacts_get_default_avatar_colors_from_palette()
+    {
+        var (client, _, cookie) = await RegisterAndLogin(UniqueEmail());
+        var csv =
+            "displayName,role,organization,emails,phones,tags,location\n" +
+            "Alice Imported,Engineer,Acme,a@x.com,,,\n";
+        var bytes = Encoding.UTF8.GetBytes(csv);
+
+        using var form = BuildForm(bytes);
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/import/contacts") { Content = form };
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+
+        using var listReq = new HttpRequestMessage(HttpMethod.Get, "/api/contacts?page=1&pageSize=10");
+        listReq.Headers.Add("Cookie", cookie);
+        var listRes = await client.SendAsync(listReq);
+        var listBody = await listRes.Content.ReadFromJsonAsync<JsonElement>();
+        var aliceId = listBody.GetProperty("items").EnumerateArray()
+            .First(c => c.GetProperty("displayName").GetString() == "Alice Imported")
+            .GetProperty("id").GetGuid();
+
+        using var detailReq = new HttpRequestMessage(HttpMethod.Get, $"/api/contacts/{aliceId}");
+        detailReq.Headers.Add("Cookie", cookie);
+        var detailRes = await client.SendAsync(detailReq);
+        var detail = await detailRes.Content.ReadFromJsonAsync<JsonElement>();
+
+        var colorA = detail.GetProperty("avatarColorA");
+        var colorB = detail.GetProperty("avatarColorB");
+        Assert.NotEqual(JsonValueKind.Null, colorA.ValueKind);
+        Assert.NotEqual(JsonValueKind.Null, colorB.ValueKind);
+        Assert.StartsWith("#", colorA.GetString());
+        Assert.StartsWith("#", colorB.GetString());
+    }
+
     [Fact]
     public async Task Import_over_10MB_returns_413()
     {
