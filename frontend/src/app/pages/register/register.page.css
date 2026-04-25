@@ -48,4 +48,5 @@ form {
 .aux a {
   color: var(--accent-tertiary);
   text-decoration: none;
+  font-weight: 600;
 }
