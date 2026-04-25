@@ -85,11 +85,13 @@ public static class RateLimitPolicies
                 });
             });
 
-            // summary: 1 refresh per user per minute (defense-in-depth alongside in-handler guard)
+            // summary: 1 refresh per (user, contact) per minute
             options.AddPolicy("summary", httpCtx =>
             {
-                var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                var userId = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                     ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var contactId = httpCtx.Request.RouteValues["id"]?.ToString() ?? "unknown";
+                var key = $"{userId}:{contactId}";
                 return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
                 {
                     PermitLimit = 1,

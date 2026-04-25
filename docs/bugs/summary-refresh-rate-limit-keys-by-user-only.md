@@ -2,7 +2,7 @@
 
 **Flow:** 35 — Rate Limiting (with summary refresh flow 27)
 **Severity:** Medium-High (refreshing contact A blocks contact B for 60s)
-**Status:** Open
+**Status:** Complete — `RateLimitPolicies` "summary" policy now reads `httpCtx.Request.RouteValues["id"]` and partitions by `${userId}:{contactId}`. Refreshing contact A no longer consumes the bucket for contact B.
 
 ## Symptom
 
