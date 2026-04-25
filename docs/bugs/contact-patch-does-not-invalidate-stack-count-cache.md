@@ -2,7 +2,7 @@
 
 **Flow:** 24 — Smart Stacks (View and Open)
 **Severity:** Medium-high (every other write path that affects stack membership — `POST /api/contacts`, `DELETE /api/contacts/{id}`, `POST /api/contacts/import` — calls `stackCache.InvalidateOwner(...)` after saving. PATCH is the one that's missing it. Tag edits and display-name edits both shift stack membership: tags drive the `Tag`-kind stacks ("AI founders"), and display-name tokens drive the `Query`-kind stacks ("Close friends"). After a PATCH, the home screen's `Smart stacks` row shows stale counts for up to the cache TTL — currently 5 minutes — even though the user just made the change in the same browser session.)
-**Status:** Open
+**Status:** Complete — `ContactsEndpoints.cs` PATCH handler now injects `StackCountCache stackCache` and calls `stackCache.InvalidateOwner(current.UserId!.Value)` after `SaveChangesAsync`, matching the POST/DELETE/import paths. New acceptance test `StacksTests.Patch_contact_invalidates_stack_count_cache` creates a contact with no matching tags, asserts the AI founders Query stack is hidden, PATCHes the contact's tags to `["AI founders"]`, and asserts the stack appears immediately on the next `GET /api/stacks`. Test fails before the fix (cached 0 returned), passes after. All six other pre-existing stacks tests still pass when run sequentially (parallel test runs flake on the unrelated 5/min register rate limit).
 
 ## Symptom
 

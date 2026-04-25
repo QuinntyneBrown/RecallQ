@@ -80,7 +80,8 @@ public static class ContactsEndpoints
 
         app.MapPatch("/api/contacts/{id:guid}", [Authorize] async (
             Guid id, PatchContactRequest req, AppDbContext db,
-            ChannelWriter<EmbeddingJob> embeddingWriter, ICurrentUser current) =>
+            ChannelWriter<EmbeddingJob> embeddingWriter, ICurrentUser current,
+            StackCountCache stackCache) =>
         {
             var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
             if (c is null) return Results.NotFound();
@@ -114,6 +115,7 @@ public static class ContactsEndpoints
             await db.SaveChangesAsync();
             if (needsEmbedding)
                 await embeddingWriter.WriteAsync(new EmbeddingJob(c.Id, current.UserId!.Value, "contact"));
+            stackCache.InvalidateOwner(current.UserId!.Value);
 
             var total = await db.Interactions.CountAsync(i => i.ContactId == id);
             var rows = await db.Interactions.Where(i => i.ContactId == id)
