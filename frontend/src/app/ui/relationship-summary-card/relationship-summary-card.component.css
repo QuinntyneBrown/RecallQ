@@ -1,7 +1,7 @@
 .ai-card {
   background: var(--surface-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 18px;
   padding: 16px;
   color: var(--foreground-primary);
   display: grid;
