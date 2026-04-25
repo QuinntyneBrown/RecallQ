@@ -2,7 +2,7 @@
 
 **Flow:** 10 — Star / Unstar Contact
 **Severity:** High (the most observable behavior of the entire flow is broken — the user cannot see whether their contact is starred)
-**Status:** Open
+**Status:** Complete — `frontend/src/styles.css` now imports both `regular/style.css` and `fill/style.css`, and `contact-detail.page.html` toggles the weight class (`ph` vs `ph-fill`) on a fixed `ph-star` icon class so the filled glyph actually renders. E2E test `bug-star-icon-renders-when-starred.spec.ts` asserts `::before` content is non-empty in both states.
 
 ## Symptom
 
