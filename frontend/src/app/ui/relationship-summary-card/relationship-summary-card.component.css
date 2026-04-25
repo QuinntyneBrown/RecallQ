@@ -1,5 +1,5 @@
 .ai-card {
-  background: var(--surface-elevated);
+  background: var(--surface-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px;
