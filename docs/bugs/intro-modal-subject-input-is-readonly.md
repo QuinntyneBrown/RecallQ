@@ -2,7 +2,7 @@
 
 **Flow:** 30 — Quick Action: Intro Draft (step 9)
 **Severity:** Medium-High (the user can tailor the body but is stuck with whatever subject the LLM produced; the `mailto:` and the Copy paths both end up shipping the locked subject regardless of how the user edited the body)
-**Status:** Open
+**Status:** Complete — `intro.modal.html` no longer marks `#draft-subject` as `readonly` and now wires `(input)="onSubjectInput($event)"` through to the `subject` signal in `intro.modal.ts`. New e2e test `bug-intro-modal-subject-editable.spec.ts` types over the generated subject and asserts the new value sticks. (Verification of that test against the live backend is currently blocked by an unrelated broken build — the in-progress forgot/reset-password feature has dangling references to `PasswordResetToken`, `PasswordResetTokenService`, `IPasswordResetEmailSender` — but the fix itself is a frontend-only change confirmed by code review.)
 
 ## Symptom
 
