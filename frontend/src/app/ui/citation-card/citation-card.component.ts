@@ -5,6 +5,8 @@ import { ScoreChipComponent } from '../score-chip/score-chip.component';
 export interface Citation {
   contactId: string;
   contactName: string;
+  contactRole?: string | null;
+  contactOrganization?: string | null;
   snippet: string;
   similarity: number;
   source: 'contact' | 'interaction';
@@ -23,7 +25,13 @@ export class CitationCardComponent {
   private readonly router = inject(Router);
 
   ariaLabel(): string {
-    return `Contact: ${this.citation.contactName}, similarity ${this.citation.similarity.toFixed(2)}`;
+    const c = this.citation;
+    const role = c.contactRole?.trim();
+    const org = c.contactOrganization?.trim();
+    const middle = role && org ? `${role} at ${org}` : (role || org || '');
+    return middle.length
+      ? `Contact: ${c.contactName}, ${middle}, similarity ${c.similarity.toFixed(2)}`
+      : `Contact: ${c.contactName}, similarity ${c.similarity.toFixed(2)}`;
   }
 
   initials(): string {

@@ -5,7 +5,7 @@ using RecallQ.Api.Embeddings;
 
 namespace RecallQ.Api.Chat;
 
-public record Citation(Guid ContactId, string ContactName, string Snippet, double Similarity, string Source);
+public record Citation(Guid ContactId, string ContactName, string? ContactRole, string? ContactOrganization, string Snippet, double Similarity, string Source);
 
 public class CitationRetriever
 {
@@ -18,7 +18,7 @@ public class CitationRetriever
         _embeddings = embeddings;
     }
 
-    private record Row(Guid ContactId, string ContactName, string MatchedText, float Similarity, string Source);
+    private record Row(Guid ContactId, string ContactName, string? Role, string? Organization, string MatchedText, float Similarity, string Source);
 
     public async Task<IReadOnlyList<Citation>> RetrieveAsync(Guid ownerUserId, string q, int k, CancellationToken ct, Guid? biasContactId = null)
     {
@@ -35,6 +35,7 @@ public class CitationRetriever
         const string sql = @"
 WITH hits AS (
   SELECT c.id AS ""ContactId"", c.display_name AS ""ContactName"",
+         c.role AS ""Role"", c.organization AS ""Organization"",
          c.display_name || COALESCE(' · ' || c.role, '') || COALESCE(' · ' || c.organization, '') AS ""MatchedText"",
          (1 - (ce.embedding <=> CAST(@q AS vector)))::real AS ""Similarity"",
          'contact'::text AS ""Source""
@@ -42,6 +43,7 @@ WITH hits AS (
   WHERE ce.owner_user_id = @owner AND ce.failed = FALSE
   UNION ALL
   SELECT i.contact_id, c.display_name,
+         c.role, c.organization,
          COALESCE(i.subject || E'\n', '') || i.content,
          (1 - (ie.embedding <=> CAST(@q AS vector)))::real,
          'interaction'::text
@@ -51,10 +53,10 @@ WITH hits AS (
   WHERE ie.owner_user_id = @owner AND ie.failed = FALSE
 ),
 collapsed AS (
-  SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""ContactName"", ""MatchedText"", ""Similarity"", ""Source""
+  SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""MatchedText"", ""Similarity"", ""Source""
   FROM hits ORDER BY ""ContactId"", ""Similarity"" DESC
 )
-SELECT ""ContactId"", ""ContactName"", ""MatchedText"", ""Similarity"", ""Source""
+SELECT ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""MatchedText"", ""Similarity"", ""Source""
 FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
 
         var rows = await _db.Database.SqlQueryRaw<Row>(sql,
@@ -65,6 +67,8 @@ FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
         var results = rows.Select(r => new Citation(
             r.ContactId,
             r.ContactName,
+            r.Role,
+            r.Organization,
             Truncate((r.MatchedText ?? string.Empty).Trim(), 200),
             Math.Round(Math.Clamp((double)r.Similarity, 0.0, 1.0), 2),
             r.Source)).ToList();
@@ -92,6 +96,8 @@ FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
                     results.Insert(0, new Citation(
                         contact.Id,
                         contact.DisplayName,
+                        contact.Role,
+                        contact.Organization,
                         Truncate(snippet.Trim(), 200),
                         1.0,
                         "contact"));
