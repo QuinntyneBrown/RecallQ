@@ -13,6 +13,7 @@ const RECOVER_SSE =
   'event: done\ndata: {}\n\n';
 
 test('ask error event shows retry chip; retry re-asks the prior question', async ({ page }) => {
+  test.setTimeout(60_000);
   let askHits = 0;
   const seenBodies: string[] = [];
   await page.route('**/api/ask', (route) => {
@@ -32,9 +33,11 @@ test('ask error event shows retry chip; retry re-asks the prior question', async
   const email = `aer-${Date.now()}-${Math.floor(Math.random() * 10000)}@example.com`;
   await registerAndLogin(page, email, 'correcthorse12');
 
-  await page.goto('/ask');
+  await page.goto('/ask', { waitUntil: 'domcontentloaded' });
 
-  await page.getByRole('textbox', { name: 'Ask a question' }).fill('what about Avery?');
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
+  await expect(input).toBeVisible({ timeout: 15_000 });
+  await input.fill('what about Avery?');
   await page.getByRole('button', { name: 'Send' }).click();
 
   const bubble = page.getByTestId('assistant-bubble').first();

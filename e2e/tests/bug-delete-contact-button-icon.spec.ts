@@ -44,6 +44,7 @@ test('Delete contact button icon is ph-trash, not ph-dots-three', async ({ page 
   await registerAndLogin(page, email, 'correcthorse12');
 
   await page.goto(`/contacts/${contactId}`);
+  await expect(page.getByTestId('hero-name')).toHaveText('Trash Test', { timeout: 15_000 });
 
   const icon = page.getByRole('button', { name: 'Delete contact' }).locator('i');
   await expect(icon).toHaveClass(/ph-trash/);

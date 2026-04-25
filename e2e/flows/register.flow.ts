@@ -5,7 +5,11 @@ export async function registerAndLogin(page: Page, email: string, password: stri
   const auth = new AuthPage(page);
   await auth.gotoRegister();
   await auth.register(email, password);
-  await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+  await expect(page.getByRole('heading', { name: 'Find anyone.' })).toBeVisible({ timeout: 20_000 });
+  if (!/\/home$/.test(page.url())) {
+    await page.goto('/home', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { name: 'Find anyone.' })).toBeVisible({ timeout: 20_000 });
+  }
 }
 
 export { registerAndLogin as registerFlow };

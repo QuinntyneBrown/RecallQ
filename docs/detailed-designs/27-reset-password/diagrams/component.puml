@@ -1,0 +1,37 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Reset Password - Components
+
+Person(user, "User", "Anonymous")
+
+Container_Boundary(spa, "Angular SPA") {
+    Component(rpPage, "ResetPasswordPage", "standalone", "password + confirm + show/hide")
+    Component(authSvc, "AuthService", "service", "resetPassword(token, newPw)")
+    Component(toast, "ToastService", "existing", "success message")
+}
+
+Container_Boundary(api, "RecallQ.Api") {
+    Component(rp, "AuthEndpoints.ResetPassword", "Minimal API", "POST /api/auth/reset-password")
+    Component(rl, "RateLimitPolicies", "builtin", "reset-password 10/min/IP")
+    Component(svc, "PasswordResetTokenService", "scoped", "Hash(rawToken)")
+    Component(hasher, "Argon2Hasher", "Konscious", "Hash new password")
+    Component(ctx, "AppDbContext", "EF Core", "users + password_reset_tokens")
+    Component(cookies, "Cookie middleware", "ASP.NET", "OnValidatePrincipal\nepoch check")
+}
+
+ContainerDb(db, "users + password_reset_tokens", "Postgres")
+
+Rel(user, rpPage, "open email link\n/reset-password?token=...")
+Rel(rpPage, authSvc, "resetPassword(token, newPw)")
+Rel(authSvc, rp, "POST {token, newPassword}", "JSON/HTTPS")
+Rel(rp, rl, "decorated")
+Rel(rp, svc, "Hash(token)")
+Rel(rp, ctx, "find token, mark used,\nupdate user.PasswordChangedAt")
+Rel(rp, hasher, "Hash(newPw)")
+Rel(ctx, db, "SQL")
+Rel(rpPage, toast, "show 'Password updated.'")
+Rel(cookies, ctx, "load PasswordChangedAt\non each authed request")
+
+@enduml

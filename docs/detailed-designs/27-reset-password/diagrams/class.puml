@@ -1,0 +1,53 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+
+title Reset Password - Domain (delta only)
+
+class User {
+    +Id: Guid
+    +Email: string
+    +PasswordHash: string
+    +CreatedAt: DateTime
+    +PasswordChangedAt: DateTime  <<NEW>>
+}
+
+class PasswordResetToken {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +TokenHash: string
+    +ExpiresAt: DateTime
+    +UsedAt: DateTime?
+    +CreatedAt: DateTime
+}
+
+class ResetPasswordRequest <<record>> {
+    +Token: string?
+    +NewPassword: string?
+}
+
+class AuthEndpoints {
+    +ResetPassword(req): IResult
+}
+
+class CookieEvents <<framework>> {
+    +OnValidatePrincipal(ctx): Task
+    -- new check --
+    +RejectIf(IssuedUtc < user.PasswordChangedAt)
+}
+
+class ResetPasswordPage <<Angular>> {
+    +token: signal<string?>
+    +password: signal<string>
+    +confirm: signal<string>
+    +show: signal<bool>
+    +valid: computed<bool>
+    +onSubmit(): Promise<void>
+}
+
+AuthEndpoints --> User : update PasswordHash, PasswordChangedAt
+AuthEndpoints --> PasswordResetToken : mark used + bulk-mark others
+CookieEvents --> User : compare PasswordChangedAt
+
+@enduml

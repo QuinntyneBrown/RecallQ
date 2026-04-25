@@ -1,0 +1,49 @@
+@startuml sequence_reset
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Reset Password - Consume Token
+
+actor User
+participant "ResetPasswordPage" as PG
+participant "AuthService" as SVC
+participant "/api/auth/reset-password" as EP
+participant "PasswordResetTokenService" as TKN
+participant "Argon2Hasher" as H
+participant "AppDbContext" as CTX
+database "users +\npassword_reset_tokens" as DB
+participant "ToastService" as TST
+
+User -> PG: open email link, set new password, submit
+PG -> SVC: resetPassword(token, newPw)
+SVC -> EP: POST { token, newPassword }
+EP -> TKN: Hash(token)
+TKN --> EP: tokenHash
+EP -> CTX: SELECT WHERE token_hash = ?
+CTX -> DB: SELECT
+DB --> CTX: row (or null)
+
+alt row is null OR used OR expired
+    EP --> SVC: 400 invalid_token
+    SVC --> PG: throw "invalid_token"
+    PG --> User: broken-link panel\n"Request a new link"
+else valid
+    EP -> H: Hash(newPw)
+    H --> EP: argon2id$...
+    EP -> CTX: UPDATE users\n  SET password_hash, password_changed_at
+    EP -> CTX: UPDATE password_reset_tokens\n  SET used_at = now WHERE id = this
+    EP -> CTX: UPDATE password_reset_tokens\n  SET used_at = now\n  WHERE owner_user_id = u\n    AND used_at IS NULL
+    CTX -> DB: UPDATE x3 (single SaveChanges)
+    EP --> SVC: 200 OK
+    SVC --> PG: success
+    PG -> TST: show "Password updated. Please sign in."
+    PG --> User: redirect /login
+end
+
+note over EP,DB
+  PasswordChangedAt change makes
+  every existing cookie ticket
+  fail OnValidatePrincipal next time.
+end note
+
+@enduml
