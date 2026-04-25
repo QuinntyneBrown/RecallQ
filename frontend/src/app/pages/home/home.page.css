@@ -70,7 +70,7 @@
   color: var(--foreground-muted);
 }
 .search-input:focus {
-  border-color: var(--accent-primary);
+  border-color: var(--accent-tertiary);
 }
 /* T031: --accent-primary (#7C3AFF) on --surface-primary (#0A0A16) fails WCAG AA (3.65:1).
    Use --accent-tertiary (cyan #4BE8FF) which passes comfortably. */
