@@ -1,4 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { ContactDto } from '../contacts/contacts.service';
 
 export type StackKind = 'Query' | 'Tag' | 'Classification';
@@ -14,11 +16,13 @@ export interface StackDto {
 export class StacksService {
   readonly stacks = signal<StackDto[]>([]);
 
+  constructor(private http: HttpClient) {}
+
   async refresh(): Promise<void> {
     try {
-      const res = await fetch('/api/stacks', { credentials: 'include' });
-      if (res.status !== 200) return;
-      const body = (await res.json()) as StackDto[];
+      const body = await firstValueFrom(
+        this.http.get<StackDto[]>('/api/stacks')
+      );
       this.stacks.set(body.filter((s) => s.count > 0));
     } catch {
       // ignore
@@ -26,8 +30,12 @@ export class StacksService {
   }
 
   async listContacts(stackId: string): Promise<ContactDto[]> {
-    const res = await fetch(`/api/stacks/${stackId}/contacts`, { credentials: 'include' });
-    if (res.status !== 200) throw new Error('list_stack_contacts_failed_' + res.status);
-    return (await res.json()) as ContactDto[];
+    try {
+      return await firstValueFrom(
+        this.http.get<ContactDto[]>(`/api/stacks/${stackId}/contacts`)
+      );
+    } catch (err: any) {
+      throw new Error('list_stack_contacts_failed_' + err.status);
+    }
   }
 }

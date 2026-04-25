@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export interface IntroDraft {
   subject: string;
@@ -11,15 +13,16 @@ export class IntroRateLimitedError extends Error {
 
 @Injectable({ providedIn: 'root' })
 export class IntrosService {
+  constructor(private http: HttpClient) {}
+
   async generate(contactAId: string, contactBId: string): Promise<IntroDraft> {
-    const res = await fetch('/api/intro-drafts', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contactAId, contactBId }),
-    });
-    if (res.status === 200) return (await res.json()) as IntroDraft;
-    if (res.status === 429) throw new IntroRateLimitedError();
-    throw new Error('intro_failed_' + res.status);
+    try {
+      return await firstValueFrom(
+        this.http.post<IntroDraft>('/api/intro-drafts', { contactAId, contactBId })
+      );
+    } catch (err: any) {
+      if (err.status === 429) throw new IntroRateLimitedError();
+      throw new Error('intro_failed_' + err.status);
+    }
   }
 }

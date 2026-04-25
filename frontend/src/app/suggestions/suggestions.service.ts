@@ -1,4 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export interface Suggestion {
   id: string;
@@ -14,11 +16,13 @@ export interface Suggestion {
 export class SuggestionsService {
   readonly suggestion = signal<Suggestion | null>(null);
 
+  constructor(private http: HttpClient) {}
+
   async refresh(): Promise<void> {
     try {
-      const res = await fetch('/api/suggestions', { credentials: 'include' });
-      if (res.status !== 200) return;
-      const raw = await res.text();
+      const raw = await firstValueFrom(
+        this.http.get('/api/suggestions', { responseType: 'text' })
+      );
       if (!raw || raw === 'null') { this.suggestion.set(null); return; }
       const body = JSON.parse(raw) as Suggestion | null;
       this.suggestion.set(body);
@@ -30,10 +34,9 @@ export class SuggestionsService {
   async dismiss(key: string): Promise<void> {
     this.suggestion.set(null);
     try {
-      await fetch(`/api/suggestions/${encodeURIComponent(key)}/dismiss`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await firstValueFrom(
+        this.http.post<void>(`/api/suggestions/${encodeURIComponent(key)}/dismiss`, {})
+      );
     } catch {
       // best-effort; local state is already cleared
     }
