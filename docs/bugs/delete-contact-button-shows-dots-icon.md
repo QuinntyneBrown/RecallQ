@@ -2,7 +2,7 @@
 
 **Flow:** 09 — Delete Contact (Cascade)
 **Severity:** Medium-High (misleading affordance, destructive action)
-**Status:** Open
+**Status:** Complete — `contact-detail.page.html` now renders `<i class="ph ph-trash">` inside the Delete-contact icon-button so the visual matches the destructive action; aria-label and click handler are unchanged.
 
 ## Symptom
 
