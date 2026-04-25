@@ -13,7 +13,7 @@ using RecallQ.Api;
 namespace RecallQ.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260425082935_InitialCreate")]
+    [Migration("20260425084133_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -285,33 +285,6 @@ namespace RecallQ.Api.Migrations
                     b.HasIndex("OwnerUserId");
 
                     b.ToTable("interaction_embeddings", (string)null);
-                });
-
-            modelBuilder.Entity("RecallQ.Api.Entities.PasswordResetToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("OwnerUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PasswordResetTokens");
                 });
 
             modelBuilder.Entity("RecallQ.Api.Entities.RelationshipSummary", b =>

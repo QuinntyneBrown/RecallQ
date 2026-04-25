@@ -284,33 +284,6 @@ namespace RecallQ.Api.Migrations
                     b.ToTable("interaction_embeddings", (string)null);
                 });
 
-            modelBuilder.Entity("RecallQ.Api.Entities.PasswordResetToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("OwnerUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PasswordResetTokens");
-                });
-
             modelBuilder.Entity("RecallQ.Api.Entities.RelationshipSummary", b =>
                 {
                     b.Property<Guid>("ContactId")

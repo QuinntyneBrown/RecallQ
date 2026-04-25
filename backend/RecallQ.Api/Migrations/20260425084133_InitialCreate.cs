@@ -54,22 +54,6 @@ namespace RecallQ.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PasswordResetTokens",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    OwnerUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TokenHash = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PasswordResetTokens", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "stacks",
                 columns: table => new
                 {
@@ -266,10 +250,6 @@ namespace RecallQ.Api.Migrations
                 table: "users",
                 column: "email",
                 unique: true);
-
-            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS vector;");
-            migrationBuilder.Sql("CREATE INDEX IF NOT EXISTS ix_contact_embeddings_vector ON contact_embeddings USING hnsw (embedding vector_cosine_ops);");
-            migrationBuilder.Sql("CREATE INDEX IF NOT EXISTS ix_interaction_embeddings_vector ON interaction_embeddings USING hnsw (embedding vector_cosine_ops);");
         }
 
         /// <inheritdoc />
@@ -283,9 +263,6 @@ namespace RecallQ.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "interaction_embeddings");
-
-            migrationBuilder.DropTable(
-                name: "PasswordResetTokens");
 
             migrationBuilder.DropTable(
                 name: "relationship_summaries");
