@@ -69,8 +69,8 @@
   cursor: pointer;
 }
 .loadmore-retry:hover, .loadmore-retry:focus-visible {
-  background: color-mix(in srgb, var(--accent-primary) 12%, var(--surface-elevated));
-  border-color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-tertiary) 12%, var(--surface-elevated));
+  border-color: var(--accent-tertiary);
 }
 .skeletons { display: flex; flex-direction: column; gap: 10px; }
 .skeleton {
