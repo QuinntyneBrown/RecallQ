@@ -19,6 +19,24 @@ public static class InteractionsEndpoints
 
     public static IEndpointRouteBuilder MapInteractions(this IEndpointRouteBuilder app)
     {
+        app.MapGet("/api/contacts/{contactId:guid}/interactions", [Authorize] async (
+            Guid contactId, AppDbContext db, int? page, int? pageSize) =>
+        {
+            var contact = await db.Contacts.FirstOrDefaultAsync(c => c.Id == contactId);
+            if (contact is null) return Results.NotFound();
+            var p = page is null or < 1 ? 1 : page.Value;
+            var ps = pageSize is null or < 1 ? 50 : Math.Min(pageSize.Value, 100);
+            var query = db.Interactions
+                .Where(i => i.ContactId == contactId)
+                .OrderByDescending(i => i.OccurredAt)
+                .ThenBy(i => i.Id);
+            var totalCount = await query.CountAsync();
+            var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync();
+            var items = rows.Select(InteractionDto.From).ToArray();
+            var nextPage = totalCount > p * ps ? p + 1 : (int?)null;
+            return Results.Ok(new { items, totalCount, page = p, pageSize = ps, nextPage });
+        });
+
         app.MapPost("/api/contacts/{contactId:guid}/interactions", [Authorize] async (
             Guid contactId, CreateInteractionRequest req, AppDbContext db, ICurrentUser current,
             ChannelWriter<EmbeddingJob> emb, ChannelWriter<SummaryRefreshJob> sum) =>
