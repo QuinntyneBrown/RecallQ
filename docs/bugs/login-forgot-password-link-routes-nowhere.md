@@ -2,7 +2,7 @@
 
 **Flow:** 42 — Remember Me (login form), with reset-password (flow 43) still unimplemented
 **Severity:** High (every user who has forgotten their password sees this link, taps it, and lands back on the login page with no explanation — there is no working recovery path today)
-**Status:** Open
+**Status:** Complete — `login.page.html` no longer renders the link, and the unused `.forgot` rule is dropped from `login.page.css`. The existing `remember-me.spec.ts` "aligns Remember me and Forgot password" test that encoded the dead link as a layout invariant is rewritten to just assert the checkbox renders. New e2e `bug-login-no-dead-forgot-password-link.spec.ts` asserts the link has zero count. When PD001 / flow 43 ships, bring the link back pointing at the new route.
 
 ## Symptom
 
