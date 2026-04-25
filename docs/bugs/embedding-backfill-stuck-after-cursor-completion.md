@@ -2,7 +2,7 @@
 
 **Flow:** 33 — Embedding Backfill (and 32 — Embedding Pipeline)
 **Severity:** Medium-High (a second model upgrade leaves the API serving `503 Embeddings are being regenerated` indefinitely; the user can't run search until ops manually deletes the cursor row)
-**Status:** Open
+**Status:** Complete — `EmbeddingBackfillRunner.ProcessTableAsync` now resets a Completed cursor at the top of the loop (zero `LastProcessedCreatedAt` / `LastProcessedId`, flip `Completed = false`, refresh `StartedAt`), so subsequent runs re-enumerate every row. The worker's hash+model idempotency check still skips rows whose embeddings are already current, keeping the reset cheap. New acceptance test `BackfillReentrantAfterCompletionTests` seeds a contact + a Completed cursor, runs the backfill, and asserts an embedding row materializes.
 
 ## Symptom
 
