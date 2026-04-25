@@ -1,5 +1,6 @@
 # Search zero-state missing "Edit query" ghost action
 
+**Status:** Complete — `ZeroStateComponent` now renders an `Edit query` ghost button next to the primary `Ask RecallQ` link; clicking it routes to `/home` so the visitor can rewrite the query.
 **Flow:** [18 — Search Zero-Result State](../flows/18-search-zero-state/18-search-zero-state.md)
 **Traces:** L1-004, L2-014.
 **Severity:** Low-Medium — Flow 18 step 3 lists "two actions: `Ask RecallQ` (primary) and `Edit query` (ghost)". `ZeroStateComponent` ships only the primary `Ask RecallQ` link; the ghost `Edit query` action is absent, so the visitor's only way to retry with a different wording is to navigate back to home manually.

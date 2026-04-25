@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, Input, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-zero-state',
@@ -9,5 +9,10 @@ import { RouterLink } from '@angular/router';
   styleUrl: './zero-state.component.css',
 })
 export class ZeroStateComponent {
+  private readonly router = inject(Router);
   @Input() q: string | null = null;
+
+  editQuery(): void {
+    void this.router.navigateByUrl('/home');
+  }
 }

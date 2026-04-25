@@ -11,4 +11,19 @@
 .icon { font-size: 40px; color: var(--foreground-muted); }
 .head { margin: 0; color: var(--foreground-primary); font-size: 18px; font-weight: 600; }
 .body { margin: 0; color: var(--foreground-secondary); font-size: 14px; }
+.actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 4px;
+}
 .link { color: var(--accent-primary); text-decoration: none; font-weight: 600; }
+.ghost {
+  background: transparent;
+  border: 0;
+  color: var(--foreground-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.ghost:hover, .ghost:focus-visible { color: var(--foreground-primary); }

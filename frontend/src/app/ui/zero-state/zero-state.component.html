@@ -2,9 +2,12 @@
   <i class="ph ph-magnifying-glass icon" aria-hidden="true"></i>
   <h2 class="head">No matches yet</h2>
   <p class="body">Your query didn't match any indexed contacts or interactions.</p>
-  <a
-    [routerLink]="['/ask']"
-    [queryParams]="q ? { q } : null"
-    class="link"
-  >Ask RecallQ</a>
+  <div class="actions">
+    <a
+      [routerLink]="['/ask']"
+      [queryParams]="q ? { q } : null"
+      class="link"
+    >Ask RecallQ</a>
+    <button type="button" class="ghost" (click)="editQuery()">Edit query</button>
+  </div>
 </div>
