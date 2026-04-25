@@ -31,7 +31,12 @@
 
 @if (generated()) {
   <label for="draft-subject">Subject</label>
-  <input id="draft-subject" type="text" readonly [value]="subject()" />
+  <input
+    id="draft-subject"
+    type="text"
+    [value]="subject()"
+    (input)="onSubjectInput($event)"
+  />
 
   <label for="draft-body">Draft body</label>
   <textarea

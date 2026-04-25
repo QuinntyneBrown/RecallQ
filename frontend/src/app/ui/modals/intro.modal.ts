@@ -60,6 +60,10 @@ export class IntroModal implements OnInit {
     this.body.set((e.target as HTMLTextAreaElement).value);
   }
 
+  onSubjectInput(e: Event) {
+    this.subject.set((e.target as HTMLInputElement).value);
+  }
+
   pick(c: ContactDto) {
     this.secondParty.set(c);
     this.query.set(c.displayName);
