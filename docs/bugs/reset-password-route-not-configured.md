@@ -1,6 +1,6 @@
 # Reset password route is not configured in app router
 
-**Status:** Incomplete
+**Status:** Complete
 **Flow:** [43 - Reset Password](../flows/43-reset-password/43-reset-password.md)
 **Severity:** Critical (authentication flow broken, all 6 reset-password E2E tests failing)
 
