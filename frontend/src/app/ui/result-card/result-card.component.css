@@ -3,7 +3,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: var(--radius-lg);
+  border-radius: 18px;
   background: var(--surface-secondary);
   border: 1px solid var(--border-subtle);
   color: var(--foreground-primary);
