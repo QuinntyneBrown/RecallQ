@@ -2,7 +2,7 @@
 
 **Flow:** 09 — Delete Contact (Cascade)
 **Severity:** High (the entire flow 09 cascade — interactions, embeddings, summary — is unreachable; the Delete-contact button is decorative)
-**Status:** Open
+**Status:** Complete — `ContactsEndpoints.cs` now registers a `MapDelete("/api/contacts/{id:guid}", [Authorize] …)` that loads the contact owner-scoped, calls `Contacts.Remove` (EF Core's configured cascades clear interactions, embeddings, summary), invalidates the per-owner `StackCountCache`, and returns `204`. New e2e `bug-delete-contact-endpoint-real.spec.ts` exercises the real backend and asserts `204` + subsequent `GET → 404`.
 
 ## Symptom
 
