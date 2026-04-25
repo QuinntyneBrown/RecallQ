@@ -36,7 +36,7 @@
   display: flex; align-items: center; justify-content: center;
   color: var(--foreground-primary);
   font-family: Geist, system-ui, sans-serif;
-  font-weight: 700; font-size: 28px;
+  font-weight: 700; font-size: 36px; letter-spacing: -1px;
 }
 h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 24px; letter-spacing: -0.5px; color: var(--foreground-primary); }
 [data-testid="hero-role"] { margin: 0; color: var(--foreground-primary); opacity: 0.9; font-size: 14px; }
