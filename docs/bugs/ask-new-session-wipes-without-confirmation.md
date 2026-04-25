@@ -1,5 +1,6 @@
 # Ask "New session" wipes conversation without confirmation
 
+**Status:** Complete — `newSession()` now gates `ask.reset()` behind a `window.confirm('Clear this conversation?')` when there are messages.
 **Flow:** [22 — Ask New Session](../flows/22-ask-new-session/22-ask-new-session.md)
 **Traces:** L1-005, L2-025.
 **Severity:** Medium — a single accidental tap of `+` in the Ask top bar irrecoverably clears the visitor's entire conversation. Flow 22 step 2 explicitly calls for a small confirmation when `messages.length > 0` to avoid exactly this.

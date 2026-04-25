@@ -249,7 +249,10 @@ export class AskPage implements AfterViewChecked, OnInit {
 
   back(): void { this.location.back(); }
 
-  newSession(): void { this.ask.reset(); }
+  newSession(): void {
+    if (this.ask.messages().length > 0 && !window.confirm('Clear this conversation?')) return;
+    this.ask.reset();
+  }
 
   async handleFollowUp(text: string): Promise<void> {
     await this.ask.send(text);
