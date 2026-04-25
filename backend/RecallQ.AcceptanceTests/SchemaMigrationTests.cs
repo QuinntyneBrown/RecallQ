@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Data.SqlClient;
-using Npgsql;
 
 namespace RecallQ.AcceptanceTests;
 
@@ -22,8 +20,7 @@ public class SchemaMigrationTests
         var programContent = File.ReadAllText(apiProjectPath);
 
         // EnsureCreatedAsync is a development convenience that should not be used in production code
-        Assert.DoesNotContain("EnsureCreatedAsync", programContent,
-            "Program.cs should not use EnsureCreatedAsync; use EF Core Migrations instead");
+        Assert.DoesNotContain("EnsureCreatedAsync", programContent);
 
         // Verify migrations directory exists
         var migrationsPath = Path.Combine(
@@ -51,8 +48,7 @@ public class SchemaMigrationTests
         // If there are try-catch blocks around schema setup, they should not silently log and continue
         if (hasExceptionHandling)
         {
-            Assert.DoesNotContain("catch (Exception", programContent,
-                "Broad exception handling around schema initialization will hide migration errors");
+            Assert.DoesNotContain("catch (Exception", programContent);
         }
     }
 }

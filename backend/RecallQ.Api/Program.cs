@@ -160,25 +160,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    try
-    {
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await db.Database.EnsureCreatedAsync();
-        try
-        {
-            await db.Database.ExecuteSqlRawAsync("CREATE EXTENSION IF NOT EXISTS vector;");
-            await db.Database.ExecuteSqlRawAsync("CREATE INDEX IF NOT EXISTS ix_contact_embeddings_vector ON contact_embeddings USING hnsw (embedding vector_cosine_ops);");
-            await db.Database.ExecuteSqlRawAsync("CREATE INDEX IF NOT EXISTS ix_interaction_embeddings_vector ON interaction_embeddings USING hnsw (embedding vector_cosine_ops);");
-        }
-        catch (Exception ex)
-        {
-            app.Logger.LogWarning(ex, "HNSW index creation skipped.");
-        }
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogWarning(ex, "Database initialization skipped.");
-    }
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 if (!app.Environment.IsProduction())
