@@ -12,8 +12,8 @@
 .citation.top { border: 1px solid var(--citation-border-top); }
 .avatar {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
