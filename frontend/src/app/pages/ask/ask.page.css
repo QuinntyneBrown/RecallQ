@@ -54,7 +54,7 @@
 }
 .user-bubble {
   align-self: flex-end;
-  background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid));
   color: var(--foreground-primary);
 }
 .assistant-bubble {
