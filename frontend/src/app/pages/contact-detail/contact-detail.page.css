@@ -63,7 +63,7 @@ h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 24px
   margin-bottom: 8px;
 }
 .activity-head h2 { margin: 0; font-size: 15px; letter-spacing: -0.2px; font-family: Geist, system-ui, sans-serif; }
-.activity-head a { color: var(--accent-primary); text-decoration: none; font-size: 14px; }
+.activity-head a { color: var(--accent-tertiary); text-decoration: none; font-size: 12px; font-weight: 500; }
 .activity-actions {
   display: flex; align-items: center; gap: 16px;
 }
