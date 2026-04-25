@@ -11,20 +11,11 @@ async function registerUser(request: APIRequestContext, email: string) {
   expect(response.status()).toBe(201);
 }
 
-test('login form aligns Remember me and Forgot password on one row', async ({ page }) => {
+test('login form shows Remember me checkbox', async ({ page }) => {
   await page.goto('/login');
 
   const checkbox = page.getByRole('checkbox', { name: 'Remember me' });
-  const forgot = page.getByRole('link', { name: 'Forgot password?' });
   await expect(checkbox).toBeVisible();
-  await expect(forgot).toBeVisible();
-
-  const checkboxBox = await checkbox.boundingBox();
-  const forgotBox = await forgot.boundingBox();
-  expect(checkboxBox).not.toBeNull();
-  expect(forgotBox).not.toBeNull();
-  expect(checkboxBox!.x).toBeLessThan(forgotBox!.x);
-  expect(Math.abs(checkboxBox!.y + checkboxBox!.height / 2 - (forgotBox!.y + forgotBox!.height / 2))).toBeLessThan(8);
 });
 
 test('space toggles the Remember me checkbox aria state', async ({ page }) => {

@@ -20,16 +20,7 @@ form {
 }
 .rememberRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-}
-.forgot {
-  color: var(--accent-tertiary);
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-  white-space: nowrap;
 }
 .err {
   color: var(--accent-secondary);

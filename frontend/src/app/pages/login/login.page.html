@@ -24,11 +24,6 @@
         [checked]="rememberMe()"
         (checkedChange)="rememberMe.set($event)"
       />
-      <a
-        routerLink="/forgot-password"
-        [queryParams]="{ email: email() }"
-        class="forgot"
-      >Forgot password?</a>
     </div>
     @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
     <app-button-primary type="submit" [disabled]="busy()">Sign in</app-button-primary>
