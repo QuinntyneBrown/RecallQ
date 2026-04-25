@@ -2,7 +2,7 @@
 
 **Flow:** 31 — CSV Bulk Import
 **Severity:** Medium (data quality, payload abuse)
-**Status:** Open
+**Status:** Complete — `TryBuildContact` now splits emails/phones/tags up front and rejects any row whose multi-value count exceeds the spec caps (10 / 10 / 20) with a clear `"emails: max 10"` / `"phones: max 10"` / `"tags: max 20"` reason. The endpoint's existing per-row error collection surfaces the message in the `errors` list.
 
 ## Symptom
 

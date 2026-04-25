@@ -63,6 +63,13 @@ public static class ImportContactsHelper
         if (displayName.Length < 1) { reason = "displayName is required"; return false; }
         if (displayName.Length > 120) { reason = "displayName must be 1-120 chars"; return false; }
 
+        var tags = Split(row.Tags);
+        var emails = Split(row.Emails);
+        var phones = Split(row.Phones);
+        if (emails.Length > 10) { reason = "emails: max 10"; return false; }
+        if (phones.Length > 10) { reason = "phones: max 10"; return false; }
+        if (tags.Length > 20) { reason = "tags: max 20"; return false; }
+
         contact = new Contact
         {
             OwnerUserId = ownerId,
@@ -71,9 +78,9 @@ public static class ImportContactsHelper
             Role = string.IsNullOrWhiteSpace(row.Role) ? null : row.Role.Trim(),
             Organization = string.IsNullOrWhiteSpace(row.Organization) ? null : row.Organization.Trim(),
             Location = string.IsNullOrWhiteSpace(row.Location) ? null : row.Location.Trim(),
-            Tags = Split(row.Tags),
-            Emails = Split(row.Emails),
-            Phones = Split(row.Phones),
+            Tags = tags,
+            Emails = emails,
+            Phones = phones,
         };
         reason = null;
         return true;
