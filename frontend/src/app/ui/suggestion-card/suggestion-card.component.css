@@ -39,6 +39,12 @@
 }
 /* T031: white text on the 3-stop gradient is borderline against the pink end-stop (#FF5EE7).
    Bumping font-weight to 500 improves perceived contrast while keeping the visual identity. */
+.title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 600;
+}
 .body {
   margin: 0;
   font-size: 15px;

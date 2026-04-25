@@ -2,7 +2,7 @@
 
 **Flow:** 25 — Proactive AI Suggestion (Render and Dismiss)
 **Severity:** High (lost UX content)
-**Status:** Open
+**Status:** Complete — `suggestion-card.component.html` now renders `<h3 class="title">{{ suggestion.title }}</h3>` between the eyebrow row and the body paragraph; `suggestion-card.component.css` adds `.title` styling (size 18, weight 600, on-accent color) so the AI's one-phrase summary is visible above the longer body.
 
 ## Symptom
 
