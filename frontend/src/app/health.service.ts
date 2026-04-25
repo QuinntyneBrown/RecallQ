@@ -1,4 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export const API_BASE = '';
 
@@ -7,18 +9,17 @@ export class HealthService {
   readonly online = signal(false);
   private started = false;
 
+  constructor(private http: HttpClient) {}
+
   async check(): Promise<void> {
     try {
-      const res = await fetch(`/api/ping`);
-      if (res.ok) {
-        const text = (await res.text()).trim();
-        this.online.set(text === 'pong');
-        return;
-      }
+      const text = await firstValueFrom(
+        this.http.get('/api/ping', { responseType: 'text' })
+      );
+      this.online.set(text.trim() === 'pong');
     } catch {
-      // fall through
+      this.online.set(false);
     }
-    this.online.set(false);
   }
 
   start(): void {

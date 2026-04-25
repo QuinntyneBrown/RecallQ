@@ -1,4 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export interface AuthUser { id: string; email: string; }
 
@@ -7,38 +9,38 @@ export class AuthService {
   readonly authState = signal<AuthUser | null>(null);
   readonly isAuthenticated = computed(() => this.authState() !== null);
 
+  constructor(private http: HttpClient) {}
+
   async register(email: string, password: string): Promise<void> {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok && res.status !== 201) {
-      const body = await res.json().catch(() => ({} as { error?: string }));
-      const code = body?.error ?? (res.status === 409 ? 'email_taken' : 'register_failed');
+    try {
+      await firstValueFrom(
+        this.http.post<AuthUser>('/api/auth/register', { email, password })
+      );
+    } catch (err: any) {
+      const code = err.error?.error ?? (err.status === 409 ? 'email_taken' : 'register_failed');
       throw new Error(code);
     }
     await this.login(email, password, false);
   }
 
   async login(email: string, password: string, rememberMe: boolean): Promise<void> {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, rememberMe }),
-    });
-    if (res.status === 401) throw new Error('invalid_credentials');
-    if (res.status === 429) throw new Error('rate_limited');
-    if (!res.ok) throw new Error('login_failed');
-    const body = await res.json() as AuthUser;
-    this.authState.set({ id: body.id, email: body.email });
+    try {
+      const body = await firstValueFrom(
+        this.http.post<AuthUser>('/api/auth/login', { email, password, rememberMe })
+      );
+      this.authState.set({ id: body.id, email: body.email });
+    } catch (err: any) {
+      if (err.status === 401) throw new Error('invalid_credentials');
+      if (err.status === 429) throw new Error('rate_limited');
+      throw new Error('login_failed');
+    }
   }
 
   async logout(): Promise<void> {
     try {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      await firstValueFrom(
+        this.http.post<void>('/api/auth/logout', {})
+      );
     } catch {
       // ignore
     }
@@ -47,13 +49,10 @@ export class AuthService {
 
   async fetchMe(): Promise<void> {
     try {
-      const res = await fetch('/api/auth/me', { credentials: 'include' });
-      if (res.ok) {
-        const body = await res.json() as AuthUser;
-        this.authState.set({ id: body.id, email: body.email });
-      } else {
-        this.authState.set(null);
-      }
+      const body = await firstValueFrom(
+        this.http.get<AuthUser>('/api/auth/me')
+      );
+      this.authState.set({ id: body.id, email: body.email });
     } catch {
       this.authState.set(null);
     }

@@ -1,4 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { InteractionDto } from '../interactions/interactions.service';
 
 export interface ContactDto {
@@ -26,6 +28,12 @@ export interface PatchContactPayload {
   starred?: boolean;
   emails?: string[];
   phones?: string[];
+  displayName?: string;
+  initials?: string;
+  role?: string | null;
+  organization?: string | null;
+  location?: string | null;
+  tags?: string[];
 }
 
 export interface CreateContactPayload {
@@ -73,75 +81,92 @@ export class ContactsService {
   readonly contactCount = signal(0);
   readonly interactionCount = signal(0);
 
+  constructor(private http: HttpClient) {}
+
   async create(payload: CreateContactPayload): Promise<ContactDto> {
-    const res = await fetch('/api/contacts', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (res.status === 201) return (await res.json()) as ContactDto;
-    if (res.status === 400) {
-      const body = await res.json().catch(() => ({}));
-      throw new ContactsValidationError(body.errors ?? {});
+    try {
+      return await firstValueFrom(
+        this.http.post<ContactDto>('/api/contacts', payload)
+      );
+    } catch (err: any) {
+      if (err.status === 400) {
+        throw new ContactsValidationError(err.error?.errors ?? {});
+      }
+      throw new Error('create_failed_' + err.status);
     }
-    throw new Error('create_failed_' + res.status);
   }
 
   async get(id: string, take?: number): Promise<ContactDetailDto | null> {
-    const url = take ? `/api/contacts/${id}?take=${take}` : `/api/contacts/${id}`;
-    const res = await fetch(url, { credentials: 'include' });
-    if (res.status === 200) return (await res.json()) as ContactDetailDto;
-    if (res.status === 404) return null;
-    throw new Error('get_failed_' + res.status);
+    try {
+      const params = take ? { take: String(take) } : undefined;
+      return await firstValueFrom(
+        this.http.get<ContactDetailDto>(`/api/contacts/${id}`, { params })
+      );
+    } catch (err: any) {
+      if (err.status === 404) return null;
+      throw new Error('get_failed_' + err.status);
+    }
   }
 
   async patch(id: string, payload: PatchContactPayload): Promise<ContactDetailDto> {
-    const res = await fetch(`/api/contacts/${id}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (res.status === 200) return (await res.json()) as ContactDetailDto;
-    throw new Error('patch_failed_' + res.status);
+    try {
+      return await firstValueFrom(
+        this.http.patch<ContactDetailDto>(`/api/contacts/${id}`, payload)
+      );
+    } catch (err: any) {
+      throw new Error('patch_failed_' + err.status);
+    }
   }
 
   async list(page = 1, pageSize = 20, sort = 'createdAt_desc'): Promise<ContactListResult> {
-    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize), sort });
-    const res = await fetch(`/api/contacts?${params.toString()}`, { credentials: 'include' });
-    if (res.status !== 200) throw new Error('list_failed_' + res.status);
-    return (await res.json()) as ContactListResult;
+    try {
+      const params = { page: String(page), pageSize: String(pageSize), sort };
+      return await firstValueFrom(
+        this.http.get<ContactListResult>('/api/contacts', { params })
+      );
+    } catch (err: any) {
+      throw new Error('list_failed_' + err.status);
+    }
   }
 
   async count(): Promise<ContactCounts> {
-    const res = await fetch('/api/contacts/count', { credentials: 'include' });
-    if (res.status !== 200) throw new Error('count_failed_' + res.status);
-    return (await res.json()) as ContactCounts;
+    try {
+      return await firstValueFrom(
+        this.http.get<ContactCounts>('/api/contacts/count')
+      );
+    } catch (err: any) {
+      throw new Error('count_failed_' + err.status);
+    }
   }
 
   async getSummary(contactId: string): Promise<SummaryResponse> {
-    const res = await fetch(`/api/contacts/${contactId}/summary`, { credentials: 'include' });
-    if (res.status !== 200) throw new Error('summary_failed_' + res.status);
-    return (await res.json()) as SummaryResponse;
+    try {
+      return await firstValueFrom(
+        this.http.get<SummaryResponse>(`/api/contacts/${contactId}/summary`)
+      );
+    } catch (err: any) {
+      throw new Error('summary_failed_' + err.status);
+    }
   }
 
   async refreshSummary(contactId: string): Promise<void> {
-    const res = await fetch(`/api/contacts/${contactId}/summary:refresh`, {
-      method: 'POST', credentials: 'include',
-    });
-    if (res.status === 202) return;
-    if (res.status === 429) throw new Error('rate_limited');
-    throw new Error('refresh_summary_failed_' + res.status);
+    try {
+      await firstValueFrom(
+        this.http.post<void>(`/api/contacts/${contactId}/summary:refresh`, {})
+      );
+    } catch (err: any) {
+      if (err.status === 429) throw new Error('rate_limited');
+      throw new Error('refresh_summary_failed_' + err.status);
+    }
   }
 
   async delete(id: string): Promise<void> {
-    const res = await fetch(`/api/contacts/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    if (res.status !== 204 && res.status !== 200) {
-      throw new Error('delete_failed_' + res.status);
+    try {
+      await firstValueFrom(
+        this.http.delete<void>(`/api/contacts/${id}`)
+      );
+    } catch (err: any) {
+      throw new Error('delete_failed_' + err.status);
     }
   }
 
