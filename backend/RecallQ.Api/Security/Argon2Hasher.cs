@@ -12,6 +12,15 @@ public class Argon2Hasher
     private const int MemorySize = 19456;
     private const int Iterations = 2;
 
+    // A constant Argon2id-formatted hash whose preimage is unknown. The
+    // login endpoint runs Verify against this when the user lookup
+    // misses, so the unknown-email path takes the same wall-clock time
+    // as the wrong-password path. Verify will always return false
+    // against any user-supplied password but still runs the full
+    // Argon2id KDF, equalizing timing.
+    public static readonly string DummyHash =
+        "$argon2id$v=19$m=19456,t=2,p=2$AAAAAAAAAAAAAAAAAAAAAA==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+
     public string Hash(string password)
     {
         var salt = RandomNumberGenerator.GetBytes(SaltSize);

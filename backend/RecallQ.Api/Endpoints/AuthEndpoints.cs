@@ -72,7 +72,13 @@ public static class AuthEndpoints
             var email = (req.Email ?? "").Trim().ToLowerInvariant();
             var password = req.Password ?? "";
             var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user is null || !hasher.Verify(password, user.PasswordHash))
+            // Always run Verify so timing doesn't leak email existence.
+            // The dummy-hash branch always returns false; the real-hash
+            // branch returns true only on the right password.
+            var passwordOk = user is null
+                ? hasher.Verify(password, Argon2Hasher.DummyHash) /* discarded; runs full Argon2 KDF */
+                : hasher.Verify(password, user.PasswordHash);
+            if (user is null || !passwordOk)
             {
                 http.Response.StatusCode = 401;
                 http.Response.ContentType = "application/json";
