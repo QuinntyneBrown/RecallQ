@@ -90,8 +90,11 @@ export class AddContactPage {
       await this.router.navigateByUrl('/contacts/' + result.id);
       this.toast.show('Contact added');
     } catch (e: any) {
-      if (e instanceof ContactsValidationError) this.errors.set(e.errors);
-      else this.error.set(e?.message ?? 'error');
+      if (e instanceof ContactsValidationError) {
+        this.errors.set(e.errors);
+      } else {
+        this.error.set("We couldn't save that contact. Please try again.");
+      }
     } finally {
       this.busy.set(false);
     }

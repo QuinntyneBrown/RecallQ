@@ -1,5 +1,6 @@
 # Add contact page surfaces raw `create_failed_<status>`
 
+**Status:** Complete — `add-contact.page.ts` catch now sets the generic alert to `"We couldn't save that contact. Please try again."` for any non-validation failure.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md)
 **Traces:** L1-002, L2-005.
 **Severity:** Low-Medium — `frontend/src/app/pages/add-contact/add-contact.page.ts` catches `ContactsValidationError` (per-field errors) but falls back to `e.message` for everything else. `ContactsService.create` throws `'create_failed_' + status` for non-201/400, so a 500 (or any other unhandled status) renders `create_failed_500` literally in the form's general error band.
