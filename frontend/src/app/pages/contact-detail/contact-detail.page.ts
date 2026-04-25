@@ -1,6 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContactsService, ContactDetailDto, SummaryResponse } from '../../contacts/contacts.service';
+import { InteractionsService } from '../../interactions/interactions.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
 import { RelationshipSummaryCardComponent } from '../../ui/relationship-summary-card/relationship-summary-card.component';
 import { QuickActionTileComponent } from '../../ui/quick-action-tile/quick-action-tile.component';
@@ -102,7 +103,7 @@ import { navigateExternal } from '../../shared/navigate-external';
             <ul data-testid="timeline" role="list" class="timeline">
               @for (item of c.recentInteractions; track item.id) {
                 <li role="listitem" class="timeline-item">
-                  <app-timeline-item [item]="item"></app-timeline-item>
+                  <app-timeline-item [item]="item" (delete)="onDeleteInteraction($event)"></app-timeline-item>
                 </li>
               }
             </ul>
@@ -209,6 +210,7 @@ export class ContactDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly contacts = inject(ContactsService);
+  private readonly interactions = inject(InteractionsService);
   private readonly dialog = inject(Dialog);
   private readonly toast = inject(ToastService);
   readonly contact = signal<ContactDetailDto | null>(null);
@@ -363,6 +365,20 @@ export class ContactDetailPage implements OnInit {
     const id = this.contactId();
     if (!id) return;
     void this.router.navigate(['/contacts', id, 'interactions', 'new']);
+  }
+
+  async onDeleteInteraction(interactionId: string) {
+    if (!window.confirm('Delete this interaction?')) return;
+    try {
+      await this.interactions.delete(interactionId);
+      const cid = this.contactId();
+      if (cid) {
+        const refreshed = await this.contacts.get(cid);
+        if (refreshed) this.contact.set(refreshed);
+      }
+    } catch {
+      this.toast.show('Could not delete interaction');
+    }
   }
 
   async deleteContact() {

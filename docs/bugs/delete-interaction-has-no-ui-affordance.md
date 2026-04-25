@@ -1,5 +1,6 @@
 # Delete interaction has no UI affordance
 
+**Status:** Complete — `TimelineItemComponent` now renders a `Delete interaction` icon button and emits its id; `ContactDetailPage.onDeleteInteraction` confirms, calls `interactions.delete`, and refetches the contact.
 **Flow:** [14 — Delete Interaction](../flows/14-delete-interaction/14-delete-interaction.md)
 **Traces:** L1-003, L2-013, L2-033.
 **Severity:** Medium-High — `InteractionsService.delete(id)` and the route `DELETE /api/interactions/{id}` exist, but nothing in the SPA calls them. There is no swipe action, no more-menu, and no delete button on `<app-timeline-item>` — the entire Flow 14 trigger ("User confirms deletion on a timeline row") is unreachable.
