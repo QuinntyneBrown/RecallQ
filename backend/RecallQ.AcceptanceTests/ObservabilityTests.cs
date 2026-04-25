@@ -38,18 +38,51 @@ public class ObservabilityTests : IClassFixture<ObservabilityFactory>
     public async Task Correlation_id_echoed_in_response_header()
     {
         var client = _factory.CreateClient();
+        var hex32 = new Regex("^[0-9a-fA-F]{32}$");
 
         using var req1 = new HttpRequestMessage(HttpMethod.Get, "/api/ping");
         req1.Headers.Add("X-Correlation-Id", "abc123");
         var res1 = await client.SendAsync(req1);
         Assert.True(res1.Headers.TryGetValues("X-Correlation-Id", out var v1));
-        Assert.Equal("abc123", string.Join(",", v1!));
+        var echoed = string.Join(",", v1!);
+        Assert.Matches(hex32, echoed);
 
         var res2 = await client.GetAsync("/api/ping");
         Assert.True(res2.Headers.TryGetValues("X-Correlation-Id", out var v2));
         var generated = string.Join(",", v2!);
         Assert.False(string.IsNullOrWhiteSpace(generated));
-        Assert.Matches(new Regex("^[0-9a-fA-F]{32}$"), generated);
+        Assert.Matches(hex32, generated);
+    }
+
+    [Fact]
+    public async Task Correlation_id_rejects_non_guid_and_regenerates()
+    {
+        var client = _factory.CreateClient();
+        var hex32 = new Regex("^[0-9a-fA-F]{32}$");
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, "/api/ping");
+        req.Headers.Add("X-Correlation-Id", "hello world\nSEVERE: injected");
+        var res = await client.SendAsync(req);
+
+        Assert.True(res.Headers.TryGetValues("X-Correlation-Id", out var v));
+        var echoed = string.Join(",", v!);
+        Assert.Matches(hex32, echoed);
+        Assert.DoesNotContain("hello", echoed);
+        Assert.DoesNotContain("SEVERE", echoed);
+    }
+
+    [Fact]
+    public async Task Correlation_id_accepts_valid_guid_and_echoes()
+    {
+        var client = _factory.CreateClient();
+        var marker = Guid.NewGuid().ToString("N");
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, "/api/ping");
+        req.Headers.Add("X-Correlation-Id", marker);
+        var res = await client.SendAsync(req);
+
+        Assert.True(res.Headers.TryGetValues("X-Correlation-Id", out var v));
+        Assert.Equal(marker, string.Join(",", v!));
     }
 
     [Fact]
