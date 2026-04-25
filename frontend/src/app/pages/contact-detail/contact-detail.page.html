@@ -6,7 +6,7 @@
           <i class="ph ph-caret-left"></i>
         </button>
         <div class="spacer"></div>
-        <button type="button" class="icon-btn" aria-label="Star contact" (click)="toggleStar()">
+        <button type="button" class="icon-btn" [attr.aria-label]="starred() ? 'Unstar contact' : 'Star contact'" (click)="toggleStar()">
           <i class="ph"
              [class.ph-star]="!starred()"
              [class.ph-star-fill]="starred()"

@@ -8,7 +8,7 @@ export class ContactDetailPage {
   tags()        { return this.page.getByTestId('hero-tags').getByRole('listitem'); }
   timelineItems() { return this.page.getByTestId('timeline').getByRole('listitem'); }
   seeAllLink()  { return this.page.getByRole('link', { name: /See all \d+/ }); }
-  starButton()  { return this.page.getByRole('button', { name: 'Star contact' }); }
+  starButton()  { return this.page.getByRole('button', { name: /^(Star|Unstar) contact$/ }); }
   summaryParagraph() { return this.page.getByTestId('summary-paragraph'); }
   statInteractions() { return this.page.getByTestId('stat-interactions'); }
   statSentiment()    { return this.page.getByTestId('stat-sentiment'); }

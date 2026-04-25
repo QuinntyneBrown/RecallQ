@@ -2,7 +2,7 @@
 
 **Flow:** 10 — Star / Unstar Contact
 **Severity:** Medium (a11y, mismatched action labelling)
-**Status:** Open
+**Status:** Complete — `contact-detail.page.html` now binds `[attr.aria-label]="starred() ? 'Unstar contact' : 'Star contact'"`. The shared `ContactDetailPage` page object switches its `starButton()` selector to a regex that matches both names so existing tests survive the toggle.
 
 ## Symptom
 
