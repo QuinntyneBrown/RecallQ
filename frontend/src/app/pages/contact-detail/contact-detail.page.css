@@ -49,6 +49,7 @@ h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 24px
   padding: 4px 10px;
   border-radius: var(--radius-full);
   background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.20);
   color: var(--foreground-primary);
   font-size: 12px;
 }
