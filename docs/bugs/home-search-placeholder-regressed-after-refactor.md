@@ -1,5 +1,6 @@
 # Home search placeholder regression after templateUrl refactor
 
+**Status:** Complete — placeholder re-applied to `home.page.html` after the templateUrl refactor lost the original edit.
 **Flow:** [15 — Vector Semantic Search](../flows/15-vector-search/15-vector-search.md)
 **Traces:** L1-004, L2-014.
 **Severity:** Low — the earlier fix in `home-search-placeholder-mismatch.md` set the placeholder to `Search by meaning...` in the inline template inside `home.page.ts`. A subsequent editor pass split that component into `templateUrl: './home.page.html'` + `styleUrl: './home.page.css'`, and the new `.html` file was written from an older snapshot — `placeholder="Search contacts"` reappeared.
