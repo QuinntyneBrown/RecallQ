@@ -1,7 +1,7 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 32px;
   padding: 24px;
   max-width: 390px;
   margin: 0 auto;
@@ -10,7 +10,8 @@
 }
 h1 {
   color: var(--foreground-primary);
-  font-size: 28px;
+  font-size: 32px;
+  letter-spacing: -0.8px;
   margin: 0;
 }
 form {
