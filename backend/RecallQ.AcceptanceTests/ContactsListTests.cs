@@ -75,6 +75,21 @@ public class ContactsListTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task List_response_includes_nextPage_cursor()
+    {
+        var (client, cookie) = await RegisterAndLogin(UniqueEmail());
+        await PostContact(client, cookie, "One");
+        await PostContact(client, cookie, "Two");
+        await PostContact(client, cookie, "Three");
+
+        var page1 = await GetJson(client, cookie, "/api/contacts?page=1&pageSize=2");
+        Assert.Equal(2, page1.GetProperty("nextPage").GetInt32());
+
+        var page2 = await GetJson(client, cookie, "/api/contacts?page=2&pageSize=2");
+        Assert.Equal(JsonValueKind.Null, page2.GetProperty("nextPage").ValueKind);
+    }
+
+    [Fact]
     public async Task List_sort_name_returns_alphabetical()
     {
         var (client, cookie) = await RegisterAndLogin(UniqueEmail());
