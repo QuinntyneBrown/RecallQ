@@ -4,7 +4,7 @@ import { BreakpointService } from '../../shell/breakpoint.service';
 import { SearchResult } from '../../search/search.service';
 import { ScoreChipComponent } from '../score-chip/score-chip.component';
 import { InteractionPill, InteractionPillsComponent } from '../interaction-pills/interaction-pills.component';
-import { ResultCardContact } from '../result-card/result-card.component';
+import { ResultCardContact, avatarBackground } from '../result-card/result-card.component';
 
 @Component({
   selector: 'app-featured-result-card',
@@ -23,6 +23,10 @@ export class FeaturedResultCardComponent {
   subLine() {
     const parts = [this.contact.role, this.contact.organization].filter(p => p && p.trim().length);
     return parts.join(' · ');
+  }
+
+  avatarBackground(): string | null {
+    return avatarBackground(this.contact);
   }
 
   pills(): InteractionPill[] {

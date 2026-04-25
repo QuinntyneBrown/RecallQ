@@ -1,5 +1,6 @@
 # Search result cards ignore server-assigned avatar colors
 
+**Status:** Complete — `ResultCardContact` now carries optional `avatarColorA/B`; both result-card and featured-result-card bind `[style.background]="avatarBackground()"` (a shared helper) on their avatar; `search.page.hydrateContacts` and `onSelect` pass both fields through.
 **Flow:** [15 — Vector Semantic Search](../flows/15-vector-search/15-vector-search.md)
 **Traces:** L1-002, L1-004, L2-005, L2-035.
 **Severity:** Low-Medium — Mirror of the recent `contact-detail-avatar-ignores-server-colors` fix. The search result cards (`ResultCardComponent`, `FeaturedResultCardComponent`) render every avatar with the same `linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid))`. The contact data carries `avatarColorA` / `avatarColorB`, but the `ResultCardContact` interface drops those fields, so even if the cards wanted to honour them they cannot.

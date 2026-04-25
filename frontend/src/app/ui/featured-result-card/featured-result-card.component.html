@@ -7,7 +7,7 @@
   <span class="eyebrow">WHY THIS MATCH</span>
   <span class="matched">{{ result.matchedText }}</span>
   <span class="row">
-    <span class="avatar" aria-hidden="true">{{ contact.initials }}</span>
+    <span class="avatar" aria-hidden="true" [style.background]="avatarBackground()">{{ contact.initials }}</span>
     <span class="body">
       <span class="name">{{ contact.displayName }}</span>
       <span class="sub">{{ subLine() }}</span>

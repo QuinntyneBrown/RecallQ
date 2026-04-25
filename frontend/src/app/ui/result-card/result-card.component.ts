@@ -12,6 +12,14 @@ export interface ResultCardContact {
   role: string | null;
   organization: string | null;
   tags?: string[];
+  avatarColorA?: string | null;
+  avatarColorB?: string | null;
+}
+
+export function avatarBackground(c: { avatarColorA?: string | null; avatarColorB?: string | null }): string | null {
+  return c.avatarColorA && c.avatarColorB
+    ? `linear-gradient(135deg, ${c.avatarColorA}, ${c.avatarColorB})`
+    : null;
 }
 
 @Component({
@@ -31,6 +39,10 @@ export class ResultCardComponent {
   subLine() {
     const parts = [this.contact.role, this.contact.organization].filter(p => p && p.trim().length);
     return parts.join(' · ');
+  }
+
+  avatarBackground(): string | null {
+    return avatarBackground(this.contact);
   }
 
   pills(): InteractionPill[] {

@@ -114,6 +114,8 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
           role: c.role,
           organization: c.organization,
           tags: c.tags,
+          avatarColorA: c.avatarColorA,
+          avatarColorB: c.avatarColorB,
         });
       });
     }
@@ -143,6 +145,8 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
           role: c.role,
           organization: c.organization,
           tags: c.tags,
+          avatarColorA: c.avatarColorA,
+          avatarColorB: c.avatarColorB,
         });
       } else {
         next.set(id, { id, displayName: 'Unknown', initials: '?', role: null, organization: null, tags: [] });
