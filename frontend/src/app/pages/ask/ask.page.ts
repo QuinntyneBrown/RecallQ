@@ -30,10 +30,10 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
         }
         @for (m of messages(); track m.id) {
           @if (m.role === 'user') {
-            <div data-testid="user-bubble" class="bubble user-bubble">{{ m.text }}</div>
+            <div data-testid="user-bubble" class="bubble user-bubble"><span class="sr-only">You said: </span>{{ m.text }}</div>
           } @else {
             <div data-testid="assistant-bubble" class="bubble assistant-bubble" [attr.aria-busy]="m.streaming ? 'true' : null">
-              {{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
+              <span class="sr-only">RecallQ said: </span>{{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
               @if (m.citations?.length) {
                 <div class="citations">
                   @for (c of m.citations; track c.contactId; let i = $index) {
@@ -161,6 +161,17 @@ import { FollowUpChipComponent } from '../../ui/follow-up-chip/follow-up-chip.co
       align-self: flex-start;
       color: var(--accent-secondary);
       font-size: 13px;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
     .input-bar {
       display: flex;

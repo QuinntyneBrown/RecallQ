@@ -1,5 +1,6 @@
 # Ask bubbles do not announce the speaker to screen readers
 
+**Status:** Complete — `ask.page.ts` user bubble now leads with `<span class="sr-only">You said: </span>` and the assistant bubble leads with `RecallQ said: `; the matching `.sr-only` rule is added to the page styles.
 **Flow:** [41 — Screen Reader Announcement for Streaming Chat](../flows/41-screen-reader-streaming/41-screen-reader-streaming.md)
 **Traces:** L1-015, L2-068.
 **Severity:** Low — Flow 41 step 2 says the user bubble enters the live region as `You said: {question}`. The current template renders only `{{ m.text }}`, so a screen reader hears the new bubble but has no cue about who is speaking. The same applies to the assistant bubble (Flow 41 step 4 implicitly assumes the listener can tell the answer from the question).
