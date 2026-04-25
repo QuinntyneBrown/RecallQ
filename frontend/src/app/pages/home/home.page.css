@@ -59,7 +59,7 @@
   border: 1px solid var(--border-subtle);
   padding: 0 24px 0 52px;
   color: var(--foreground-primary);
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
