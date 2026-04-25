@@ -54,7 +54,16 @@ public class EmbeddingBackfillRunner
                 db.BackfillCursors.Add(cursor);
                 await db.SaveChangesAsync(ct);
             }
-            if (cursor.Completed) return;
+            else if (cursor.Completed)
+            {
+                cursor.LastProcessedCreatedAt = default;
+                cursor.LastProcessedId = default;
+                cursor.Completed = false;
+                cursor.StartedAt = DateTime.UtcNow;
+                cursor.UpdatedAt = DateTime.UtcNow;
+                await db.SaveChangesAsync(ct);
+                _logger.LogInformation("backfill cursor reset owner={Owner} table={Table} (was completed)", ownerUserId, table);
+            }
 
             int count = 0;
             if (table == "contacts")
