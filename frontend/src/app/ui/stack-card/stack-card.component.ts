@@ -17,6 +17,10 @@ export class StackCardComponent {
     return c > 999 ? '999+' : String(c);
   }
 
+  ariaLabel(): string {
+    return `${this.displayCount()} ${this.stack.name}`;
+  }
+
   nav(e: Event): void {
     e.preventDefault();
     void this.router.navigate(['/search'], {

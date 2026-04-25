@@ -2,7 +2,7 @@
 
 **Flow:** 24 — Smart Stacks (View and Open)
 **Severity:** Medium-High (a11y)
-**Status:** Open
+**Status:** Complete — `stack-card.component.ts` exposes `ariaLabel()` returning `"<displayCount()> <stack.name>"` (e.g. `"27 AI founders"`, `"999+ Everyone"`); `stack-card.component.html` binds `[attr.aria-label]="ariaLabel()"`.
 
 ## Symptom
 
