@@ -162,6 +162,99 @@ public class StacksTests : IClassFixture<RecallqFactory>
 
         Assert.Empty(aIds.Intersect(bIds));
     }
+
+    // Bug: docs/bugs/stacks-contacts-endpoint-no-pagination.md
+    [Fact]
+    public async Task Stack_contacts_endpoint_returns_paginated_envelope()
+    {
+        var (client, userId, cookie) = await RegisterLogin(_factory);
+
+        Guid stackId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var stack = new Stack
+            {
+                OwnerUserId = userId,
+                Name = "vip",
+                Kind = StackKind.Tag,
+                Definition = "vip",
+                SortOrder = 10,
+            };
+            db.Stacks.Add(stack);
+            for (var i = 0; i < 60; i++)
+            {
+                db.Contacts.Add(new Contact
+                {
+                    OwnerUserId = userId,
+                    DisplayName = $"vip{i:D2}",
+                    Initials = "VP",
+                    Tags = new[] { "vip" },
+                });
+            }
+            await db.SaveChangesAsync();
+            stackId = stack.Id;
+        }
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"/api/stacks/{stackId}/contacts?page=1&pageSize=50");
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.Equal(JsonValueKind.Object, body.ValueKind);
+        Assert.Equal(50, body.GetProperty("items").GetArrayLength());
+        Assert.Equal(60, body.GetProperty("totalCount").GetInt32());
+        Assert.Equal(1, body.GetProperty("page").GetInt32());
+        Assert.Equal(50, body.GetProperty("pageSize").GetInt32());
+        Assert.Equal(2, body.GetProperty("nextPage").GetInt32());
+    }
+
+    // Bug: docs/bugs/stacks-contacts-endpoint-no-pagination.md
+    [Fact]
+    public async Task Stack_contacts_last_page_has_null_next_page()
+    {
+        var (client, userId, cookie) = await RegisterLogin(_factory);
+
+        Guid stackId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var stack = new Stack
+            {
+                OwnerUserId = userId,
+                Name = "vip",
+                Kind = StackKind.Tag,
+                Definition = "vip",
+                SortOrder = 10,
+            };
+            db.Stacks.Add(stack);
+            for (var i = 0; i < 12; i++)
+            {
+                db.Contacts.Add(new Contact
+                {
+                    OwnerUserId = userId,
+                    DisplayName = $"vip{i:D2}",
+                    Initials = "VP",
+                    Tags = new[] { "vip" },
+                });
+            }
+            await db.SaveChangesAsync();
+            stackId = stack.Id;
+        }
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"/api/stacks/{stackId}/contacts?page=2&pageSize=10");
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.Equal(2, body.GetProperty("items").GetArrayLength());
+        Assert.Equal(12, body.GetProperty("totalCount").GetInt32());
+        Assert.Equal(2, body.GetProperty("page").GetInt32());
+        Assert.Equal(10, body.GetProperty("pageSize").GetInt32());
+        Assert.Equal(JsonValueKind.Null, body.GetProperty("nextPage").ValueKind);
+    }
 }
 
 internal class ShortTtlFactory : RecallqFactory
