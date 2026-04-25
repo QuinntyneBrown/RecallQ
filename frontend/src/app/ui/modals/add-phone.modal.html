@@ -5,11 +5,13 @@
     aria-label="Phone"
     required
     [(ngModel)]="value"
+    (ngModelChange)="onInput()"
     name="phone"
     autofocus
   />
+  @if (error()) { <div role="alert" class="err">{{ error() }}</div> }
   <div class="actions">
     <button type="button" (click)="cancel()">Cancel</button>
-    <button type="submit">Save</button>
+    <button type="submit" [disabled]="busy()">Save</button>
   </div>
 </form>

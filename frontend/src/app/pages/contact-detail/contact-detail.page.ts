@@ -146,17 +146,22 @@ export class ContactDetailPage implements OnInit {
     if (!this.hasPhone()) {
       const ref = this.dialog.open<string | undefined>(AddPhoneModal, {
         ariaLabelledBy: 'add-phone-title',
+        data: {
+          onSave: async (v: string): Promise<string | null> => {
+            try {
+              const updated = await this.contacts.patch(c.id, { phones: [v] });
+              this.contact.set(updated);
+              return null;
+            } catch (e: any) {
+              return e?.message === 'patch_failed_400'
+                ? 'That phone number looks invalid'
+                : 'Could not update contact';
+            }
+          },
+        },
       });
-      ref.closed.subscribe(async (value) => {
-        const v = (value ?? '').trim();
-        if (!v) return;
-        try {
-          const updated = await this.contacts.patch(c.id, { phones: [v] });
-          this.contact.set(updated);
-          this.onCall();
-        } catch {
-          this.toast.show('Could not update contact');
-        }
+      ref.closed.subscribe((value) => {
+        if ((value ?? '').trim()) this.onCall();
       });
       return;
     }

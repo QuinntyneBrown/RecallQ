@@ -2,7 +2,7 @@
 
 **Flow:** 29 — Quick Action: Call
 **Severity:** Medium-High (UX recovery path lost)
-**Status:** Open
+**Status:** Complete — `AddPhoneModal` now mirrors `AddEmailModal`: it accepts an optional `onSave` callback via `DIALOG_DATA`, awaits it on Save, and either closes (null) or surfaces the returned message inline (`role="alert"`) while keeping the typed value. `ContactDetailPage.onCall` passes an `onSave` that maps `patch_failed_400` to `That phone number looks invalid`; the recursive `tel:` handoff fires after a clean close.
 
 ## Symptom
 
