@@ -1,5 +1,6 @@
 # Search rate-limit response shows raw `search_failed_429`
 
+**Status:** Complete — `search.service.ts` now handles 429 with a friendly rate-limit toast and falls back to a generic `'Search failed. Please try again.'` for unknown statuses.
 **Flow:** [15 — Vector Semantic Search](../flows/15-vector-search/15-vector-search.md)
 **Traces:** L1-004, L2-014.
 **Severity:** Low-Medium — Flow 15 alternatives call out 429 as a first-class case ("Over rate limit → 429 with `Retry-After`"). The SPA's search service has friendly messages for 400 and 503 but funnels 429 (and any other unhandled status) into the catch-all `'search_failed_' + status`, so the visitor sees `search_failed_429` literally in the results error band.

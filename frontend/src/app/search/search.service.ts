@@ -62,8 +62,9 @@ export class SearchService {
       this.hasMore.set(false);
       this.page.set(1);
       if (res.status === 400) this.error.set('Invalid query');
+      else if (res.status === 429) this.error.set('Too many searches. Try again in a minute.');
       else if (res.status === 503) this.error.set('Embeddings are being regenerated, try again shortly');
-      else this.error.set('search_failed_' + res.status);
+      else this.error.set('Search failed. Please try again.');
     } finally {
       this.loading.set(false);
     }
