@@ -13,7 +13,8 @@ public static class RecallQMetrics
 
     public static readonly Histogram EmbeddingLatencySeconds = Metrics.CreateHistogram(
         "recallq_embedding_latency_seconds",
-        "Embedding latency");
+        "Embedding latency",
+        new HistogramConfiguration { LabelNames = new[] { "model" } });
 
     public static readonly Histogram SearchLatencySeconds = Metrics.CreateHistogram(
         "recallq_search_latency_seconds",

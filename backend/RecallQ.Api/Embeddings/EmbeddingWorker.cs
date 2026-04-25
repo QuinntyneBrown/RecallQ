@@ -50,7 +50,7 @@ public class EmbeddingWorker : BackgroundService
 
     private async Task ProcessAsync(EmbeddingJob job, CancellationToken ct)
     {
-        using var _timer = RecallQMetrics.EmbeddingLatencySeconds.NewTimer();
+        using var _timer = RecallQMetrics.EmbeddingLatencySeconds.WithLabels(_client.Model).NewTimer();
         using var scope = _scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 

@@ -2,7 +2,7 @@
 
 **Flow:** 38 — Metrics Scrape (/metrics)
 **Severity:** Low-Medium (operational visibility)
-**Status:** Open
+**Status:** Complete — `RecallQMetrics.EmbeddingLatencySeconds` now declares `LabelNames = new[] { "model" }`. `EmbeddingWorker.ProcessAsync` calls `EmbeddingLatencySeconds.WithLabels(_client.Model).NewTimer()` so every observation is attributed to the embedding model that produced it.
 
 ## Symptom
 
