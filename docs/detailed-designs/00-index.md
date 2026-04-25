@@ -47,6 +47,9 @@ Features are numbered in the order they shall be implemented. Each feature is a 
 | 22 | [Security hardening](22-security-hardening/README.md) | L1-013 | Draft |
 | 23 | [Observability](23-observability/README.md) | L1-016 | Draft |
 | 24 | [Accessibility](24-accessibility/README.md) | L1-015 | Draft |
+| 25 | [Remember me](25-remember-me/README.md) | L1-001 | Draft |
+| 26 | [Forgot password request](26-forgot-password-request/README.md) | L1-001 | Draft |
+| 27 | [Reset password](27-reset-password/README.md) | L1-001 | Draft |
 
 ## Conventions used across designs
 
