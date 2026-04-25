@@ -110,6 +110,32 @@ public class AuthTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task RateLimit_429_includes_retry_after_header_and_json_body()
+    {
+        var client = _factory.CreateClient();
+        var email = UniqueEmail();
+        HttpResponseMessage? last = null;
+        for (int i = 0; i < 6; i++)
+        {
+            last = await client.PostAsJsonAsync("/api/auth/login", new { email, password = "wrongpassword12" });
+        }
+        Assert.NotNull(last);
+        Assert.Equal((HttpStatusCode)429, last!.StatusCode);
+
+        Assert.True(
+            last.Headers.TryGetValues("Retry-After", out var retryHeader),
+            "Retry-After header is missing");
+        var headerValue = retryHeader!.FirstOrDefault();
+        Assert.False(string.IsNullOrEmpty(headerValue));
+        Assert.True(int.TryParse(headerValue, out var headerSeconds), "Retry-After must be an integer");
+        Assert.True(headerSeconds > 0);
+
+        var body = await last.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("rate_limited", body.GetProperty("error").GetString());
+        Assert.Equal(headerSeconds, body.GetProperty("retryAfter").GetInt32());
+    }
+
+    [Fact]
     public async Task Password_hash_is_argon2id_not_plain()
     {
         var client = _factory.CreateClient();
