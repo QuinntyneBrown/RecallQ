@@ -1,5 +1,6 @@
 # Intro modal "Send via email" not disabled when either party lacks email
 
+**Status:** Complete — `IntroModal` now exposes `canEmailBoth()` and binds `[disabled]="!canEmailBoth()"` on the Send via email button; `sendEmail()` short-circuits if either email is missing.
 **Flow:** [30 — Quick Action: Intro Draft](../flows/30-quick-action-intro/30-quick-action-intro.md)
 **Traces:** L1-010, L2-039.
 **Severity:** Medium — Flow 30 alternatives say "Either party has no email → `Send via email` is disabled". The current button is always enabled, so tapping it on a contact with no email produces a malformed `mailto:,b@example.com?subject=…` URL whose first recipient is empty (and many mail clients reject the whole `to` field as invalid).

@@ -62,7 +62,7 @@ export interface IntroModalData {
 
       <div class="actions">
         <button type="button" (click)="copy()">Copy</button>
-        <button type="button" (click)="sendEmail()">Send via email</button>
+        <button type="button" (click)="sendEmail()" [disabled]="!canEmailBoth()">Send via email</button>
       </div>
     }
   `,
@@ -191,7 +191,12 @@ export class IntroModal implements OnInit {
     }
   }
 
+  canEmailBoth(): boolean {
+    return !!this.data.contact.emails?.[0] && !!this.secondParty()?.emails?.[0];
+  }
+
   sendEmail() {
+    if (!this.canEmailBoth()) return;
     const a = this.data.contact;
     const b = this.secondParty();
     const aEmail = a.emails?.[0] ?? '';
