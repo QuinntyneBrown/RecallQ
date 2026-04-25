@@ -149,6 +149,26 @@ public class SummariesTests : IClassFixture<SummaryWorkerFactory>
     }
 
     [Fact]
+    public async Task Refresh_different_contacts_within_60s_each_get_their_own_bucket()
+    {
+        var (client, cookie) = await RegisterAndLogin(_factory);
+        var idA = await CreateContact(client, cookie);
+        var idB = await CreateContact(client, cookie);
+        await LogInteraction(client, cookie, idA, "alpha", DateTime.UtcNow.AddDays(-1));
+        await LogInteraction(client, cookie, idB, "beta", DateTime.UtcNow.AddDays(-1));
+
+        using var reqA = new HttpRequestMessage(HttpMethod.Post, $"/api/contacts/{idA}/summary:refresh");
+        reqA.Headers.Add("Cookie", cookie);
+        var rA = await client.SendAsync(reqA);
+        Assert.Equal(HttpStatusCode.Accepted, rA.StatusCode);
+
+        using var reqB = new HttpRequestMessage(HttpMethod.Post, $"/api/contacts/{idB}/summary:refresh");
+        reqB.Headers.Add("Cookie", cookie);
+        var rB = await client.SendAsync(reqB);
+        Assert.Equal(HttpStatusCode.Accepted, rB.StatusCode);
+    }
+
+    [Fact]
     public async Task Cached_summary_within_1h_does_not_call_LLM()
     {
         await using var factory = new CountingFactory();
