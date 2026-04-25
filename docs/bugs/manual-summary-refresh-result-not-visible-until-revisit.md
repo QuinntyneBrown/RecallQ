@@ -2,7 +2,7 @@
 
 **Flow:** 27 — Refresh Relationship Summary (Manual)
 **Severity:** High (the entire manual-refresh flow is functionally broken when the contact's interactions haven't changed; the user taps **Refresh**, sees the same paragraph, and has no signal that a fresh one ever lands)
-**Status:** Open
+**Status:** Complete — `SummariesEndpoints` GET now returns `status: "pending"` when `row.LastRefreshRequestedAt > row.UpdatedAt`, so the SPA's poll loop continues across the in-flight refresh and picks up the regenerated paragraph in place. Existing `loadSummary` already keeps the prior paragraph visible across `pending` polls, so the user sees a subtle spinner instead of a wipe. New acceptance test `SummaryRefreshGatedOnLastRequestTests` seeds a 30-min-old summary, fires `:refresh`, and asserts GET returns `pending`.
 
 ## Symptom
 
