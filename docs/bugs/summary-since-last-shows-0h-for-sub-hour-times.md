@@ -2,7 +2,7 @@
 
 **Flow:** 26 — View Relationship Summary
 **Severity:** Medium-High (every user who logs an interaction sees an awkward, misleading "0h" stat for the next hour)
-**Status:** Open
+**Status:** Complete — `relationship-summary-card.component.ts`'s `sinceLast()` now has a dedicated minutes branch: 60s–60m → `${m}m`, then hours, then days. E2E test `bug-summary-since-last-minutes.spec.ts` mocks `lastInteractionAt` 30 minutes in the past and asserts the stat reads `30m`.
 
 ## Symptom
 
