@@ -9,9 +9,12 @@ export class AuthPage {
     await this.page.getByLabel('Password').fill(password);
     await this.page.getByRole('button', { name: 'Create account' }).click();
   }
-  async login(email: string, password: string) {
+  async login(email: string, password: string, rememberMe = false) {
     await this.page.getByLabel('Email').fill(email);
     await this.page.getByLabel('Password').fill(password);
+    if (rememberMe) {
+      await this.page.getByRole('checkbox', { name: 'Remember me' }).click();
+    }
     await this.page.getByRole('button', { name: 'Sign in' }).click();
   }
   async logout() {

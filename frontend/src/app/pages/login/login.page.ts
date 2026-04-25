@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InputFieldComponent } from '../../ui/input-field/input-field.component';
 import { ButtonPrimaryComponent } from '../../ui/button-primary/button-primary.component';
 import { BrandComponent } from '../../ui/brand/brand.component';
+import { CheckboxComponent } from '../../ui/checkbox/checkbox.component';
 import { AuthService } from '../../auth/auth.service';
 import { safeReturnUrl } from '../../auth/return-url';
 
@@ -15,7 +16,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [InputFieldComponent, ButtonPrimaryComponent, BrandComponent, RouterLink],
+  imports: [InputFieldComponent, ButtonPrimaryComponent, BrandComponent, CheckboxComponent, RouterLink],
   templateUrl: './login.page.html',
   styleUrl: './login.page.css',
 })
@@ -25,6 +26,7 @@ export class LoginPage {
   private readonly route = inject(ActivatedRoute);
   readonly email = signal('');
   readonly password = signal('');
+  readonly rememberMe = signal(false);
   readonly error = signal<string | null>(null);
   readonly busy = signal(false);
 
@@ -33,7 +35,7 @@ export class LoginPage {
     this.error.set(null);
     this.busy.set(true);
     try {
-      await this.auth.login(this.email(), this.password());
+      await this.auth.login(this.email(), this.password(), this.rememberMe());
       const target = safeReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
       await this.router.navigateByUrl(target);
     } catch (e: any) {

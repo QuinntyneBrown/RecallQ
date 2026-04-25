@@ -19,15 +19,15 @@ export class AuthService {
       const code = body?.error ?? (res.status === 409 ? 'email_taken' : 'register_failed');
       throw new Error(code);
     }
-    await this.login(email, password);
+    await this.login(email, password, false);
   }
 
-  async login(email: string, password: string): Promise<void> {
+  async login(email: string, password: string, rememberMe: boolean): Promise<void> {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, rememberMe }),
     });
     if (res.status === 401) throw new Error('invalid_credentials');
     if (res.status === 429) throw new Error('rate_limited');

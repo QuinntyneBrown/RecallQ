@@ -1,0 +1,17 @@
+<button
+  class="row"
+  type="button"
+  role="checkbox"
+  [attr.aria-checked]="checked"
+  [disabled]="disabled"
+  (click)="toggle()"
+>
+  <span class="box">
+    @if (checked) {
+      <svg class="check" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+    }
+  </span>
+  <span class="label">{{ label }}</span>
+</button>

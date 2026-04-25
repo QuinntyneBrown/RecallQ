@@ -17,7 +17,7 @@ public static class AuthEndpoints
         System.Text.Encoding.UTF8.GetBytes("{\"error\":\"invalid_credentials\"}");
 
     public record RegisterRequest(string? Email, string? Password);
-    public record LoginRequest(string? Email, string? Password);
+    public record LoginRequest(string? Email, string? Password, bool? RememberMe);
 
     private static readonly (string Name, Entities.StackKind Kind, string Definition, int Order)[] DefaultStacks = new[]
     {
@@ -81,7 +81,17 @@ public static class AuthEndpoints
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("sid", Guid.NewGuid().ToString())
             }, CookieAuthenticationDefaults.AuthenticationScheme);
-            await http.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            var rememberMe = req.RememberMe == true;
+            var props = new AuthenticationProperties
+            {
+                IsPersistent = rememberMe,
+                ExpiresUtc = DateTimeOffset.UtcNow.Add(rememberMe ? TimeSpan.FromDays(30) : TimeSpan.FromHours(24)),
+                AllowRefresh = false
+            };
+            await http.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                props);
             http.Response.StatusCode = 200;
             await http.Response.WriteAsJsonAsync(new { id = user.Id, email = user.Email });
         }).RequireRateLimiting(LoginRateLimit.PolicyName);
