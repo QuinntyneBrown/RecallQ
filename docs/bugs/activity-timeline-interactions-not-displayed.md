@@ -1,6 +1,6 @@
 # Activity timeline interactions not displayed on contact detail page
 
-**Status:** Incomplete
+**Status:** Complete
 **Test:** activity-timeline.spec.ts:6 - "flow 12: activity timeline shows recent interactions inline"
 **Severity:** High (activity timeline is a core feature)
 
@@ -36,17 +36,16 @@ Interaction creation may be failing silently or interactions exist but timeline 
 6. Click save/submit
 7. Verify "Activity 1" text appears in timeline
 
-## Root cause investigation needed
+## Root cause
 
-- Check if the add-interaction button exists and is visible on contact-detail page
-- Check if interaction creation API endpoint is working
-- Check if timeline component is fetching/rendering interactions correctly
-- Verify backend returns interactions list in contact detail response
+Test was using incorrect form selectors:
+- Tried to use `selectOption()` for type but form uses radio buttons
+- Incorrect label selectors for Subject and Content fields
 
-## Fixes to test
+## Fix applied
 
-Need to verify:
-1. Add interaction button selector/naming
-2. Form field labels and input selectors match actual form
-3. Save/submit button selector matches actual button
-4. Timeline displays interactions after creation
+Updated test to:
+1. Use `getByRole('radio', { name: /note/i })` for type selection
+2. Use correct label selectors: `getByLabel('Subject')` and `getByLabel('Content')`
+3. Add `waitForURL` to wait for navigation back to contact detail page
+4. This allows the test to properly create interactions and verify they display in timeline
