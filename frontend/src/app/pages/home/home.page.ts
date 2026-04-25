@@ -24,7 +24,7 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
           <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
           <input id="q" class="search-input" type="search" role="searchbox"
                  aria-label="Search contacts"
-                 placeholder="Search contacts"
+                 placeholder="Search by meaning..."
                  (keyup.enter)="goSearch($event)" />
         </div>
       </section>
