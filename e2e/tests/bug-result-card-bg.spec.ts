@@ -20,7 +20,7 @@ test('result card uses --surface-secondary background', async ({ page }) => {
 
   await page.goto('/search?q=Sarah');
 
-  const card = page.locator('.card').first();
+  const card = page.locator('[data-testid="result-card"], [data-testid="featured-result"]').first();
   await expect(card).toBeVisible({ timeout: 10_000 });
 
   const bg = await card.evaluate((el) => getComputedStyle(el).backgroundColor);

@@ -4,7 +4,7 @@
   gap: 10px;
   padding: 16px;
   border-radius: var(--radius-lg);
-  background: var(--surface-elevated);
+  background: var(--surface-secondary);
   border: 2px solid var(--featured-border);
   box-shadow: 0 0 24px color-mix(in srgb, var(--accent-primary) 24%, transparent);
   color: var(--foreground-primary);
