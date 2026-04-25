@@ -2,7 +2,7 @@
 // Task: T026
 import { test, expect } from '@playwright/test';
 
-// NOTE: duplicated from web/src/app/shell/breakpoints.util.ts — must stay in sync.
+// NOTE: duplicated from frontend/src/app/shell/breakpoints.util.ts — must stay in sync.
 type BreakpointFlags = {
   xs: boolean;
   sm: boolean;

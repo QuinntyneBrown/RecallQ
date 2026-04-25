@@ -26,7 +26,7 @@ const REQUIRED_TOKENS = [
 ];
 
 test('tokens.css declares every required variable', () => {
-  const tokensPath = path.resolve(__dirname, '../../web/src/app/tokens.css');
+  const tokensPath = path.resolve(__dirname, '../../frontend/src/app/tokens.css');
   const css = fs.readFileSync(tokensPath, 'utf8');
   for (const name of REQUIRED_TOKENS) {
     expect(css, `missing ${name}`).toContain(`${name}:`);

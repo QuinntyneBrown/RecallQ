@@ -12,6 +12,11 @@ public static class RateLimitPolicies
 
     public static IServiceCollection AddRecallQRateLimits(this IServiceCollection services)
     {
+        var disableRateLimits = string.Equals(
+            Environment.GetEnvironmentVariable("RECALLQ_DISABLE_RATE_LIMITS"),
+            "true",
+            StringComparison.OrdinalIgnoreCase);
+
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = 429;
@@ -32,6 +37,7 @@ public static class RateLimitPolicies
             // register: 5 per 60s keyed by ip
             options.AddPolicy("register", httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter("register");
                 var key = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
                 {
@@ -45,6 +51,7 @@ public static class RateLimitPolicies
             // login: 5 per 60s keyed by ip+email
             options.AddPolicy(LoginRateLimit.PolicyName, httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter(LoginRateLimit.PolicyName);
                 var ip = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var email = httpCtx.Items.TryGetValue(LoginEmailItemKey, out var e) ? e as string ?? "" : "";
                 var key = $"{ip}:{email}";
@@ -60,6 +67,7 @@ public static class RateLimitPolicies
             // search: 60 per minute keyed by user
             options.AddPolicy("search", httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter("search");
                 var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                     ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
@@ -74,6 +82,7 @@ public static class RateLimitPolicies
             // ask: 20 per minute keyed by user
             options.AddPolicy("ask", httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter("ask");
                 var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                     ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
@@ -88,6 +97,7 @@ public static class RateLimitPolicies
             // summary: 1 refresh per (user, contact) per minute
             options.AddPolicy("summary", httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter("summary");
                 var userId = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                     ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var contactId = httpCtx.Request.RouteValues["id"]?.ToString() ?? "unknown";
@@ -104,6 +114,7 @@ public static class RateLimitPolicies
             // intro: 20 per minute keyed by user
             options.AddPolicy("intro", httpCtx =>
             {
+                if (disableRateLimits) return RateLimitPartition.GetNoLimiter("intro");
                 var key = httpCtx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                     ?? httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions

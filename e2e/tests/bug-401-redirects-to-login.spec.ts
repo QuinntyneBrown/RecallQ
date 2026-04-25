@@ -16,5 +16,5 @@ test('401 on a protected call sends the user to /login', async ({ page }) => {
 
   await page.reload();
 
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login(?:\?returnUrl=%2Fhome)?$/);
 });

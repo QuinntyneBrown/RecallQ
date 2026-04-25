@@ -36,18 +36,18 @@ export default defineConfig({
   webServer: [
     {
       command: 'npm run start',
-      cwd: '../web',
+      cwd: '../frontend',
       url: 'http://localhost:4200',
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
     },
     {
-      command: 'dotnet run --project ../src/RecallQ.Api --urls http://localhost:5151',
+      command: 'dotnet run --project ../backend/RecallQ.Api/RecallQ.Api.csproj --urls http://localhost:5151',
       url: 'http://localhost:5151/api/ping',
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
       stdout: 'pipe',
-      env: { ADMIN_ENABLED: 'true' },
+      env: { ADMIN_ENABLED: 'true', RECALLQ_DISABLE_RATE_LIMITS: 'true' },
     },
   ],
 });

@@ -19,6 +19,10 @@ export class AppShellPage {
     };
   }
 
+  statusClock() {
+    return this.page.getByTestId('status-clock');
+  }
+
   async healthDot() {
     return this.page.getByTestId('health-dot');
   }

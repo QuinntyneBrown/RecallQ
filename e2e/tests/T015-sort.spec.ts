@@ -2,7 +2,7 @@
 // Task: T015
 import { test, expect } from '@playwright/test';
 
-// NOTE: duplicated from web/src/app/search/sort.util.ts — must stay in sync.
+// NOTE: duplicated from frontend/src/app/search/sort.util.ts — must stay in sync.
 type Sort = 'similarity' | 'recent';
 const DEFAULT_SORT: Sort = 'similarity';
 interface Sortable { similarity: number; occurredAt?: string | null }

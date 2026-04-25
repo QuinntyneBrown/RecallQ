@@ -7,7 +7,7 @@ import { screenshot } from '../fixtures/screenshot';
 
 test('anonymous user is redirected to login', async ({ page }) => {
   await page.goto('/home');
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?returnUrl=%2Fhome$/);
 });
 
 test('register, login, and logout flow', async ({ page }) => {

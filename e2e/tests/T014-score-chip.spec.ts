@@ -2,7 +2,7 @@
 // Task: T014
 import { test, expect } from '@playwright/test';
 
-// NOTE: duplicated from web/src/app/ui/score-chip/score-chip.util.ts — must stay in sync.
+// NOTE: duplicated from frontend/src/app/ui/score-chip/score-chip.util.ts — must stay in sync.
 type ScoreTier = 'high' | 'mid' | 'low';
 function computeTier(value: number): ScoreTier {
   if (value >= 0.90) return 'high';
