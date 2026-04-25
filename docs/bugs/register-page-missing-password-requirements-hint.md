@@ -2,7 +2,7 @@
 
 **Flow:** 01 — User Registration
 **Severity:** Low-Medium (UX, friction)
-**Status:** Open
+**Status:** Complete — `register.page.html` now renders `<p class="hint" data-testid="password-hint">At least 12 characters, including a letter and a digit.</p>` directly under the password input. `register.page.css` adds a small muted-foreground style for `.hint`. Visitors see the rule before they ever submit.
 
 ## Symptom
 

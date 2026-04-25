@@ -22,6 +22,11 @@ form {
   color: var(--accent-secondary);
   font-size: 14px;
 }
+.hint {
+  color: var(--foreground-muted);
+  font-size: 12px;
+  margin: -8px 0 0 0;
+}
 .aux {
   color: var(--foreground-secondary);
   font-size: 14px;

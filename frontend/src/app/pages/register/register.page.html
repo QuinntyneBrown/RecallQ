@@ -18,6 +18,7 @@
       [value]="password()"
       (valueChange)="password.set($event)"
     />
+    <p class="hint" data-testid="password-hint">At least 12 characters, including a letter and a digit.</p>
     @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
     <app-button-primary type="submit" [disabled]="busy()">Create account</app-button-primary>
   </form>
