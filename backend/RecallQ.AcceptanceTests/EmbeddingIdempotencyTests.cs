@@ -70,6 +70,42 @@ public class EmbeddingIdempotencyTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public async Task Contact_patch_changing_emails_re_embeds()
+    {
+        var (client, userId, cookie) = await RegisterLogin();
+        var id = await CreateContact(client, cookie, "Patch Re-embed " + Guid.NewGuid().ToString("N"));
+        var row1 = await WaitForEmbedding(id);
+        Assert.NotNull(row1);
+        var hashBefore = row1!.ContentHash;
+
+        using var patch = new HttpRequestMessage(HttpMethod.Patch, $"/api/contacts/{id}")
+        {
+            Content = JsonContent.Create(new { emails = new[] { "patched-" + Guid.NewGuid().ToString("N") + "@example.com" } })
+        };
+        patch.Headers.Add("Cookie", cookie);
+        var patchRes = await client.SendAsync(patch);
+        Assert.Equal(HttpStatusCode.OK, patchRes.StatusCode);
+
+        var deadline = DateTime.UtcNow.AddSeconds(15);
+        string? hashAfter = null;
+        while (DateTime.UtcNow < deadline)
+        {
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var row = await db.ContactEmbeddings.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.ContactId == id);
+            if (row is not null && !string.IsNullOrEmpty(row.ContentHash) && row.ContentHash != hashBefore)
+            {
+                hashAfter = row.ContentHash;
+                break;
+            }
+            await Task.Delay(150);
+        }
+
+        Assert.NotNull(hashAfter);
+        Assert.NotEqual(hashBefore, hashAfter);
+    }
+
+    [Fact]
     public async Task Re_embedding_same_content_is_idempotent()
     {
         var (_, userId, _) = await RegisterLogin();
