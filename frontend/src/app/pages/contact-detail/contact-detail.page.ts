@@ -10,6 +10,7 @@ import { AddEmailModal } from '../../ui/modals/add-email.modal';
 import { AddPhoneModal } from '../../ui/modals/add-phone.modal';
 import { IntroModal } from '../../ui/modals/intro.modal';
 import { ToastService } from '../../ui/toast/toast.service';
+import { BreakpointService } from '../../shell/breakpoint.service';
 import { navigateExternal } from '../../shared/navigate-external';
 
 @Component({
@@ -213,6 +214,7 @@ export class ContactDetailPage implements OnInit {
   private readonly interactions = inject(InteractionsService);
   private readonly dialog = inject(Dialog);
   private readonly toast = inject(ToastService);
+  private readonly breakpoints = inject(BreakpointService);
   readonly contact = signal<ContactDetailDto | null>(null);
   readonly notFound = signal(false);
   readonly contactId = signal<string | null>(null);
@@ -334,8 +336,7 @@ export class ContactDetailPage implements OnInit {
       return;
     }
     const phone = c.phones[0];
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
+    if (!this.breakpoints.md()) {
       this.navigateExternal('tel:' + phone);
     } else {
       try {

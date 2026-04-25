@@ -1,5 +1,6 @@
 # Call tile picks tel:/clipboard from User-Agent instead of viewport
 
+**Status:** Complete — `onCall` now branches on `BreakpointService.md()` so a viewport `< 768 px` always takes the dialer path.
 **Flow:** [29 — Quick Action: Call](../flows/29-quick-action-call/29-quick-action-call.md)
 **Traces:** L1-010, L2-038.
 **Severity:** Medium — Flow 29 says "Phone present & **viewport is XS/SM** → `tel:`" and "Phone present & **viewport ≥ MD** → clipboard copy". The current code branches on `navigator.userAgent`, so a mobile-sized viewport on a desktop browser (the most common manual-test setup, and the default Playwright project) takes the clipboard branch instead of the dialer branch. Tablet browsers in desktop mode hit the opposite mismatch.
