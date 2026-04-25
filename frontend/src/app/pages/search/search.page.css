@@ -117,7 +117,7 @@
 .detail-name { margin: 0; font-size: 20px; font-weight: 600; }
 .detail-sub { margin: 4px 0 0 0; color: var(--foreground-secondary); font-size: 14px; }
 .open-link {
-  color: var(--accent-primary);
+  color: var(--accent-tertiary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
