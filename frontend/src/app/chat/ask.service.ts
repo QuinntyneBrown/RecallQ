@@ -1,4 +1,5 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Citation } from '../ui/citation-card/citation-card.component';
 import { AuthService } from '../auth/auth.service';
 
@@ -18,6 +19,7 @@ export class AskService {
   readonly pending = signal(false);
   readonly error = signal<string | null>(null);
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   constructor() {
     effect(() => {
@@ -85,6 +87,15 @@ export class AskService {
         body: JSON.stringify(body),
       });
       if (!res.ok || !res.body) {
+        if (res.status === 401) {
+          this.auth.authState.set(null);
+          const url = this.router.url;
+          const usable = url && url !== '/' && !url.startsWith('/login');
+          const target = usable ? `/login?returnUrl=${encodeURIComponent(url)}` : '/login';
+          void this.router.navigateByUrl(target);
+          this.finishStreaming(assistantMsg.id);
+          return;
+        }
         if (res.status === 429) {
           this.error.set('Too many questions — try again in a minute.');
         } else if (res.status === 400) {
