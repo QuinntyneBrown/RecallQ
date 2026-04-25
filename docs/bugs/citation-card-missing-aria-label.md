@@ -1,5 +1,6 @@
 # Citation card has no `aria-label` for screen readers
 
+**Status:** Complete — `CitationCardComponent` now exposes an `ariaLabel()` getter and binds it on the anchor as `[attr.aria-label]="ariaLabel()"`.
 **Flow:** [41 — Screen Reader Announcement for Streaming Chat](../flows/41-screen-reader-streaming/41-screen-reader-streaming.md)
 **Traces:** L1-015, L2-068.
 **Severity:** Low — Flow 41 step 5 says each citation mini-card "exposes `role="link"` and an accessible name like `Contact: Sarah Mitchell, VP Product at Stripe, similarity 0.91`." The implementation provides `role="link"` but no `aria-label`, so screen readers fall back to concatenating the link's visible text — contact name, score-chip number, and the matched snippet — without any "Contact:" framing.

@@ -22,6 +22,10 @@ export class CitationCardComponent {
   @Input() top: boolean = false;
   private readonly router = inject(Router);
 
+  ariaLabel(): string {
+    return `Contact: ${this.citation.contactName}, similarity ${this.citation.similarity.toFixed(2)}`;
+  }
+
   nav(e: MouseEvent): void {
     e.preventDefault();
     this.router.navigate(['/contacts', this.citation.contactId]);

@@ -1,5 +1,5 @@
 <a class="citation" [class.top]="top" [attr.href]="'/contacts/' + citation.contactId"
-   (click)="nav($event)" role="link" data-testid="citation-card">
+   (click)="nav($event)" role="link" [attr.aria-label]="ariaLabel()" data-testid="citation-card">
   <div class="row">
     <strong>{{ citation.contactName }}</strong>
     <app-score-chip [value]="citation.similarity"/>
