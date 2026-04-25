@@ -2,7 +2,7 @@
 
 **Flow:** 13 — Update Interaction (with summary refresh flow 27)
 **Severity:** Medium-High (summary goes stale on every edit)
-**Status:** Open
+**Status:** Complete — `PATCH /api/interactions/{id}` now injects `ChannelWriter<SummaryRefreshJob>` and writes `new SummaryRefreshJob(i.ContactId, current.UserId!.Value)` after `SaveChangesAsync`, mirroring the create / delete handlers. Editing an interaction kicks the summary worker.
 
 ## Symptom
 

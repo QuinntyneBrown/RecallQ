@@ -45,7 +45,7 @@ public static class InteractionsEndpoints
 
         app.MapPatch("/api/interactions/{id:guid}", [Authorize] async (
             Guid id, PatchInteractionRequest req, AppDbContext db, ICurrentUser current,
-            ChannelWriter<EmbeddingJob> emb) =>
+            ChannelWriter<EmbeddingJob> emb, ChannelWriter<SummaryRefreshJob> sum) =>
         {
             var i = await db.Interactions.FirstOrDefaultAsync(x => x.Id == id);
             if (i is null) return Results.NotFound();
@@ -65,6 +65,7 @@ public static class InteractionsEndpoints
             }
             await db.SaveChangesAsync();
             await emb.WriteAsync(new EmbeddingJob(i.Id, current.UserId!.Value, "interaction"));
+            await sum.WriteAsync(new SummaryRefreshJob(i.ContactId, current.UserId!.Value));
             return Results.Ok(InteractionDto.From(i));
         });
 
