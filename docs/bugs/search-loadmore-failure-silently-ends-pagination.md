@@ -2,7 +2,7 @@
 
 **Flow:** 17 — Search Pagination (Infinite Scroll)
 **Severity:** High
-**Status:** Open
+**Status:** Complete — `SearchService` now exposes a `loadMoreError` signal; non-200 / thrown fetch in `loadMore` sets it without touching `hasMore`. `search.page.html` renders a `Couldn't load more — Retry` chip (`data-testid="loadmore-retry"`) when the error signal is set, and only renders the `End of results` marker when the server actually said `nextPage: null`.
 
 ## Symptom
 

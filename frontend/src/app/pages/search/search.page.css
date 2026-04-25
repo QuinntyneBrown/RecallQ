@@ -58,6 +58,20 @@
   text-align: center;
   margin: 0;
 }
+.loadmore-retry {
+  align-self: center;
+  background: var(--surface-elevated);
+  color: var(--foreground-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font: inherit;
+  cursor: pointer;
+}
+.loadmore-retry:hover, .loadmore-retry:focus-visible {
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--surface-elevated));
+  border-color: var(--accent-primary);
+}
 .skeletons { display: flex; flex-direction: column; gap: 10px; }
 .skeleton {
   height: 84px;

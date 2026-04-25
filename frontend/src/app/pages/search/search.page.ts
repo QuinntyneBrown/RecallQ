@@ -98,6 +98,10 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  onRetryLoadMore(): void {
+    void this.searchService.loadMore().then(() => this.hydrateContacts());
+  }
+
   onSelect(contactId: string): void {
     this.selectedContactId.set(contactId);
     const cached = this.contactsMap().get(contactId);

@@ -26,6 +26,7 @@ export class SearchService {
   readonly sort = signal<SearchSort>('similarity');
   readonly hasMore = signal(false);
   readonly page = signal(1);
+  readonly loadMoreError = signal(false);
   private readonly pageSize = 50;
 
   async search(q: string, opts?: { reset?: boolean; sort?: SearchSort }): Promise<void> {
@@ -76,6 +77,7 @@ export class SearchService {
     if (!q || !q.trim()) return;
     const nextPage = this.page() + 1;
     this.loading.set(true);
+    this.loadMoreError.set(false);
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
@@ -89,8 +91,10 @@ export class SearchService {
         this.hasMore.set(body.nextPage != null);
         this.page.set(nextPage);
       } else {
-        this.hasMore.set(false);
+        this.loadMoreError.set(true);
       }
+    } catch {
+      this.loadMoreError.set(true);
     } finally {
       this.loading.set(false);
     }

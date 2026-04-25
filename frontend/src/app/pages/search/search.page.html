@@ -39,7 +39,14 @@
           }
         </ng-container>
       </cdk-virtual-scroll-viewport>
-      @if (!searchService.hasMore() && !loading()) {
+      @if (searchService.loadMoreError() && !loading()) {
+        <button
+          type="button"
+          class="loadmore-retry"
+          data-testid="loadmore-retry"
+          (click)="onRetryLoadMore()"
+        >Couldn't load more — Retry</button>
+      } @else if (!searchService.hasMore() && !loading()) {
         <p class="end-of-results" data-testid="end-of-results">End of results</p>
       }
     }
