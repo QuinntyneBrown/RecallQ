@@ -102,8 +102,8 @@ public static class ContactsEndpoints
 
             var needsEmbedding = false;
             if (req.Starred.HasValue) c.Starred = req.Starred.Value;
-            if (req.Emails is not null) c.Emails = req.Emails;
-            if (req.Phones is not null) c.Phones = req.Phones;
+            if (req.Emails is not null) { c.Emails = req.Emails; needsEmbedding = true; }
+            if (req.Phones is not null) { c.Phones = req.Phones; needsEmbedding = true; }
             if (req.DisplayName is not null) { c.DisplayName = req.DisplayName.Trim(); needsEmbedding = true; }
             if (req.Initials is not null) { c.Initials = req.Initials.Trim(); }
             if (req.Role is not null) { c.Role = req.Role.Trim(); needsEmbedding = true; }

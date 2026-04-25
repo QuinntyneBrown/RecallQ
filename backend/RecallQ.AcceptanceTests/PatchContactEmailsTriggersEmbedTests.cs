@@ -59,10 +59,10 @@ public class PatchContactEmailsTriggersEmbedTests : IClassFixture<RecallqFactory
         var createdJson = await createRes.Content.ReadFromJsonAsync<JsonElement>();
         var contactId = createdJson.GetProperty("id").GetGuid();
 
-        // Drain whatever was enqueued by the create path so the next
-        // assertion reflects only what the PATCH writes.
-        var reader = _factory.Services.GetRequiredService<ChannelReader<EmbeddingJob>>();
-        while (reader.TryRead(out _)) { /* drain */ }
+        // The factory's CapturingEmbeddingConsumer drains the channel
+        // and stores jobs in CapturedJobs. Snapshot the count so we
+        // can assert the PATCH adds at least one new job.
+        var beforeCount = _factory.CapturedJobs.Count;
 
         // PATCH the emails — the embedded text now references a new
         // domain. The embedding job MUST be enqueued.
@@ -74,18 +74,28 @@ public class PatchContactEmailsTriggersEmbedTests : IClassFixture<RecallqFactory
         var patchRes = await client.SendAsync(patchReq);
         Assert.Equal(HttpStatusCode.OK, patchRes.StatusCode);
 
-        // Wait briefly for the writer to land. With the current bug, no
-        // job is enqueued and the read returns false.
+        // Wait briefly for the consumer to land the new job.
         var deadline = DateTime.UtcNow.AddSeconds(2);
-        EmbeddingJob? job = null;
+        EmbeddingJob? newJob = null;
         while (DateTime.UtcNow < deadline)
         {
-            if (reader.TryRead(out var j)) { job = j; break; }
+            newJob = _factory.CapturedJobs.FirstOrDefault(j => j.Id == contactId && j.Kind == "contact" && !ReferenceEquals(j, null) && !PreviouslySeen(_factory, beforeCount, j));
+            if (newJob is not null) break;
             await Task.Delay(50);
         }
 
-        Assert.NotNull(job);
-        Assert.Equal(contactId, job!.Id);
-        Assert.Equal("contact", job.Kind);
+        // Simpler: there must be MORE jobs after the PATCH than before.
+        Assert.True(_factory.CapturedJobs.Count > beforeCount,
+            $"Expected the PATCH to enqueue a new EmbeddingJob (before={beforeCount}, after={_factory.CapturedJobs.Count}).");
+        Assert.Contains(_factory.CapturedJobs, j => j.Id == contactId && j.Kind == "contact");
+    }
+
+    private static bool PreviouslySeen(RecallqFactory factory, int beforeCount, EmbeddingJob job)
+    {
+        var arr = factory.CapturedJobs.ToArray();
+        // We can't precisely tell which index a job was at; ConcurrentBag
+        // doesn't preserve order. Best-effort: if the count went up,
+        // assume new jobs are at the tail.
+        return arr.Take(beforeCount).Any(j => ReferenceEquals(j, job));
     }
 }
