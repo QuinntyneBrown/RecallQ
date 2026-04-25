@@ -2,7 +2,7 @@
 
 **Flow:** 29 — Quick Action: Call
 **Severity:** High (misleading UX)
-**Status:** Open
+**Status:** Complete — `ContactDetailPage.onCall`'s catch branch now toasts `Couldn't copy — call <phone>` instead of the success message, so the user can both see the failure and read the number to dial manually.
 
 ## Symptom
 

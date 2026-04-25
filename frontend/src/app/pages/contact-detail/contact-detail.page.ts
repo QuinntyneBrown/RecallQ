@@ -163,7 +163,7 @@ export class ContactDetailPage implements OnInit {
         await navigator.clipboard.writeText(phone);
         this.toast.show('Phone number copied');
       } catch {
-        this.toast.show('Phone number copied');
+        this.toast.show(`Couldn't copy — call ${phone}`);
       }
     }
   }
