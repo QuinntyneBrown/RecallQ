@@ -2,7 +2,7 @@
 
 **Flow:** 32 — Embedding Pipeline (and summary refresh flow 27)
 **Severity:** Medium (memory pressure under bulk writes)
-**Status:** Open
+**Status:** Complete — `Program.cs` now registers `Channel.CreateBounded<SummaryRefreshJob>(new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.Wait })`, mirroring the EmbeddingJob channel. Producers backpressure naturally on bulk writes.
 
 ## Symptom
 

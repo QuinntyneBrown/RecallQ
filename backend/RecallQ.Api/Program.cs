@@ -99,7 +99,7 @@ builder.Services.AddScoped<CitationRetriever>();
 builder.Services.AddScoped<FollowUpGenerator>();
 builder.Services.AddScoped<IntroDraftGenerator>();
 
-builder.Services.AddSingleton(Channel.CreateUnbounded<SummaryRefreshJob>());
+builder.Services.AddSingleton(Channel.CreateBounded<SummaryRefreshJob>(new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.Wait }));
 builder.Services.AddSingleton<ChannelWriter<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<SummaryRefreshJob>>(sp => sp.GetRequiredService<Channel<SummaryRefreshJob>>().Reader);
 builder.Services.AddHostedService<SummaryWorker>();
