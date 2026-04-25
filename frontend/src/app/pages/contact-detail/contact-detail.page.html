@@ -18,7 +18,13 @@
       </div>
 
       <div class="hero-content">
-        <div class="avatar" data-testid="hero-avatar">{{ c.initials }}</div>
+        <div
+          class="avatar"
+          data-testid="hero-avatar"
+          [style.background]="c.avatarColorA && c.avatarColorB
+            ? 'linear-gradient(135deg, ' + c.avatarColorA + ', ' + c.avatarColorB + ')'
+            : null"
+        >{{ c.initials }}</div>
         <h1 data-testid="hero-name">{{ c.displayName }}</h1>
         @if (roleLine()) {
           <p data-testid="hero-role">{{ roleLine() }}</p>

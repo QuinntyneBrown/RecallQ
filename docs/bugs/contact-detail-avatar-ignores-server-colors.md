@@ -1,5 +1,6 @@
 # Contact detail hero avatar ignores server-assigned colors
 
+**Status:** Complete — `contact-detail.page.html` hero avatar binds `[style.background]` to a 135deg gradient between `avatarColorA` and `avatarColorB` when both are present, falling back to the static rule otherwise.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md) (rendered through Flow 07)
 **Traces:** L1-002, L2-005, L2-035.
 **Severity:** Low-Medium — Flow 05 step 4 says the server "defaults `avatarColorA/B` from the palette when not supplied", and `ContactDetailDto` exposes both fields. The hero avatar in `contact-detail.page` always uses the static `linear-gradient(var(--accent-gradient-start), var(--accent-gradient-end))`, so every contact looks identical. The avatar is the strongest visual identifier for a contact in the design — losing per-contact colors flattens the feed.
