@@ -13,6 +13,7 @@ public static class SuggestionsEndpoints
         {
             var cutoff = DateTime.UtcNow.AddDays(-7);
             var row = await db.Suggestions
+                .Where(s => s.CreatedAt > cutoff)
                 .Where(s => s.DismissedAt == null || s.DismissedAt < cutoff)
                 .OrderByDescending(s => s.CreatedAt)
                 .FirstOrDefaultAsync(ct);

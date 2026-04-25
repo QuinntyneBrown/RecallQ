@@ -2,7 +2,7 @@
 
 **Flow:** 25 — Proactive AI Suggestion (Render and Dismiss)
 **Severity:** Medium (a Suggestion row created 30, 60, 90 days ago and never dismissed will still be served on every home load. The user sees stale text — e.g., "You met 3 AI founder last week" — long after the underlying signal stopped being true. The detector is keyed by `(OwnerUserId, Key)` and `AnyAsync`-skips re-creation, so the row never refreshes; once the deterministic key is minted it lives in the DB until somebody dismisses it. There's no scheduled cleanup either.)
-**Status:** Open
+**Status:** Complete — `SuggestionsEndpoints.cs` GET handler now ANDs in a `s.CreatedAt > cutoff` predicate (using the same 7-day cutoff that gates dismissal expiry), so an undismissed suggestion older than 7 days is filtered out. Two new acceptance tests in `SuggestionsTests` cover the boundary: `Suggestion_older_than_7_days_is_not_served` (8-day-old undismissed → null, was failing before the fix) and `Suggestion_within_7_days_is_served` (6-day sanity check). All four pre-existing tests still pass.
 
 ## Symptom
 
