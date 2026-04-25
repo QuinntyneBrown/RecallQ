@@ -10611,6 +10611,270 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pVKY9",
+                  "name": "groupHeader_ThisWeek",
+                  "width": "fill_container",
+                  "padding": [
+                    24,
+                    24,
+                    8,
+                    24
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "8Jter",
+                      "name": "groupLbl",
+                      "fill": "$foreground-muted",
+                      "content": "THIS WEEK",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "KF4TN",
+                      "name": "count",
+                      "fill": "$foreground-muted",
+                      "content": "1",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 11,
+                      "fontWeight": "500",
+                      "letterSpacing": 1.4
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "H9Za0",
+                  "name": "row4_meeting",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "NXfnN",
+                      "name": "iconCol",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "#BF40FF1A",
+                      "cornerRadius": "$radius-full",
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#BF40FF33"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "cuLb7",
+                          "name": "icon",
+                          "width": 18,
+                          "height": 18,
+                          "iconFontName": "calendar",
+                          "iconFontFamily": "phosphor",
+                          "fill": "$accent-secondary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "HQcJC",
+                      "name": "textCol",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YV4wd",
+                          "name": "subjRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "cHt3v",
+                              "name": "subject",
+                              "fill": "$foreground-primary",
+                              "content": "Coffee — Caverna, Brooklyn",
+                              "fontFamily": "Geist",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "R7P5H",
+                              "name": "time",
+                              "fill": "$foreground-muted",
+                              "content": "Tue",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "500",
+                              "letterSpacing": 1.2
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "uS3uG",
+                          "name": "snippet",
+                          "fill": "$foreground-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Pre-funding chat. She wants to see the deck v3 before introducing us to a16z.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qBIWL",
+                  "name": "groupHeader_Earlier",
+                  "width": "fill_container",
+                  "padding": [
+                    24,
+                    24,
+                    8,
+                    24
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "InhHN",
+                      "name": "groupLbl",
+                      "fill": "$foreground-muted",
+                      "content": "EARLIER IN MARCH 2026",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "letterSpacing": 1.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "yeU1J",
+                      "name": "count",
+                      "fill": "$foreground-muted",
+                      "content": "4",
+                      "fontFamily": "Geist Mono",
+                      "fontSize": 11,
+                      "fontWeight": "500",
+                      "letterSpacing": 1.4
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iPa7j",
+                  "name": "row5_email",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "oSrMu",
+                      "name": "iconCol",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "#4BE8FF1A",
+                      "cornerRadius": "$radius-full",
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#4BE8FF33"
+                      },
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "pjvKI",
+                          "name": "icon",
+                          "width": 18,
+                          "height": 18,
+                          "iconFontName": "envelope",
+                          "iconFontFamily": "phosphor",
+                          "fill": "$accent-tertiary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "G5r9p",
+                      "name": "textCol",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "SLVa7",
+                          "name": "subjRow",
+                          "width": "fill_container",
+                          "justifyContent": "space_between",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qWo5b",
+                              "name": "subject",
+                              "fill": "$foreground-primary",
+                              "content": "Welcome to RecallQ early-access",
+                              "fontFamily": "Geist",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "bZV60",
+                              "name": "time",
+                              "fill": "$foreground-muted",
+                              "content": "Mar 9",
+                              "fontFamily": "Geist Mono",
+                              "fontSize": 11,
+                              "fontWeight": "500",
+                              "letterSpacing": 1.2
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "eMGuI",
+                          "name": "snippet",
+                          "fill": "$foreground-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Thanks for the bug report on the import flow — fix shipped this morning. Let us know.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
