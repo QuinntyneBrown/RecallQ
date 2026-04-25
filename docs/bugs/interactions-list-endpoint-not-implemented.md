@@ -2,7 +2,7 @@
 
 **Flow:** 12 — View Activity Timeline (and 17 — Search Pagination's infinite-scroll pattern)
 **Severity:** High (the entire full-timeline view is unreachable in production: every user with > 3 interactions on a contact taps **See all N** and sees "No activity yet" instead of their interactions)
-**Status:** Open
+**Status:** Complete — `InteractionsEndpoints.cs` now registers `MapGet("/api/contacts/{contactId:guid}/interactions", …)` with paginated + ordered results (OccurredAt DESC, Id ASC for stability), default `pageSize = 50` capped at 100, and a `nextPage` cursor that mirrors the contacts-list endpoint. Owner-scoping comes from the global EF query filter on `Contacts` + `Interactions`. New acceptance test `InteractionsListEndpointTests` seeds 5 interactions via DbContext and asserts the live endpoint returns 200 with all 5 items + `nextPage = null`. No mocks.
 
 ## Symptom
 
