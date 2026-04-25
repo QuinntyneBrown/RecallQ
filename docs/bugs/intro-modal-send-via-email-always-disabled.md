@@ -2,7 +2,7 @@
 
 **Flow:** 30 — Quick Action: Intro Draft
 **Severity:** Medium-high (the documented "Send via email" path is unreachable for any picked second party. The button stays disabled even when both parties have emails on file. The user falls back to `Copy` and pasting into a fresh email — which silently changes the flow's UX promise of "default mail client opens with both recipients and the draft content".)
-**Status:** Open
+**Status:** Complete — `IntroModal.pick()` is now async; after setting `secondParty` to the list-shaped DTO it fetches the full `ContactDetailDto` via `contacts.get(c.id)` and replaces `secondParty` with the detail (guarded by an id check so a fast user picking B then C doesn't get B's late-arriving detail). `canEmailBoth()` and `sendEmail()` are unchanged — they now see the email field on the detail DTO. New e2e `bug-intro-send-email-enabled-when-both-have-emails.spec.ts` asserts the `Send via email` button is enabled after picking a second party who has an email on file. The fix doesn't touch the backend; `ContactListDto` stays lean.
 
 ## Symptom
 

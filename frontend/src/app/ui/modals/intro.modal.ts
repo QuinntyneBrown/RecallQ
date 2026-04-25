@@ -64,9 +64,17 @@ export class IntroModal implements OnInit {
     this.subject.set((e.target as HTMLInputElement).value);
   }
 
-  pick(c: ContactDto) {
+  async pick(c: ContactDto) {
     this.secondParty.set(c);
     this.query.set(c.displayName);
+    try {
+      const detail = await this.contacts.get(c.id);
+      if (detail && this.secondParty()?.id === c.id) {
+        this.secondParty.set(detail);
+      }
+    } catch {
+      // keep the list-shaped DTO; canEmailBoth() stays false but Copy still works
+    }
   }
 
   async generate() {
