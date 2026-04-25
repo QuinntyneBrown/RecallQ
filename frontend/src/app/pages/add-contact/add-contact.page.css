@@ -33,6 +33,6 @@ form { display: flex; flex-direction: column; gap: 16px; }
   font-size: 16px; box-sizing: border-box; outline: none;
 }
 .tag-label input:focus-visible {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px var(--accent-primary);
+  border-color: var(--accent-tertiary);
+  box-shadow: 0 0 0 2px var(--accent-tertiary);
 }
