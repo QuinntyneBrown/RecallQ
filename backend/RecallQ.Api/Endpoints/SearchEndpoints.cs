@@ -43,10 +43,10 @@ public static class SearchEndpoints
         logger.LogInformation("Search q_len={len} q_hash={hash} sort={sort}", q.Length, hashHex, sort);
 
         var userId = current.UserId!.Value;
-        var ceTotal = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
-        var ceMatch = await db.ContactEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
-        var ieTotal = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId).CountAsync();
-        var ieMatch = await db.InteractionEmbeddings.IgnoreQueryFilters().Where(e => e.OwnerUserId == userId && e.Model == client.Model).CountAsync();
+        var ceTotal = await db.ContactEmbeddings.CountAsync();
+        var ceMatch = await db.ContactEmbeddings.CountAsync(e => e.Model == client.Model);
+        var ieTotal = await db.InteractionEmbeddings.CountAsync();
+        var ieMatch = await db.InteractionEmbeddings.CountAsync(e => e.Model == client.Model);
         var total = ceTotal + ieTotal;
         if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), nextPage = (int?)null, contactsMatched = 0 });
         if ((ceMatch + ieMatch) * 2 < total)

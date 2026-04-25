@@ -2,7 +2,7 @@
 
 **Flow:** 36 — Owner-Scope Data Isolation
 **Severity:** Medium (defense-in-depth violation; brittle isolation)
-**Status:** Open
+**Status:** Complete — `SearchEndpoints` now reads `db.ContactEmbeddings.CountAsync()` / `db.ContactEmbeddings.CountAsync(e => e.Model == client.Model)` (and the parallel `InteractionEmbeddings` counts) directly. The four `IgnoreQueryFilters().Where(e => e.OwnerUserId == userId)` chains are gone — owner scope flows from the global query filter exactly the way flow 36 designed it.
 
 ## Symptom
 
