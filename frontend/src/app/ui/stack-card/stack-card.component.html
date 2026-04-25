@@ -1,0 +1,6 @@
+<a [attr.href]="'/search?stackId=' + stack.id" (click)="nav($event)"
+   role="link" data-testid="stack-card" class="stack-card"
+   [attr.aria-label]="stack.name">
+  <div class="count">{{ displayCount() }}</div>
+  <div class="name">{{ stack.name }}</div>
+</a>

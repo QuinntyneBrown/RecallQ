@@ -1,0 +1,20 @@
+<div class="wrap">
+  <button
+    type="button"
+    class="chip"
+    aria-label="Sort"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="open()"
+    [disabled]="disabled"
+    data-testid="sort-menu-trigger"
+    (click)="toggle()"
+  >
+    Sort · {{ label() }}
+  </button>
+  @if (open()) {
+    <div class="menu" role="menu" data-testid="sort-menu">
+      <button type="button" role="menuitem" class="item" (click)="pick('similarity')">Similarity</button>
+      <button type="button" role="menuitem" class="item" (click)="pick('recent')">Most recent</button>
+    </div>
+  }
+</div>

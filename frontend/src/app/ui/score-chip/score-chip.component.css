@@ -1,0 +1,28 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  min-width: 48px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-elevated);
+  color: var(--foreground-secondary);
+}
+.chip.high {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  color: var(--success);
+}
+.chip.mid {
+  background: color-mix(in srgb, var(--accent-secondary) 18%, transparent);
+  color: var(--accent-secondary);
+}
+/* T031: lift low-tier text color to --foreground-secondary (#B8B8D4) so the chip passes
+   WCAG AA against its tinted background. Using --foreground-muted gave 4.05:1 over the mixed bg. */
+.chip.low {
+  background: color-mix(in srgb, var(--foreground-muted) 18%, transparent);
+  color: var(--foreground-secondary);
+}

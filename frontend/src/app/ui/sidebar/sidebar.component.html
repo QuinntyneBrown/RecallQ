@@ -1,0 +1,19 @@
+<nav aria-label="Sidebar" class="sidebar">
+  <span
+    data-testid="health-dot-sidebar"
+    class="dot"
+    [class.online]="online()"
+    aria-hidden="true"
+  ></span>
+  <a routerLink="/home" aria-label="Home"><i class="ph ph-house"></i></a>
+  <a routerLink="/search" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
+  <a routerLink="/ask" aria-label="Ask"><i class="ph ph-sparkle"></i></a>
+  <div class="profile-wrap">
+    <button type="button" aria-label="Profile" (click)="toggleMenu()"><i class="ph ph-user"></i></button>
+    @if (menuOpen()) {
+      <div role="menu" class="menu">
+        <button role="menuitem" aria-label="Log out" type="button" (click)="logout()">Log out</button>
+      </div>
+    }
+  </div>
+</nav>

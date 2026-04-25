@@ -1,0 +1,5 @@
+<span class="chip"
+      [class.high]="tier()==='high'"
+      [class.mid]="tier()==='mid'"
+      [class.low]="tier()==='low'"
+      [attr.data-tier]="tier()">{{ rounded().toFixed(2) }}</span>
