@@ -52,7 +52,7 @@ export class EditInteractionPage implements OnInit {
     const contactId = this.route.snapshot.paramMap.get('id');
     const interactionId = this.route.snapshot.paramMap.get('interactionId');
     if (!contactId || !interactionId) return;
-    const contact = await this.contacts.get(contactId);
+    const contact = await this.contacts.get(contactId, 50);
     const i = contact?.recentInteractions?.find(r => r.id === interactionId);
     if (!i) {
       this.error.set("We couldn't find that interaction.");

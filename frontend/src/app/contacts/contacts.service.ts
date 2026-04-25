@@ -88,8 +88,9 @@ export class ContactsService {
     throw new Error('create_failed_' + res.status);
   }
 
-  async get(id: string): Promise<ContactDetailDto | null> {
-    const res = await fetch(`/api/contacts/${id}`, { credentials: 'include' });
+  async get(id: string, take?: number): Promise<ContactDetailDto | null> {
+    const url = take ? `/api/contacts/${id}?take=${take}` : `/api/contacts/${id}`;
+    const res = await fetch(url, { credentials: 'include' });
     if (res.status === 200) return (await res.json()) as ContactDetailDto;
     if (res.status === 404) return null;
     throw new Error('get_failed_' + res.status);

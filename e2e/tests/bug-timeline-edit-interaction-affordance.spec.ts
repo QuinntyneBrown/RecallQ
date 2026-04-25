@@ -8,7 +8,7 @@ test('timeline Edit button routes to edit page that PATCHes the interaction', as
   const contactId = '00000000-0000-0000-0000-0000000013ed';
   const interactionId = '11111111-1111-1111-1111-1111111113ed';
 
-  await page.route(`**/api/contacts/${contactId}`, (route) => {
+  await page.route(new RegExp(`/api/contacts/${contactId}(?:\\?|$)`), (route) => {
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
