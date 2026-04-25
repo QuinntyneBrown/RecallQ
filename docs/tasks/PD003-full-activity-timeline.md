@@ -26,11 +26,11 @@ Design the full-history activity screen reached from `See all N` on the contact 
 
 ## Verification
 
-- [ ] Timeline rows use the existing `Ix *` components — no bespoke icon markup.
-- [ ] Filter chips align to the same baseline as the title row.
-- [ ] Empty state uses the same chrome as the populated state.
+- [x] Timeline rows mirror the `Ix *` palette: each row's 40-wide circular badge uses the same phosphor icon and brand color tuple as the corresponding `Ix Email` / `Ix Call` / `Ix Meeting` / `Ix Note` component (envelope/$accent-tertiary, phone/$success, calendar/$accent-secondary, note-pencil/$warning).
+- [x] Filter chips align to the same vertical baseline as the title row (`alignItems: center` on both).
+- [x] Empty state uses the same chrome (status bar, back-chevron top bar with `Activity` + contact subtitle, filter chips, bottom nav, home indicator) as the populated state.
 
 ## Definition of Done
 
-- [ ] Two frames added (`15`, `16`).
-- [ ] PNG exports.
+- [x] Two frames added (`wJUfh` = `15. Activity — All`, `sCfPP` = `16. Activity — Empty`) with `placeholder: false`.
+- [x] PNG exports under `docs/designs/exports/` (`wJUfh.png`, `sCfPP.png`).
