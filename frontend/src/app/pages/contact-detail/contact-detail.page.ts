@@ -88,9 +88,15 @@ import { navigateExternal } from '../../shared/navigate-external';
         <section class="activity">
           <div class="activity-head">
             <h2>Recent activity</h2>
-            @if (c.interactionTotal > 3) {
-              <a [attr.href]="'/contacts/' + c.id + '/activity'" role="link">See all {{ c.interactionTotal }}</a>
-            }
+            <div class="activity-actions">
+              <button type="button" class="log-btn" aria-label="Log interaction" (click)="onLogInteraction()">
+                <i class="ph ph-plus" aria-hidden="true"></i>
+                Log
+              </button>
+              @if (c.interactionTotal > 3) {
+                <a [attr.href]="'/contacts/' + c.id + '/activity'" role="link">See all {{ c.interactionTotal }}</a>
+              }
+            </div>
           </div>
           @if (c.recentInteractions?.length) {
             <ul data-testid="timeline" role="list" class="timeline">
@@ -176,6 +182,22 @@ import { navigateExternal } from '../../shared/navigate-external';
     }
     .activity-head h2 { margin: 0; font-size: 18px; font-family: Geist, system-ui, sans-serif; }
     .activity-head a { color: var(--accent-primary); text-decoration: none; font-size: 14px; }
+    .activity-actions {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .log-btn {
+      background: transparent;
+      border: 0;
+      color: var(--accent-primary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 8px;
+      border-radius: var(--radius-md);
+    }
+    .log-btn:hover, .log-btn:focus-visible { background: color-mix(in srgb, var(--accent-primary) 10%, transparent); }
+    .log-btn .ph { font-size: 16px; }
     .timeline { list-style: none; padding: 0; margin: 0; }
     .timeline-item { border-bottom: 1px solid var(--border-subtle); }
     .timeline-item:last-child { border-bottom: 0; }
@@ -323,6 +345,12 @@ export class ContactDetailPage implements OnInit {
       this.contact.set(c);
       this.toast.show('Could not update star');
     }
+  }
+
+  onLogInteraction() {
+    const id = this.contactId();
+    if (!id) return;
+    void this.router.navigate(['/contacts', id, 'interactions', 'new']);
   }
 
   async deleteContact() {

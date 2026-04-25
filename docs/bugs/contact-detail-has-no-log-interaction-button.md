@@ -1,5 +1,6 @@
 # Contact detail has no "Log interaction" button
 
+**Status:** Complete — a `+ Log` button is now rendered in the Recent activity header; `onLogInteraction()` routes to `/contacts/:id/interactions/new`.
 **Flow:** [11 — Log Interaction](../flows/11-log-interaction/11-log-interaction.md)
 **Traces:** L1-003, L2-010.
 **Severity:** High — Flow 11's primary user trigger ("User taps **Log interaction** on a contact detail screen…") has no UI entry point. The `/contacts/:id/interactions/new` route exists and `AddInteractionPage` is fully implemented, but a visitor on the contact detail page has no button or link that navigates there, so the only way in is to type the URL.
