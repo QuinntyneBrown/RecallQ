@@ -1,5 +1,6 @@
 # Refresh summary rate-limit response is silent
 
+**Status:** Complete — service now throws `rate_limited` on 429 and the page shows a `'Refresh available in a minute'` toast.
 **Flow:** [27 — Refresh Relationship Summary](../flows/27-refresh-relationship-summary/27-refresh-relationship-summary.md)
 **Traces:** L1-008, L2-031.
 **Severity:** Medium — the server enforces a 1-refresh-per-60-seconds limit, but the SPA treats the resulting `429 Too Many Requests` identically to `202 Accepted`. The user taps Refresh, sees the "pending" affordance, then nothing changes — no signal that they've been throttled.

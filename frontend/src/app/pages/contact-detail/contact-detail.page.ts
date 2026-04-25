@@ -255,7 +255,15 @@ export class ContactDetailPage implements OnInit {
     const id = this.contactId();
     if (!id) return;
     this.summary.set({ status: 'pending' });
-    try { await this.contacts.refreshSummary(id); } catch {}
+    try {
+      await this.contacts.refreshSummary(id);
+    } catch (e: any) {
+      if (e?.message === 'rate_limited') {
+        this.toast.show('Refresh available in a minute');
+      } else {
+        this.toast.show('Could not refresh summary');
+      }
+    }
     this.loadSummary(0);
   }
 

@@ -129,7 +129,8 @@ export class ContactsService {
     const res = await fetch(`/api/contacts/${contactId}/summary:refresh`, {
       method: 'POST', credentials: 'include',
     });
-    if (res.status === 202 || res.status === 429) return;
+    if (res.status === 202) return;
+    if (res.status === 429) throw new Error('rate_limited');
     throw new Error('refresh_summary_failed_' + res.status);
   }
 
