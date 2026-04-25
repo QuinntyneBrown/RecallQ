@@ -1,6 +1,6 @@
 .status-bar {
   height: 50px;
-  background: var(--surface-primary);
+  background: transparent;
   color: var(--foreground-primary);
   display: flex;
   align-items: center;
