@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-primary);
+  background: transparent;
 }
 .pill {
   width: 134px;
