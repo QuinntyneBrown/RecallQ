@@ -2,7 +2,7 @@
 
 **Flow:** 31 — CSV Bulk Import (interaction with flow 24 — Smart Stacks)
 **Severity:** Medium (a user who just imported 100 contacts tagged "AI founders" returns to /home and sees the stale pre-import count next to their newly-relevant Smart Stack — for up to 5 minutes — eroding the "import then look around" loop)
-**Status:** Open
+**Status:** Complete — `ImportEndpoints` now injects `StackCountCache` and calls `stackCache.InvalidateOwner(ownerId)` after the final flush when `imported > 0`. Mirrors the create endpoint. New acceptance test `ImportInvalidatesStackCacheTests` seeds one tagged contact, primes `/api/stacks` (count=1), bulk-imports 3 more, and asserts the next `/api/stacks` returns count=4.
 
 ## Symptom
 
