@@ -2,7 +2,7 @@
 
 **Flow:** 22 — Ask New Session
 **Severity:** Medium-High (UX confusion)
-**Status:** Open
+**Status:** Complete — `AskPage.newSession()` now also calls `this.draft.set('')` after `ask.reset()`, so the input bar empties along with the message list.
 
 ## Symptom
 
