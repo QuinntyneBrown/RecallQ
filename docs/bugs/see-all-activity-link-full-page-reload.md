@@ -1,5 +1,6 @@
 # "See all N" activity link does a full page reload
 
+**Status:** Complete — `contact-detail.page.ts` now imports `RouterLink` and the activity link binds `[routerLink]="['/contacts', c.id, 'activity']"` so navigation stays inside the SPA.
 **Flow:** [07 — View Contact Detail](../flows/07-view-contact-detail/07-view-contact-detail.md)
 **Traces:** L1-009, L2-035.
 **Severity:** Medium — clicking the `See all 24` link on a contact's detail page navigates with a plain `<a href>`, so the browser performs a full document reload instead of an Angular Router transition. The visitor loses every in-memory signal (auth, contacts cache, ask conversation, suggestion state) and the load is noticeably slower.

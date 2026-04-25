@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ContactsService, ContactDetailDto, SummaryResponse } from '../../contacts/contacts.service';
 import { InteractionsService } from '../../interactions/interactions.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
@@ -15,7 +15,7 @@ import { navigateExternal } from '../../shared/navigate-external';
 @Component({
   selector: 'app-contact-detail-page',
   standalone: true,
-  imports: [TimelineItemComponent, RelationshipSummaryCardComponent, QuickActionTileComponent],
+  imports: [TimelineItemComponent, RelationshipSummaryCardComponent, QuickActionTileComponent, RouterLink],
   template: `
     <section class="page">
       @if (contact(); as c) {
@@ -95,7 +95,7 @@ import { navigateExternal } from '../../shared/navigate-external';
                 Log
               </button>
               @if (c.interactionTotal > 3) {
-                <a [attr.href]="'/contacts/' + c.id + '/activity'" role="link">See all {{ c.interactionTotal }}</a>
+                <a [routerLink]="['/contacts', c.id, 'activity']" role="link">See all {{ c.interactionTotal }}</a>
               }
             </div>
           </div>
