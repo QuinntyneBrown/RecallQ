@@ -135,6 +135,7 @@ public class ObservabilityTests : IClassFixture<ObservabilityFactory>
         Assert.Contains("recallq_http_requests_total", body);
         Assert.Matches(new Regex(@"recallq_http_requests_total\{[^}]*status_code=""\d+""[^}]*\}\s+[0-9]"), body);
         Assert.Matches(new Regex(@"recallq_api_latency_seconds_bucket\{[^}]*endpoint=""[^""]+""[^}]*status=""\d+""[^}]*le="), body);
+        Assert.Matches(new Regex(@"recallq_llm_tokens_total\{(?=[^}]*endpoint=)(?=[^}]*direction=)[^}]*\}\s+[0-9]"), body);
     }
 
     [Fact]
