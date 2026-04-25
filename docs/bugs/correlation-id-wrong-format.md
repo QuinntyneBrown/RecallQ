@@ -1,6 +1,6 @@
 # Correlation ID header returns UUID in wrong format
 
-**Status:** Open
+**Status:** Complete
 **Source:** Flow 37 - Observability Correlation ID E2E tests
 **Severity:** Medium (header value is valid but not in standard GUID format)
 
