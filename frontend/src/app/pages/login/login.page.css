@@ -8,11 +8,22 @@
   width: 100%;
   box-sizing: border-box;
 }
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 h1 {
   color: var(--foreground-primary);
   font-size: 32px;
   letter-spacing: -0.8px;
   margin: 0;
+}
+.hero-sub {
+  margin: 0;
+  color: var(--foreground-secondary);
+  font-size: 15px;
+  line-height: 1.4;
 }
 form {
   display: flex;
