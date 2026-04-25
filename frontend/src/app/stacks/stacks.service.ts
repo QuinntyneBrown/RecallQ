@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { ContactDto } from '../contacts/contacts.service';
 
 export type StackKind = 'Query' | 'Tag' | 'Classification';
@@ -16,7 +17,11 @@ export interface StackDto {
 export class StacksService {
   readonly stacks = signal<StackDto[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {
+    effect(() => {
+      if (this.auth.authState() === null) this.stacks.set([]);
+    });
+  }
 
   async refresh(): Promise<void> {
     try {

@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 export interface Suggestion {
   id: string;
@@ -16,7 +17,11 @@ export interface Suggestion {
 export class SuggestionsService {
   readonly suggestion = signal<Suggestion | null>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {
+    effect(() => {
+      if (this.auth.authState() === null) this.suggestion.set(null);
+    });
+  }
 
   async refresh(): Promise<void> {
     try {

@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { InteractionDto } from '../interactions/interactions.service';
 
 export interface ContactDto {
@@ -81,7 +82,14 @@ export class ContactsService {
   readonly contactCount = signal(0);
   readonly interactionCount = signal(0);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {
+    effect(() => {
+      if (this.auth.authState() === null) {
+        this.contactCount.set(0);
+        this.interactionCount.set(0);
+      }
+    });
+  }
 
   async create(payload: CreateContactPayload): Promise<ContactDto> {
     try {

@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 export type SearchSort = 'similarity' | 'recent';
 
@@ -31,7 +32,23 @@ export class SearchService {
   readonly loadMoreError = signal(false);
   private readonly pageSize = 50;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {
+    effect(() => {
+      if (this.auth.authState() === null) this.reset();
+    });
+  }
+
+  private reset(): void {
+    this.results.set([]);
+    this.loading.set(false);
+    this.error.set(null);
+    this.query.set('');
+    this.contactsMatched.set(0);
+    this.sort.set('similarity');
+    this.hasMore.set(false);
+    this.page.set(1);
+    this.loadMoreError.set(false);
+  }
 
   async search(q: string, opts?: { reset?: boolean; sort?: SearchSort }): Promise<void> {
     const sort = opts?.sort ?? this.sort();
