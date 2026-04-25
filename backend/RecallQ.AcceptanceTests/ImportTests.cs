@@ -56,6 +56,27 @@ public class ImportTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task Import_row_with_more_than_10_emails_is_rejected()
+    {
+        var (client, _, cookie) = await RegisterAndLogin(UniqueEmail());
+        var emails = string.Join(';', Enumerable.Range(0, 11).Select(i => $"user{i}@example.com"));
+        var csv = "displayName,emails\n" + $"Too Many,\"{emails}\"\n";
+        var bytes = Encoding.UTF8.GetBytes(csv);
+
+        using var form = BuildForm(bytes);
+        using var req = new HttpRequestMessage(HttpMethod.Post, "/api/import/contacts") { Content = form };
+        req.Headers.Add("Cookie", cookie);
+        var res = await client.SendAsync(req);
+        Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+        var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(0, body.GetProperty("imported").GetInt32());
+        Assert.Equal(1, body.GetProperty("failed").GetInt32());
+        var errs = body.GetProperty("errors");
+        Assert.Equal(1, errs.GetArrayLength());
+        Assert.Contains("emails", errs[0].GetProperty("reason").GetString(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task Import_500_rows_creates_500_contacts_and_enqueues_embeddings()
     {
         _factory.CapturedJobs.Clear();
