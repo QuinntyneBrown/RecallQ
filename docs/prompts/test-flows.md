@@ -1,3 +1,5 @@
+Git pull all changes from Origin
+
 Randomly pick a flow from C:\projects\RecallQ\docs\flows
 
     - exercise the flow in the running app locally and find a bug. Try to find a high priority bug
