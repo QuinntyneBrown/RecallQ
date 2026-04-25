@@ -5,6 +5,9 @@
   <span class="title">{{ titleText() }}</span>
 </span>
 <span class="time">{{ timeLabel() }}</span>
+<button type="button" class="edit" aria-label="Edit interaction" (click)="onEdit()">
+  <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+</button>
 <button type="button" class="del" aria-label="Delete interaction" (click)="onDelete()">
   <i class="ph ph-trash" aria-hidden="true"></i>
 </button>

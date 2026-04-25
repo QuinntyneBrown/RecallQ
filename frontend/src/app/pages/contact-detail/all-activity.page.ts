@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { InteractionsService, InteractionDto } from '../../interactions/interactions.service';
 import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.component';
 
@@ -12,6 +12,7 @@ import { TimelineItemComponent } from '../../ui/timeline-item/timeline-item.comp
 })
 export class AllActivityPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly interactions = inject(InteractionsService);
   readonly items = signal<InteractionDto[]>([]);
   readonly loading = signal(true);
@@ -27,5 +28,11 @@ export class AllActivityPage implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onEditInteraction(interactionId: string) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+    void this.router.navigate(['/contacts', id, 'interactions', interactionId, 'edit']);
   }
 }

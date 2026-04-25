@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'search', canMatch: [authGuard], loadComponent: () => import('./pages/search/search.page').then(m => m.SearchResultsPage) },
   { path: 'ask', canMatch: [authGuard], loadComponent: () => import('./pages/ask/ask.page').then(m => m.AskPage) },
   { path: 'contacts/:id/interactions/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-interaction/add-interaction.page').then(m => m.AddInteractionPage) },
+  { path: 'contacts/:id/interactions/:interactionId/edit', canMatch: [authGuard], loadComponent: () => import('./pages/edit-interaction/edit-interaction.page').then(m => m.EditInteractionPage) },
   { path: 'contacts/:id/activity', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/all-activity.page').then(m => m.AllActivityPage) },
   { path: 'contacts/:id', canMatch: [authGuard], loadComponent: () => import('./pages/contact-detail/contact-detail.page').then(m => m.ContactDetailPage) },
   { path: '**', redirectTo: 'login' },

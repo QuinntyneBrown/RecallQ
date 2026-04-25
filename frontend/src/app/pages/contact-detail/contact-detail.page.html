@@ -90,7 +90,7 @@
         <ul data-testid="timeline" role="list" class="timeline">
           @for (item of c.recentInteractions; track item.id) {
             <li role="listitem" class="timeline-item">
-              <app-timeline-item [item]="item" (delete)="onDeleteInteraction($event)"></app-timeline-item>
+              <app-timeline-item [item]="item" (delete)="onDeleteInteraction($event)" (edit)="onEditInteraction($event)"></app-timeline-item>
             </li>
           }
         </ul>

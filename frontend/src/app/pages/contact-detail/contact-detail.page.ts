@@ -181,6 +181,12 @@ export class ContactDetailPage implements OnInit {
     void this.router.navigate(['/contacts', id, 'interactions', 'new']);
   }
 
+  onEditInteraction(interactionId: string) {
+    const id = this.contactId();
+    if (!id) return;
+    void this.router.navigate(['/contacts', id, 'interactions', interactionId, 'edit']);
+  }
+
   async onDeleteInteraction(interactionId: string) {
     if (!window.confirm('Delete this interaction?')) return;
     try {

@@ -8,7 +8,7 @@
     <ul data-testid="all-activity" role="list" class="timeline">
       @for (item of items(); track item.id) {
         <li role="listitem" class="timeline-item">
-          <app-timeline-item [item]="item"></app-timeline-item>
+          <app-timeline-item [item]="item" (edit)="onEditInteraction($event)"></app-timeline-item>
         </li>
       }
     </ul>

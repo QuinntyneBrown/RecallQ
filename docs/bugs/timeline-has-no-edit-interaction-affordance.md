@@ -2,7 +2,7 @@
 
 **Flow:** 13 — Update Interaction
 **Severity:** High
-**Status:** Open
+**Status:** Complete — `timeline-item` now renders an `Edit interaction` pencil button next to the trash button; both `contact-detail.page` and `all-activity.page` wire the `(edit)` output to a new route `contacts/:id/interactions/:interactionId/edit`; `EditInteractionPage` reads the contact, prefills the form from `recentInteractions`, and PATCHes via `InteractionsService.patch` on save.
 
 ## Symptom
 

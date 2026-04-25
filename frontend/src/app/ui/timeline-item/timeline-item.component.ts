@@ -32,6 +32,7 @@ export function relativeShort(dateIso: string, now: Date = new Date()): string {
 export class TimelineItemComponent {
   @Input({ required: true }) item!: InteractionDto;
   @Output() delete = new EventEmitter<string>();
+  @Output() edit = new EventEmitter<string>();
   iconClass() { return ICON_MAP[this.item.type] ?? 'ph-note'; }
   titleText() {
     if (this.item.subject && this.item.subject.trim().length) return this.item.subject;
@@ -39,4 +40,5 @@ export class TimelineItemComponent {
   }
   timeLabel() { return relativeShort(this.item.occurredAt); }
   onDelete() { this.delete.emit(this.item.id); }
+  onEdit() { this.edit.emit(this.item.id); }
 }
