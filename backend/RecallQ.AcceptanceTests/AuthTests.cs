@@ -110,6 +110,23 @@ public class AuthTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task Sixth_register_per_ip_in_60s_returns_429()
+    {
+        var client = _factory.CreateClient();
+        HttpResponseMessage? last = null;
+        for (int i = 0; i < 6; i++)
+        {
+            last = await client.PostAsJsonAsync("/api/auth/register", new
+            {
+                email = $"reg-flood-{Guid.NewGuid():N}@example.com",
+                password = "correcthorse12"
+            });
+        }
+        Assert.NotNull(last);
+        Assert.Equal((HttpStatusCode)429, last!.StatusCode);
+    }
+
+    [Fact]
     public async Task RateLimit_429_includes_retry_after_header_and_json_body()
     {
         var client = _factory.CreateClient();
