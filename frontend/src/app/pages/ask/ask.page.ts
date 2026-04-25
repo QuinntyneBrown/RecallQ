@@ -255,6 +255,6 @@ export class AskPage implements AfterViewChecked, OnInit {
   }
 
   async handleFollowUp(text: string): Promise<void> {
-    await this.ask.send(text);
+    await this.ask.send(text, this.currentContactId());
   }
 }

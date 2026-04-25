@@ -1,5 +1,6 @@
 # Ask follow-up chip drops the contact scope
 
+**Status:** Complete — `handleFollowUp` now passes `this.currentContactId()` into `ask.send`, so the follow-up turn carries the same scope as a manually typed turn.
 **Flow:** [21 — Ask Follow-Up Chips](../flows/21-ask-followups/21-ask-followups.md)
 **Traces:** L1-005, L2-024.
 **Severity:** Medium — when the visitor entered Ask via a specific contact (`/ask?contactId=…`, see Flow 23) the follow-up chips replay the conversation without that contact id. The next turn is no longer scoped to the contact, so the answer drifts away from the topic the visitor came from.
