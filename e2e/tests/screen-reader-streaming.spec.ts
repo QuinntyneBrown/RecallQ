@@ -53,7 +53,7 @@ test('flow 41: ask with followup question', async ({ page }) => {
   const firstAsk = await page.request.post('/api/ask', {
     data: {
       contactId: contact.id,
-      prompt: 'What is their role?'
+      q: 'What is their role?'
     }
   });
 
@@ -63,7 +63,7 @@ test('flow 41: ask with followup question', async ({ page }) => {
   const followupAsk = await page.request.post('/api/ask', {
     data: {
       contactId: contact.id,
-      prompt: 'Tell me more about their responsibilities'
+      q: 'Tell me more about their responsibilities'
     }
   });
 
@@ -149,7 +149,7 @@ test('flow 41: multiple sequential asks on same contact', async ({ page }) => {
     const response = await page.request.post('/api/ask', {
       data: {
         contactId: contact.id,
-        prompt: `Question number ${i + 1}`
+        q: `Question number ${i + 1}`
       }
     });
 
