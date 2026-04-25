@@ -134,7 +134,7 @@ public class SuggestionDetector
                     Title = $"{owed} possible unreplied emails",
                     Body = $"You have {owed} possible unreplied emails — want to triage them?",
                     ActionLabel = "Triage",
-                    ActionHref = "/contacts?filter=owed",
+                    ActionHref = "/search?sort=recent",
                 });
                 emitted++;
             }
