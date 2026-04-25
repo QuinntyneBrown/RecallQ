@@ -73,7 +73,7 @@
 .follow-up-label {
   font-family: var(--font-mono, monospace);
   letter-spacing: 1.3px;
-  color: var(--foreground-muted);
+  color: var(--accent-tertiary);
   font-size: 11px;
   margin: 0 0 6px 0;
 }
