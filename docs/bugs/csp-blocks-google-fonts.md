@@ -2,7 +2,7 @@
 
 **Flow:** 34 — Hardened Request Pipeline (CSP)
 **Severity:** High (typography fix is a no-op under CSP)
-**Status:** Open
+**Status:** Complete — `SecurityHeadersMiddleware.CspValue` now appends `https://fonts.googleapis.com` to `style-src` and `https://fonts.gstatic.com` to `font-src`, so the SPA's Google-Fonts stylesheet and binary downloads are no longer blocked. The matching `SecurityHeadersTests` assertion was updated and now also explicitly asserts both Google domains appear in the CSP string.
 
 ## Symptom
 

@@ -10,8 +10,8 @@ public sealed class SecurityHeadersMiddleware
         "default-src 'self'; " +
         "connect-src 'self' https://api.openai.com; " +
         "img-src 'self' data:; " +
-        "style-src 'self' 'unsafe-inline'; " +
-        "font-src 'self'; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
         "frame-ancestors 'none'";
 
     public SecurityHeadersMiddleware(RequestDelegate next)
