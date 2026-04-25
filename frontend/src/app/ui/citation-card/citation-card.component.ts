@@ -7,6 +7,8 @@ export interface Citation {
   contactName: string;
   contactRole?: string | null;
   contactOrganization?: string | null;
+  avatarColorA?: string | null;
+  avatarColorB?: string | null;
   snippet: string;
   similarity: number;
   source: 'contact' | 'interaction';
@@ -41,6 +43,13 @@ export class CitationCardComponent {
       .slice(0, 2)
       .map(s => s[0].toUpperCase())
       .join('');
+  }
+
+  avatarBackground(): string | null {
+    const c = this.citation;
+    return c.avatarColorA && c.avatarColorB
+      ? `linear-gradient(135deg, ${c.avatarColorA}, ${c.avatarColorB})`
+      : null;
   }
 
   nav(e: MouseEvent): void {

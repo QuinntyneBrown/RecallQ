@@ -5,7 +5,7 @@ using RecallQ.Api.Embeddings;
 
 namespace RecallQ.Api.Chat;
 
-public record Citation(Guid ContactId, string ContactName, string? ContactRole, string? ContactOrganization, string Snippet, double Similarity, string Source);
+public record Citation(Guid ContactId, string ContactName, string? ContactRole, string? ContactOrganization, string? AvatarColorA, string? AvatarColorB, string Snippet, double Similarity, string Source);
 
 public class CitationRetriever
 {
@@ -18,7 +18,7 @@ public class CitationRetriever
         _embeddings = embeddings;
     }
 
-    private record Row(Guid ContactId, string ContactName, string? Role, string? Organization, string MatchedText, float Similarity, string Source);
+    private record Row(Guid ContactId, string ContactName, string? Role, string? Organization, string? AvatarColorA, string? AvatarColorB, string MatchedText, float Similarity, string Source);
 
     public async Task<IReadOnlyList<Citation>> RetrieveAsync(Guid ownerUserId, string q, int k, CancellationToken ct, Guid? biasContactId = null)
     {
@@ -36,6 +36,7 @@ public class CitationRetriever
 WITH hits AS (
   SELECT c.id AS ""ContactId"", c.display_name AS ""ContactName"",
          c.role AS ""Role"", c.organization AS ""Organization"",
+         c.avatar_color_a AS ""AvatarColorA"", c.avatar_color_b AS ""AvatarColorB"",
          c.display_name || COALESCE(' · ' || c.role, '') || COALESCE(' · ' || c.organization, '') AS ""MatchedText"",
          (1 - (ce.embedding <=> CAST(@q AS vector)))::real AS ""Similarity"",
          'contact'::text AS ""Source""
@@ -44,6 +45,7 @@ WITH hits AS (
   UNION ALL
   SELECT i.contact_id, c.display_name,
          c.role, c.organization,
+         c.avatar_color_a, c.avatar_color_b,
          COALESCE(i.subject || E'\n', '') || i.content,
          (1 - (ie.embedding <=> CAST(@q AS vector)))::real,
          'interaction'::text
@@ -53,10 +55,10 @@ WITH hits AS (
   WHERE ie.owner_user_id = @owner AND ie.failed = FALSE
 ),
 collapsed AS (
-  SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""MatchedText"", ""Similarity"", ""Source""
+  SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""AvatarColorA"", ""AvatarColorB"", ""MatchedText"", ""Similarity"", ""Source""
   FROM hits ORDER BY ""ContactId"", ""Similarity"" DESC
 )
-SELECT ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""MatchedText"", ""Similarity"", ""Source""
+SELECT ""ContactId"", ""ContactName"", ""Role"", ""Organization"", ""AvatarColorA"", ""AvatarColorB"", ""MatchedText"", ""Similarity"", ""Source""
 FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
 
         var rows = await _db.Database.SqlQueryRaw<Row>(sql,
@@ -69,6 +71,8 @@ FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
             r.ContactName,
             r.Role,
             r.Organization,
+            r.AvatarColorA,
+            r.AvatarColorB,
             Truncate((r.MatchedText ?? string.Empty).Trim(), 200),
             Math.Round(Math.Clamp((double)r.Similarity, 0.0, 1.0), 2),
             r.Source)).ToList();
@@ -86,7 +90,7 @@ FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
             {
                 var contact = await _db.Contacts.IgnoreQueryFilters()
                     .Where(c => c.Id == biasId && c.OwnerUserId == ownerUserId)
-                    .Select(c => new { c.Id, c.DisplayName, c.Role, c.Organization })
+                    .Select(c => new { c.Id, c.DisplayName, c.Role, c.Organization, c.AvatarColorA, c.AvatarColorB })
                     .FirstOrDefaultAsync(ct);
                 if (contact is not null)
                 {
@@ -98,6 +102,8 @@ FROM collapsed ORDER BY ""Similarity"" DESC LIMIT @limit";
                         contact.DisplayName,
                         contact.Role,
                         contact.Organization,
+                        contact.AvatarColorA,
+                        contact.AvatarColorB,
                         Truncate(snippet.Trim(), 200),
                         1.0,
                         "contact"));

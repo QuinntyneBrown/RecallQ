@@ -1,6 +1,6 @@
 <a class="citation" [class.top]="top" [attr.href]="'/contacts/' + citation.contactId"
    (click)="nav($event)" role="link" [attr.aria-label]="ariaLabel()" data-testid="citation-card">
-  <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+  <span class="avatar" aria-hidden="true" [style.background]="avatarBackground()">{{ initials() }}</span>
   <div class="body">
     <div class="row">
       <strong>{{ citation.contactName }}</strong>

@@ -77,7 +77,7 @@ public static class AskEndpoints
 
         if (citations.Count > 0)
         {
-            var items = citations.Select(c => new { contactId = c.ContactId, contactName = c.ContactName, contactRole = c.ContactRole, contactOrganization = c.ContactOrganization, snippet = c.Snippet, similarity = c.Similarity, source = c.Source });
+            var items = citations.Select(c => new { contactId = c.ContactId, contactName = c.ContactName, contactRole = c.ContactRole, contactOrganization = c.ContactOrganization, avatarColorA = c.AvatarColorA, avatarColorB = c.AvatarColorB, snippet = c.Snippet, similarity = c.Similarity, source = c.Source });
             var payload = JsonSerializer.Serialize(new { items });
             await http.Response.WriteAsync($"event: citations\ndata: {payload}\n\n", http.RequestAborted);
             await http.Response.Body.FlushAsync(http.RequestAborted);

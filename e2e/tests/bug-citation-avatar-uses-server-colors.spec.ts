@@ -40,8 +40,9 @@ test('citation avatar uses contact-specific avatarColorA / avatarColorB', async 
   const avatar = page.getByTestId('citation-card').first().locator('.avatar');
   await expect(avatar).toBeVisible();
 
-  // The inline style attribute must include both color stops, in order.
-  const style = await avatar.getAttribute('style') ?? '';
-  expect(style.toLowerCase()).toContain('#ff6b6b');
-  expect(style.toLowerCase()).toContain('#4ecdc4');
+  // The inline style attribute must include both color stops. Browsers
+  // normalize hex to rgb() in the style attribute, so accept either.
+  const style = (await avatar.getAttribute('style') ?? '').toLowerCase();
+  expect(style.includes('#ff6b6b') || style.includes('rgb(255, 107, 107)')).toBe(true);
+  expect(style.includes('#4ecdc4') || style.includes('rgb(78, 205, 196)')).toBe(true);
 });
