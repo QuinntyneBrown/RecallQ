@@ -10,9 +10,9 @@
   background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
   color: var(--foreground-secondary);
 }
-.pill[data-type="email"]   { background: color-mix(in srgb, var(--accent-primary) 25%, transparent); }
+.pill[data-type="email"]   { background: color-mix(in srgb, var(--accent-tertiary) 25%, transparent); }
 .pill[data-type="call"]    { background: color-mix(in srgb, var(--success) 25%, transparent); }
 .pill[data-type="meeting"] { background: color-mix(in srgb, var(--accent-secondary) 25%, transparent); }
-.pill[data-type="note"]    { background: color-mix(in srgb, var(--accent-tertiary) 25%, transparent); }
+.pill[data-type="note"]    { background: color-mix(in srgb, var(--star-fill) 25%, transparent); }
 .pill[data-type="contact"] { background: color-mix(in srgb, var(--foreground-muted) 20%, transparent); }
 .ph { font-size: 12px; }
