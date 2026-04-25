@@ -61,8 +61,13 @@ export class AddInteractionPage {
       });
       await this.router.navigateByUrl('/contacts/' + id);
     } catch (e: any) {
-      if (e instanceof InteractionsValidationError) this.error.set('Please check the form and try again.');
-      else this.error.set(e?.message ?? 'error');
+      if (e instanceof InteractionsValidationError) {
+        this.error.set('Please check the form and try again.');
+      } else if ((e as Error)?.message === 'create_failed_404') {
+        this.error.set("We couldn't find that contact.");
+      } else {
+        this.error.set("We couldn't save that interaction. Please try again.");
+      }
     } finally {
       this.busy.set(false);
     }

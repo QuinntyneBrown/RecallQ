@@ -1,5 +1,6 @@
 # Add interaction page surfaces raw `create_failed_<status>`
 
+**Status:** Complete — `add-interaction.page.ts` catch now branches: validation error → form copy, 404 → "We couldn't find that contact.", everything else → "We couldn't save that interaction. Please try again.".
 **Flow:** [11 — Log Interaction](../flows/11-log-interaction/11-log-interaction.md)
 **Traces:** L1-003, L2-010.
 **Severity:** Low-Medium — `frontend/src/app/pages/add-interaction/add-interaction.page.ts` catches `InteractionsValidationError` with friendly copy but falls back to printing the raw `e.message` for everything else. `InteractionsService.create` throws `'create_failed_' + status` for non-201/400 responses, so a 404 (foreign contact / deleted mid-flight) or a 500 renders `create_failed_404` literally inside the form — same anti-pattern fixed elsewhere in the SPA.
