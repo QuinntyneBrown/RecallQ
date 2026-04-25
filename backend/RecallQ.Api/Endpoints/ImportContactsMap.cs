@@ -70,6 +70,10 @@ public static class ImportContactsHelper
         if (phones.Length > 10) { reason = "phones: max 10"; return false; }
         if (tags.Length > 20) { reason = "tags: max 20"; return false; }
 
+        var nameHash = displayName.GetHashCode();
+        var defaultColorA = AvatarPalette[Math.Abs(nameHash) % AvatarPalette.Length];
+        var defaultColorB = AvatarPalette[Math.Abs(nameHash + 1) % AvatarPalette.Length];
+
         contact = new Contact
         {
             OwnerUserId = ownerId,
@@ -81,8 +85,16 @@ public static class ImportContactsHelper
             Tags = tags,
             Emails = emails,
             Phones = phones,
+            AvatarColorA = defaultColorA,
+            AvatarColorB = defaultColorB,
         };
         reason = null;
         return true;
     }
+
+    private static readonly string[] AvatarPalette = new[]
+    {
+        "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
+        "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
+    };
 }

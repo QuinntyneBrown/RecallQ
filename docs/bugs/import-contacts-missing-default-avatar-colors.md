@@ -2,7 +2,7 @@
 
 **Flow:** 31 — CSV Bulk Import
 **Severity:** Medium-high (every contact created via the bulk-import path lands in the DB with `avatar_color_a = NULL` and `avatar_color_b = NULL`. The list view, detail header, search results, and ask citations all read these columns to render the gradient avatar; with both null, the avatar fallback path is taken and the contact looks visually distinct from contacts created one-by-one through `POST /api/contacts`. This is the same hash-from-displayName palette assignment that `create-contact-missing-default-avatar-colors.md` already fixed for the single-create path — the import path was just never updated.)
-**Status:** Open
+**Status:** Complete — `ImportContactsHelper.TryBuildContact` now derives `AvatarColorA` and `AvatarColorB` from the same `displayName.GetHashCode()` indexing that the POST handler uses, against a copy of the same 8-color palette held as `ImportContactsHelper.AvatarPalette`. New acceptance test `ImportTests.Imported_contacts_get_default_avatar_colors_from_palette` imports a one-row CSV and asserts the resulting contact's detail has non-null hex colors. All four pre-existing import tests still pass.
 
 ## Symptom
 
