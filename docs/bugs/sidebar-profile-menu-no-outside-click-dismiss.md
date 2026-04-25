@@ -1,5 +1,6 @@
 # Sidebar profile menu does not dismiss on outside click
 
+**Status:** Complete — `SidebarComponent` now uses `@HostListener('document:click')` to close the menu when the click target is outside the host element, mirroring the bottom-nav fix.
 **Flow:** [03 — User Logout](../flows/03-user-logout/03-user-logout.md)
 **Traces:** L1-001, L2-003, L2-066.
 **Severity:** Low-Medium — Mirror of the bottom-nav bug just fixed: at MD+ viewports the sidebar is shown instead of the bottom nav. Tapping the Profile icon opens the Log out menu, but tapping anywhere else on the screen leaves the menu mounted because `SidebarComponent` has no `document:click` listener.
