@@ -12,9 +12,10 @@
 }
 .hero-title {
   margin: 0;
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 1.1;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.2px;
 }
 .hero-sub {
   margin: 0;
