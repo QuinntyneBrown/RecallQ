@@ -85,6 +85,21 @@ public static class ContactsEndpoints
             var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
             if (c is null) return Results.NotFound();
 
+            var errors = new Dictionary<string, string[]>();
+            if (req.DisplayName is not null)
+            {
+                var displayName = req.DisplayName.Trim();
+                if (displayName.Length < 1 || displayName.Length > 120)
+                    errors["displayName"] = new[] { "DisplayName must be 1–120 chars." };
+            }
+            if (req.Initials is not null)
+            {
+                var initials = req.Initials.Trim();
+                if (initials.Length < 1 || initials.Length > 3)
+                    errors["initials"] = new[] { "Initials must be 1–3 chars." };
+            }
+            if (errors.Count > 0) return Results.ValidationProblem(errors);
+
             var needsEmbedding = false;
             if (req.Starred.HasValue) c.Starred = req.Starred.Value;
             if (req.Emails is not null) c.Emails = req.Emails;
