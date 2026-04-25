@@ -165,6 +165,56 @@ public class SuggestionsTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task Suggestion_older_than_7_days_is_not_served()
+    {
+        var (client, userId, cookie) = await RegisterLogin();
+        // Insert an undismissed suggestion whose CreatedAt is 8 days ago.
+        // Flow 25 step 2: "active = no DismissedAt AND age < 7d".
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Suggestions.Add(new Suggestion
+            {
+                OwnerUserId = userId,
+                Key = "meet-3-ai founders",
+                Kind = "meet_n_tag",
+                Title = "You met 3 ai founders",
+                Body = "You met 3 ai founders last week — shall I find similar investors?",
+                ActionLabel = "Find similar ai founders",
+                ActionHref = "/search?q=ai%20founders",
+                CreatedAt = DateTime.UtcNow.AddDays(-8),
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var body = await GetSuggestion(client, cookie);
+        Assert.Null(body);
+    }
+
+    [Fact]
+    public async Task Suggestion_within_7_days_is_served()
+    {
+        var (client, userId, cookie) = await RegisterLogin();
+        // Sanity: a 6-day-old undismissed suggestion is still active.
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Suggestions.Add(new Suggestion
+            {
+                OwnerUserId = userId,
+                Key = "meet-3-ai founders",
+                Kind = "meet_n_tag",
+                Title = "t", Body = "b", ActionLabel = "go", ActionHref = "/search?q=x",
+                CreatedAt = DateTime.UtcNow.AddDays(-6),
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var body = await GetSuggestion(client, cookie);
+        Assert.NotNull(body);
+    }
+
+    [Fact]
     public async Task Different_key_still_eligible_after_dismiss()
     {
         var (client, userId, cookie) = await RegisterLogin();
