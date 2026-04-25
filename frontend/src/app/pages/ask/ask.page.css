@@ -57,6 +57,7 @@
   align-self: flex-end;
   background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid));
   color: var(--foreground-primary);
+  font-weight: 500;
 }
 .assistant-bubble {
   align-self: flex-start;
