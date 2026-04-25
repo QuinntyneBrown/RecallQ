@@ -13,7 +13,7 @@ using RecallQ.Api;
 namespace RecallQ.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260425085110_AddPasswordResetTokens")]
+    [Migration("20260425091300_AddPasswordResetTokens")]
     partial class AddPasswordResetTokens
     {
         /// <inheritdoc />

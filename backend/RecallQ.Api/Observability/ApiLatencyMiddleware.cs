@@ -24,8 +24,8 @@ public sealed class ApiLatencyMiddleware
                 .GetMetadata<Microsoft.AspNetCore.Routing.RouteNameMetadata>()?.RouteName;
             if (string.IsNullOrEmpty(endpoint))
             {
-                var routePattern = (context.GetEndpoint() as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern?.RawText;
-                endpoint = routePattern ?? context.Request.Path.Value ?? "unknown";
+                endpoint = (context.GetEndpoint() as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern?.RawText
+                    ?? "unmatched";
             }
             var status = context.Response.StatusCode.ToString();
             RecallQMetrics.ApiLatencySeconds.WithLabels(endpoint, status).Observe(sw.Elapsed.TotalSeconds);

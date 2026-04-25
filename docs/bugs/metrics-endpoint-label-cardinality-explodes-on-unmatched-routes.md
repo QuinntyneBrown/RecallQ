@@ -2,7 +2,7 @@
 
 **Flow:** 38 — Metrics Scrape (/metrics)
 **Severity:** Medium-High (a sustained 404 pattern — a scanner, a typo'd GUID re-tried by a buggy client, a noisy bot — leaks unique label values into `recallq_http_requests_total` and `recallq_api_latency_seconds`; Prometheus' time-series count grows without bound; long-running deployments pay memory + storage cost forever)
-**Status:** Open
+**Status:** Complete — `ApiLatencyMiddleware`'s endpoint-label fallback no longer reads `context.Request.Path.Value`; it now collapses every unmatched route to the constant `"unmatched"`. Matched routes still report `RouteEndpoint.RoutePattern.RawText`, which is bounded by the registered routes. New acceptance test `MetricsCardinalityTests` hits three distinct unmatched paths and asserts the `endpoint` label space stays small (≤ 2) and that the literal request paths never appear in `/metrics`.
 
 ## Symptom
 
