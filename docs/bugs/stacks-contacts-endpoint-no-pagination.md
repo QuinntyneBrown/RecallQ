@@ -2,7 +2,7 @@
 
 **Flow:** 24 — Smart Stacks (View and Open)
 **Severity:** Medium (wire-contract gap, unbounded result set)
-**Status:** Open
+**Status:** Complete — `GET /api/stacks/{id}/contacts` now reads `page` / `pageSize` query string parameters (defaults 1 / 50, max page size 100), pages the member query with `Skip`/`Take`, and returns `{ items, totalCount, page, pageSize, nextPage }` matching `/api/contacts`. The dead-branch ternary on the previous ordering line has been collapsed into a single `OrderByDescending(c => c.CreatedAt)` call. The unreferenced `listContacts` helper in `frontend/src/app/stacks/stacks.service.ts` was left untouched.
 
 ## Symptom
 

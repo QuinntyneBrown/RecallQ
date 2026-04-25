@@ -34,16 +34,19 @@ public static class StacksEndpoints
         });
 
         app.MapGet("/api/stacks/{id:guid}/contacts", [Authorize] async (
-            Guid id, AppDbContext db, StackCountCalculator calc, CancellationToken ct) =>
+            Guid id, AppDbContext db, StackCountCalculator calc,
+            int? page, int? pageSize, CancellationToken ct) =>
         {
             var stack = await db.Stacks.FirstOrDefaultAsync(s => s.Id == id, ct);
             if (stack is null) return Results.NotFound();
-            var query = calc.BuildMemberQuery(stack);
-            query = stack.Kind == StackKind.Classification
-                ? query.OrderByDescending(c => c.CreatedAt)
-                : query.OrderByDescending(c => c.CreatedAt);
-            var rows = await query.ToListAsync(ct);
-            return Results.Ok(rows.Select(ContactsEndpoints.ContactDto.From).ToArray());
+            var p = page is null or < 1 ? 1 : page.Value;
+            var ps = pageSize is null or < 1 ? 50 : Math.Min(pageSize.Value, 100);
+            var query = calc.BuildMemberQuery(stack).OrderByDescending(c => c.CreatedAt);
+            var totalCount = await query.CountAsync(ct);
+            var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync(ct);
+            var items = rows.Select(ContactsEndpoints.ContactDto.From).ToArray();
+            var nextPage = totalCount > p * ps ? p + 1 : (int?)null;
+            return Results.Ok(new { items, totalCount, page = p, pageSize = ps, nextPage });
         });
 
         return app;
