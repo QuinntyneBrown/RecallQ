@@ -71,7 +71,7 @@ public static class AskEndpoints
         {
             answer.Append(token);
             var json = JsonSerializer.Serialize(new { token });
-            await http.Response.WriteAsync($"data: {json}\n\n", http.RequestAborted);
+            await http.Response.WriteAsync($"event: token\ndata: {json}\n\n", http.RequestAborted);
             await http.Response.Body.FlushAsync(http.RequestAborted);
         }
 

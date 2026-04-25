@@ -2,7 +2,7 @@
 
 **Flow:** 19 — Ask Mode (Streaming Answer)
 **Severity:** Low (wire-format gap)
-**Status:** Open
+**Status:** Complete — `AskEndpoints` now writes `event: token\ndata: {...}\n\n` for each streaming token, matching the named `citations` / `followups` / `error` / `done` frames. The SPA's existing parser falls through to its token branch on any non-special event name, so the rendering pipeline is unchanged.
 
 ## Symptom
 
