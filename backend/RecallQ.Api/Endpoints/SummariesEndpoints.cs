@@ -39,6 +39,12 @@ public static class SummariesEndpoints
             if (row.Paragraph is null)
                 return Results.Ok(new { status = "pending" });
 
+            // A manual refresh was just requested but the worker hasn't caught up:
+            // report pending so the SPA keeps polling until UpdatedAt advances past
+            // LastRefreshRequestedAt (or the 15s poll budget runs out).
+            if (row.LastRefreshRequestedAt is DateTime requested && row.UpdatedAt < requested)
+                return Results.Ok(new { status = "pending" });
+
             return Results.Ok(new
             {
                 status = "ready",
