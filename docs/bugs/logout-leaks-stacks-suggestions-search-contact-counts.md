@@ -2,7 +2,7 @@
 
 **Flow:** 03 — User Logout
 **Severity:** High (cross-user data leak in shared browser sessions; the previous fix only patched AskService and explicitly noted "the same risk applies to other root services" without addressing them)
-**Status:** Open
+**Status:** Complete — `StacksService`, `SuggestionsService`, `ContactsService`, and `SearchService` now each inject `AuthService` and run an `effect()` that clears their per-user signals when `authState()` becomes `null`. AuthService stays ignorant of these services (one-way dependency). New e2e `bug-logout-resets-services.spec.ts` uses SPA-only navigation across the logout boundary (so the bundle stays loaded) and asserts user A's stack chip never renders on user B's home.
 
 ## Symptom
 
