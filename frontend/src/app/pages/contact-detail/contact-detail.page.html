@@ -99,6 +99,13 @@
       }
     </section>
   } @else if (notFound()) {
+    <header class="hero">
+      <div class="topbar">
+        <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+          <i class="ph ph-caret-left"></i>
+        </button>
+      </div>
+    </header>
     <p class="err">Contact not found.</p>
   }
 </section>

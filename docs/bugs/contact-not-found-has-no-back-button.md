@@ -1,5 +1,6 @@
 # Contact-not-found state has no back button
 
+**Status:** Complete — the `@else if (notFound())` branch in `contact-detail.page.html` now opens with a topbar containing the same `aria-label="Back"` button that the loaded state has.
 **Flow:** [07 — View Contact Detail](../flows/07-view-contact-detail/07-view-contact-detail.md)
 **Traces:** L1-009.
 **Severity:** Low — Flow 07 alternatives say "Foreign or missing id → `404`, SPA shows 'Contact not found'." The implementation does show that copy, but it lives outside the `@if (contact(); as c)` branch where the topbar (and its Back button) is rendered. A visitor who arrives via a stale link or a deleted contact's URL is dropped onto the message with no in-app way back — only the browser's hardware/menu back button works.
