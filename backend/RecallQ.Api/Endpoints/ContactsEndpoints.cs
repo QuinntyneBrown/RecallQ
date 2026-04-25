@@ -119,6 +119,17 @@ public static class ContactsEndpoints
             return Results.Ok(new { contacts, interactions });
         });
 
+        app.MapDelete("/api/contacts/{id:guid}", [Authorize] async (
+            Guid id, AppDbContext db, ICurrentUser current, StackCountCache stackCache) =>
+        {
+            var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+            if (c is null) return Results.NotFound();
+            db.Contacts.Remove(c);
+            await db.SaveChangesAsync();
+            stackCache.InvalidateOwner(current.UserId!.Value);
+            return Results.NoContent();
+        });
+
         return app;
     }
 }
