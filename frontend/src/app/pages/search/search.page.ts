@@ -64,6 +64,9 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
               }
             </ng-container>
           </cdk-virtual-scroll-viewport>
+          @if (!searchService.hasMore() && !loading()) {
+            <p class="end-of-results" data-testid="end-of-results">End of results</p>
+          }
         }
 
         @if (loading()) {
@@ -152,6 +155,13 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
       flex-direction: column;
       gap: 10px;
       width: 100%;
+    }
+    .end-of-results {
+      color: var(--foreground-secondary);
+      font-size: 13px;
+      padding: 12px 0;
+      text-align: center;
+      margin: 0;
     }
     .skeletons { display: flex; flex-direction: column; gap: 10px; }
     .skeleton {

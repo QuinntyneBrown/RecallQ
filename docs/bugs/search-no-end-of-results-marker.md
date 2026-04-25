@@ -1,5 +1,6 @@
 # Search results page has no end-of-results marker
 
+**Status:** Complete — `search.page.ts` now renders `<p data-testid="end-of-results">End of results</p>` below the viewport when `!hasMore() && !loading()`.
 **Flow:** [17 — Search Pagination](../flows/17-search-pagination/17-search-pagination.md)
 **Traces:** L1-004, L2-019.
 **Severity:** Low — Flow 17 step 7 says "When `nextPage` is `null` the loader sentinel is removed and an end-of-results marker renders." Currently the SPA just stops loading; there is no indication the user has reached the end of the list, so they keep scrolling expecting more rows.
