@@ -2,7 +2,7 @@
 
 **Flow:** 33 — Embedding Backfill (with pipeline 32)
 **Severity:** Medium (operational visibility gap)
-**Status:** Open
+**Status:** Complete — `AdminEndpoints` now exposes `GET /api/admin/embeddings/status`. It reads the `ContactEmbeddings` and `InteractionEmbeddings` DbSets with `IgnoreQueryFilters` (justified per flow 36's "explicit admin utilities" carve-out), counts `Failed == true` rows on each, and returns `{ contactsFailed, interactionsFailed }`.
 
 ## Symptom
 

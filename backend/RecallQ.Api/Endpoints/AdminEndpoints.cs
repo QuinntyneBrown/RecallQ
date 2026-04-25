@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Security;
 using RecallQ.Api.Suggestions;
@@ -23,6 +24,13 @@ public static class AdminEndpoints
             var userId = current.UserId!.Value;
             runner.StartInBackground(userId);
             return Results.Accepted(value: new { status = "accepted", ownerUserId = userId });
+        });
+
+        group.MapGet("/embeddings/status", [Authorize] async (AppDbContext db, CancellationToken ct) =>
+        {
+            var contactsFailed = await db.ContactEmbeddings.IgnoreQueryFilters().CountAsync(e => e.Failed, ct);
+            var interactionsFailed = await db.InteractionEmbeddings.IgnoreQueryFilters().CountAsync(e => e.Failed, ct);
+            return Results.Ok(new { contactsFailed, interactionsFailed });
         });
 
         group.MapPost("/detect-suggestions", [Authorize] async (ICurrentUser current, SuggestionDetector detector, CancellationToken ct) =>
