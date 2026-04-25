@@ -2,7 +2,7 @@
 
 **Flow:** 23 — Ask AI from Contact Detail
 **Severity:** Medium (a11y / efficiency)
-**Status:** Open
+**Status:** Complete — `AskPage` now exposes a `@ViewChild('inp') inputRef` and a `focusInput()` helper that defers `focus()` to a microtask; both seed branches (contactId-based prompt and `q` param) call it after writing to the draft signal so the cursor lands in the chat input ready for edit-or-send.
 
 ## Symptom
 

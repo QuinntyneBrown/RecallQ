@@ -27,7 +27,12 @@ export class AskPage implements AfterViewChecked, OnInit {
   private seededOnce = false;
 
   @ViewChild('list') list?: ElementRef<HTMLElement>;
+  @ViewChild('inp') inputRef?: ElementRef<HTMLInputElement>;
   private lastLen = -1;
+
+  private focusInput(): void {
+    queueMicrotask(() => this.inputRef?.nativeElement.focus());
+  }
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(async (params) => {
@@ -38,7 +43,10 @@ export class AskPage implements AfterViewChecked, OnInit {
         this.seededOnce = true;
         try {
           const c = await this.contacts.get(contactId);
-          if (c) this.draft.set(`What should I say to ${c.displayName} next?`);
+          if (c) {
+            this.draft.set(`What should I say to ${c.displayName} next?`);
+            this.focusInput();
+          }
         } catch { /* ignore */ }
         return;
       }
@@ -46,6 +54,7 @@ export class AskPage implements AfterViewChecked, OnInit {
       if (q && q.trim()) {
         this.seededOnce = true;
         this.draft.set(q);
+        this.focusInput();
       }
     });
   }
