@@ -23,11 +23,11 @@ public sealed class CorrelationMiddleware
         if (context.Request.Headers.TryGetValue(HeaderName, out var provided)
             && Guid.TryParse(provided.ToString(), out var parsed))
         {
-            id = parsed.ToString("N");
+            id = parsed.ToString("D");
         }
         else
         {
-            id = Guid.NewGuid().ToString("N");
+            id = Guid.NewGuid().ToString("D");
         }
 
         context.Items[ItemKey] = id;
