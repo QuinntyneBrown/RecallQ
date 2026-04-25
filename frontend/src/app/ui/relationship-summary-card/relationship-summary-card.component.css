@@ -53,7 +53,7 @@
 .stats > div:last-child { border-right: 0; }
 .stats strong {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--foreground-primary);
 }
 .stats span {
