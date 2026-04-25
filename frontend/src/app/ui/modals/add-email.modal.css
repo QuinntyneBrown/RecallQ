@@ -20,7 +20,7 @@ input {
 }
 .err {
   margin-top: 8px;
-  color: var(--accent-secondary);
+  color: #FFB3B3;
   font-size: 13px;
 }
 .actions {
