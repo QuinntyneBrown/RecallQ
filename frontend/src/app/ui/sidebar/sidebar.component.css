@@ -38,6 +38,9 @@ a, button {
 a:hover, a:focus-visible, button:hover, button:focus-visible {
   color: var(--foreground-primary);
 }
+a.active {
+  color: var(--accent-tertiary);
+}
 .profile-wrap {
   position: relative;
   margin-top: auto;

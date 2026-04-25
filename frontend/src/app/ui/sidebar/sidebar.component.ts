@@ -1,12 +1,12 @@
 import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { HealthService } from '../../health.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
