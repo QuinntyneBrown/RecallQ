@@ -2,7 +2,7 @@
 
 **Flow:** 03 — User Logout
 **Severity:** High (cross-user data leak in shared browser sessions)
-**Status:** Open
+**Status:** Complete — `AskService` now injects `AuthService` and runs an `effect()` in its constructor that calls `reset()` whenever `authState` is `null`. The dependency direction stays one-way (Auth ignorant of Ask), and the reset path is the same one already used by the `+` new-session button.
 
 ## Symptom
 

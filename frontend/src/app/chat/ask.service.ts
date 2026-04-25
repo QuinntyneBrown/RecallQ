@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
 import { Citation } from '../ui/citation-card/citation-card.component';
+import { AuthService } from '../auth/auth.service';
 
 export interface AskMessage {
   id: string;
@@ -16,6 +17,13 @@ export class AskService {
   readonly messages = signal<AskMessage[]>([]);
   readonly pending = signal(false);
   readonly error = signal<string | null>(null);
+  private readonly auth = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      if (this.auth.authState() === null) this.reset();
+    });
+  }
 
   reset(): void {
     this.messages.set([]);
