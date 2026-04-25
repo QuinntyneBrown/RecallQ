@@ -96,12 +96,14 @@ public static class ContactsEndpoints
             var p = page is null or < 1 ? 1 : page.Value;
             var ps = pageSize is null or < 1 ? 20 : Math.Min(pageSize.Value, 100);
             var query = db.Contacts.AsQueryable();
-            query = (sort ?? "createdAt_desc") switch
+            query = (sort ?? "recent") switch
             {
                 "createdAt_asc" => query.OrderBy(c => c.CreatedAt),
+                "createdAt_desc" => query.OrderByDescending(c => c.CreatedAt),
                 "name_asc" => query.OrderBy(c => c.DisplayName),
                 "name_desc" => query.OrderByDescending(c => c.DisplayName),
-                _ => query.OrderByDescending(c => c.CreatedAt),
+                _ => query.OrderByDescending(c =>
+                    db.Interactions.Where(i => i.ContactId == c.Id).Max(i => (DateTime?)i.OccurredAt) ?? c.CreatedAt),
             };
             var totalCount = await query.CountAsync();
             var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync();

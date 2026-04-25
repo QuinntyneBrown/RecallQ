@@ -2,7 +2,7 @@
 
 **Flow:** 06 — List Contacts
 **Severity:** Medium-High (default surfaces wrong contacts)
-**Status:** Open
+**Status:** Complete — `GET /api/contacts` defaults to `sort = "recent"`. The default branch orders by `COALESCE(MAX(interactions.OccurredAt), CreatedAt) DESC` via a correlated subquery. The previous default (`createdAt_desc`) is still available as an explicit override; new explicit branches `recent` and `createdAt_desc` are also wired. The `Interaction` global query filter scopes the subquery to the current user automatically.
 
 ## Symptom
 
