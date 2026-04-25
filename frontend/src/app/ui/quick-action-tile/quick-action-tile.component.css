@@ -14,7 +14,7 @@
 }
 .tile:disabled { cursor: not-allowed; opacity: 0.55; }
 .tile:not(:disabled):hover { transform: translateY(-1px); }
-.tile.active { border-color: var(--accent-primary); }
+.tile.active { border-color: var(--accent-tertiary); }
 .tile.gradient {
   background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid), var(--accent-gradient-end));
   color: var(--on-accent);
