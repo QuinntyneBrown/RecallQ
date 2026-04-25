@@ -243,6 +243,32 @@ public class SearchTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public async Task Search_contactsMatched_is_total_not_page_count()
+    {
+        await using var bf = new EmbeddingWorkerFactory { EmbeddingClientFactory = _ => new BagOfWordsEmbeddingClient() };
+        await ((IAsyncLifetime)bf).InitializeAsync();
+        try
+        {
+            var (client, userId, cookie) = await RegisterLoginOn(bf);
+            for (int i = 0; i < 3; i++)
+            {
+                await CreateContact(client, cookie, $"Match{i} alpha beta gamma delta");
+            }
+            await WaitForEmbeddingsOn(bf, userId, 3, 0);
+
+            using var req = new HttpRequestMessage(HttpMethod.Post, "/api/search")
+            { Content = JsonContent.Create(new { q = "alpha beta gamma", page = 1, pageSize = 1 }) };
+            req.Headers.Add("Cookie", cookie);
+            var res = await client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+            var matched = body.GetProperty("contactsMatched").GetInt32();
+            Assert.True(matched > 1, $"contactsMatched should reflect total matches across pages, got {matched} with pageSize=1");
+        }
+        finally { await ((IAsyncLifetime)bf).DisposeAsync(); }
+    }
+
+    [Fact]
     public async Task Search_61st_per_minute_returns_429()
     {
         var (client, _, cookie) = await RegisterLogin();
