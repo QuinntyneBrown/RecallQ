@@ -132,6 +132,8 @@ public class ObservabilityTests : IClassFixture<ObservabilityFactory>
         Assert.Contains("recallq_llm_tokens_total", body);
         // Embedding histogram is registered at startup via the static class load; the metric name appears in /metrics exposition regardless of observations.
         Assert.Contains("recallq_embedding_latency_seconds", body);
+        Assert.Contains("recallq_http_requests_total", body);
+        Assert.Matches(new Regex(@"recallq_http_requests_total\{[^}]*status_code=""\d+""[^}]*\}\s+[0-9]"), body);
     }
 
     [Fact]
