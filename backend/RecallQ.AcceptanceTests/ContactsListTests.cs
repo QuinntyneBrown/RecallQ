@@ -90,6 +90,35 @@ public class ContactsListTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task List_default_sort_is_recent_interaction()
+    {
+        var (client, cookie) = await RegisterAndLogin(UniqueEmail());
+        await PostContact(client, cookie, "Alice");
+        await PostContact(client, cookie, "Bob");
+
+        var sorted = await GetJson(client, cookie, "/api/contacts?sort=name_asc");
+        var aliceId = sorted.GetProperty("items")[0].GetProperty("id").GetGuid();
+
+        var farFuture = new DateTime(2099, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var ix = new
+        {
+            type = "note",
+            occurredAt = farFuture,
+            subject = (string?)"future signal",
+            content = "future signal"
+        };
+        using var ixReq = new HttpRequestMessage(HttpMethod.Post, $"/api/contacts/{aliceId}/interactions") { Content = JsonContent.Create(ix) };
+        ixReq.Headers.Add("Cookie", cookie);
+        var ixRes = await client.SendAsync(ixReq);
+        Assert.Equal(HttpStatusCode.Created, ixRes.StatusCode);
+
+        var body = await GetJson(client, cookie, "/api/contacts");
+        var items = body.GetProperty("items");
+        Assert.True(items.GetArrayLength() >= 2);
+        Assert.Equal(aliceId, items[0].GetProperty("id").GetGuid());
+    }
+
+    [Fact]
     public async Task List_sort_name_returns_alphabetical()
     {
         var (client, cookie) = await RegisterAndLogin(UniqueEmail());
