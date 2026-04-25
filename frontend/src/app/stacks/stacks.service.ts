@@ -19,7 +19,7 @@ export class StacksService {
       const res = await fetch('/api/stacks', { credentials: 'include' });
       if (res.status !== 200) return;
       const body = (await res.json()) as StackDto[];
-      this.stacks.set(body);
+      this.stacks.set(body.filter((s) => s.count > 0));
     } catch {
       // ignore
     }

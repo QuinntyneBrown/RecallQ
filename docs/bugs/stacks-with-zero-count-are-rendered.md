@@ -1,5 +1,6 @@
 # Home Smart Stacks render cards with `count = 0`
 
+**Status:** Complete — `StacksService.refresh()` now filters the signal to stacks with `count > 0`.
 **Flow:** [24 — Smart Stacks](../flows/24-smart-stacks/24-smart-stacks.md)
 **Traces:** L1-006, L2-026.
 **Severity:** Medium — empty stack cards clutter the home surface. A fresh visitor (or one whose stack is temporarily empty) sees `0 AI founders` cards that are semantically meaningless; Flow 24 step 5 explicitly calls for those cards to be hidden.
