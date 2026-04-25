@@ -79,4 +79,13 @@ export class AskPage implements AfterViewChecked, OnInit {
     this.draft.set('');
     await this.ask.send(text, this.currentContactId());
   }
+
+  async retry(assistantMessageId: string): Promise<void> {
+    const list = this.messages();
+    const idx = list.findIndex(m => m.id === assistantMessageId);
+    if (idx <= 0) return;
+    const prior = [...list].slice(0, idx).reverse().find(m => m.role === 'user');
+    if (!prior) return;
+    await this.ask.send(prior.text, this.currentContactId());
+  }
 }

@@ -21,6 +21,9 @@
       } @else {
         <div data-testid="assistant-bubble" class="bubble assistant-bubble" [attr.aria-busy]="m.streaming ? 'true' : null">
           <span class="sr-only">RecallQ said: </span>{{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
+          @if (m.errored) {
+            <button type="button" class="ask-retry" data-testid="ask-retry" (click)="retry(m.id)">Couldn't finish — Retry</button>
+          }
           @if (m.citations?.length) {
             <div class="citations">
               @for (c of m.citations; track c.contactId; let i = $index) {

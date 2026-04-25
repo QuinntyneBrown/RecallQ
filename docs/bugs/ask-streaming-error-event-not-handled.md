@@ -2,7 +2,7 @@
 
 **Flow:** 19 — Ask Mode (Streaming Answer)
 **Severity:** High (lost UX recovery path)
-**Status:** Open
+**Status:** Complete — `AskMessage` now exposes an `errored` flag; the SSE loop in `ask.service.ts` recognizes `eventName === 'error'` and calls a new `markErrored` helper that sets `errored: true` and clears `streaming`. The page renders a `Couldn't finish — Retry` button (`data-testid="ask-retry"`) inside any errored bubble; tapping it walks back to the immediately preceding user message and re-asks via `ask.send`.
 
 ## Symptom
 

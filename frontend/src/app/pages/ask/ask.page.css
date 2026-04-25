@@ -78,6 +78,21 @@
   margin: 0 0 6px 0;
 }
 .follow-up-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ask-retry {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--surface-elevated);
+  color: var(--foreground-primary);
+  border: 1px solid var(--accent-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ask-retry:hover, .ask-retry:focus-visible {
+  background: color-mix(in srgb, var(--accent-secondary) 15%, var(--surface-elevated));
+}
 .error {
   align-self: flex-start;
   color: var(--accent-secondary);

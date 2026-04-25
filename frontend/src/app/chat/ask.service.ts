@@ -6,6 +6,7 @@ export interface AskMessage {
   role: 'user' | 'assistant';
   text: string;
   streaming?: boolean;
+  errored?: boolean;
   citations?: Citation[];
   followUps?: string[];
 }
@@ -47,6 +48,12 @@ export class AskService {
   private finishStreaming(id: string): void {
     this.messages.update(list =>
       list.map(m => (m.id === id ? { ...m, streaming: false } : m)),
+    );
+  }
+
+  private markErrored(id: string): void {
+    this.messages.update(list =>
+      list.map(m => (m.id === id ? { ...m, errored: true, streaming: false } : m)),
     );
   }
 
@@ -100,6 +107,11 @@ export class AskService {
             else if (line.startsWith('data:')) data = line.slice('data:'.length).trim();
           }
           if (eventName === 'done') { done = true; break; }
+          if (eventName === 'error') {
+            this.markErrored(assistantMsg.id);
+            done = true;
+            break;
+          }
           if (eventName === 'followups') {
             try {
               const parsed = JSON.parse(data) as { items?: string[] };
