@@ -51,6 +51,9 @@ export class IntroModal implements OnInit {
   onQuery(e: Event) {
     this.query.set((e.target as HTMLInputElement).value);
     this.secondParty.set(null);
+    this.generated.set(false);
+    this.subject.set('');
+    this.body.set('');
   }
 
   onBodyInput(e: Event) {

@@ -1,5 +1,6 @@
 # Intro modal keeps stale draft when the second party is changed
 
+**Status:** Complete — `IntroModal.onQuery` now also clears `generated`, `subject`, and `body`, so the draft area collapses the moment the second-party search is edited.
 **Flow:** [30 — Quick Action: Intro Draft](../flows/30-quick-action-intro/30-quick-action-intro.md)
 **Traces:** L1-010, L2-039.
 **Severity:** Medium — after `Generate draft` produces a `subject` and `body` for parties A + B, the visitor can clear or retype the second-party search box. `onQuery` correctly drops the picked second party, but it does not reset `generated`/`subject`/`body`, so the modal keeps showing the previous draft as if it still applied to whatever the visitor picks next.
