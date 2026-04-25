@@ -2,7 +2,7 @@
 
 **Flow:** 41 — Screen Reader Announcement for Streaming Chat (step 5)
 **Severity:** Low (a11y completeness — screen-reader users hear `"Contact: Sarah Mitchell, similarity 0.91"` instead of the spec's `"Contact: Sarah Mitchell, VP Product at Stripe, similarity 0.91"`; the role/org context that makes the citation actionable is missing)
-**Status:** Open
+**Status:** Complete — `Citation` record now carries `string? ContactRole, string? ContactOrganization`. `CitationRetriever` SQL projects `c.role` and `c.organization` in both hits-CTE branches; the bias-insert path forwards them too. `AskEndpoints`' `event: citations` payload includes `contactRole` and `contactOrganization` on the wire. `CitationCardComponent.Citation` interface gains the optional fields and `ariaLabel()` composes the full flow-41 sentence ("Contact: {name}, {role} at {org}, similarity {score}"), falling back to the simpler shape when neither role nor org is set. New e2e `bug-citation-aria-label-includes-role.spec.ts` asserts the full sentence; the existing simpler-shape test still passes.
 
 ## Symptom
 
