@@ -2,7 +2,7 @@
 
 **Flow:** 06 — List Contacts (home subtitle)
 **Severity:** High (visible wrong stat on every home render)
-**Status:** Open
+**Status:** Complete — `ContactsEndpoints.cs` now runs `await db.Interactions.CountAsync()` and returns the actual user-scoped count instead of `0`. The owner-scope global query filter already restricts the count to the authenticated user.
 
 ## Symptom
 

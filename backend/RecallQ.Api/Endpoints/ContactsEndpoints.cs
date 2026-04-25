@@ -110,7 +110,8 @@ public static class ContactsEndpoints
         app.MapGet("/api/contacts/count", [Authorize] async (AppDbContext db) =>
         {
             var contacts = await db.Contacts.CountAsync();
-            return Results.Ok(new { contacts, interactions = 0 });
+            var interactions = await db.Interactions.CountAsync();
+            return Results.Ok(new { contacts, interactions });
         });
 
         return app;
