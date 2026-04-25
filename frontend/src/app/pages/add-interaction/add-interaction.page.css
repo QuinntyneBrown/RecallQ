@@ -43,4 +43,4 @@ form { display: flex; flex-direction: column; gap: 16px; }
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 2px var(--accent-primary);
 }
-.err { color: var(--accent-secondary); font-size: 14px; }
+.err { color: #FFB3B3; font-size: 14px; }

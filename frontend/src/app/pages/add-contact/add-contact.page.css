@@ -10,7 +10,7 @@
 }
 h1 { color: var(--foreground-primary); font-size: 28px; margin: 0; }
 form { display: flex; flex-direction: column; gap: 16px; }
-.err { color: var(--accent-secondary); font-size: 14px; }
+.err { color: #FFB3B3; font-size: 14px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   display: inline-flex; align-items: center; gap: 4px;
