@@ -65,6 +65,9 @@
   outline: none;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
+.search-input::placeholder {
+  color: var(--foreground-muted);
+}
 .search-input:focus {
   border-color: var(--accent-primary);
 }
