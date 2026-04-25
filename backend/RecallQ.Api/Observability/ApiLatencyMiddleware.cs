@@ -27,8 +27,9 @@ public sealed class ApiLatencyMiddleware
                 var routePattern = (context.GetEndpoint() as Microsoft.AspNetCore.Routing.RouteEndpoint)?.RoutePattern?.RawText;
                 endpoint = routePattern ?? context.Request.Path.Value ?? "unknown";
             }
-            RecallQMetrics.ApiLatencySeconds.WithLabels(endpoint).Observe(sw.Elapsed.TotalSeconds);
-            RecallQMetrics.HttpRequestsTotal.WithLabels(endpoint, context.Response.StatusCode.ToString()).Inc();
+            var status = context.Response.StatusCode.ToString();
+            RecallQMetrics.ApiLatencySeconds.WithLabels(endpoint, status).Observe(sw.Elapsed.TotalSeconds);
+            RecallQMetrics.HttpRequestsTotal.WithLabels(endpoint, status).Inc();
         }
     }
 }

@@ -9,7 +9,7 @@ public static class RecallQMetrics
     public static readonly Histogram ApiLatencySeconds = Metrics.CreateHistogram(
         "recallq_api_latency_seconds",
         "API latency",
-        new HistogramConfiguration { LabelNames = new[] { "endpoint" } });
+        new HistogramConfiguration { LabelNames = new[] { "endpoint", "status" } });
 
     public static readonly Histogram EmbeddingLatencySeconds = Metrics.CreateHistogram(
         "recallq_embedding_latency_seconds",

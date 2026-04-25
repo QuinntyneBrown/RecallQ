@@ -2,7 +2,7 @@
 
 **Flow:** 38 — Metrics Scrape (/metrics)
 **Severity:** Medium (alerting / triage gap)
-**Status:** Open
+**Status:** Complete — `RecallQMetrics.ApiLatencySeconds` now declares `LabelNames = new[] { "endpoint", "status" }`. `ApiLatencyMiddleware` resolves the status string once and passes it to both `ApiLatencySeconds.WithLabels(endpoint, status)` and the existing `HttpRequestsTotal.WithLabels(endpoint, status)` increment, keeping the labels consistent across the two metrics.
 
 ## Symptom
 
