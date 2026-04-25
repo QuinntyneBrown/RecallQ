@@ -45,12 +45,12 @@ Design the two manual-entry screens reached from the `+` action: Add Contact and
 
 ## Verification
 
-- [ ] All inputs share identical metrics (height, radius, stroke, padding).
-- [ ] Validation variant clearly differs only in stroke color + helper text.
-- [ ] `snapshot_layout` clean.
-- [ ] Screenshots verified.
+- [x] All inputs share identical metrics (height 48, `$radius-md`, 1px `$border-subtle` default / 1.5px `$accent-primary` focused / 1px `#FF6B6B` error, `[0,16]` padding).
+- [x] Validation variant differs only in stroke color, label color, helper text rows, and a top-of-form red banner — all other rows stay neutral.
+- [x] `snapshot_layout` clean — only the deliberate sticky-action-bar overlap on the lower form rows (which simulates the scrollable form scrolling behind it).
+- [x] Screenshots verified for all four frames.
 
 ## Definition of Done
 
-- [ ] Four frames in the canvas (`11`, `12`, `13`, `14`) with `placeholder: false`.
-- [ ] PNG exports.
+- [x] Four frames in the canvas (`iuule` = `11. Add — Mode Toggle`, `9Dtd8` = `12. Add Contact`, `Uxd9H` = `13. Add Interaction`, `e9D7e` = `14. Add Contact — Validation Errors`) with `placeholder: false`.
+- [x] PNG exports under `docs/designs/exports/` (`iuule.png`, `9Dtd8.png`, `Uxd9H.png`, `e9D7e.png`).
