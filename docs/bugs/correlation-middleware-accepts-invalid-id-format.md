@@ -2,7 +2,7 @@
 
 **Flow:** 37 — Observability: Correlation ID + Structured Logging
 **Severity:** Medium-High (log injection risk; deviates from spec)
-**Status:** Open
+**Status:** Complete — `CorrelationMiddleware` now uses `Guid.TryParse` on the inbound `X-Correlation-Id` header. Valid GUIDs are normalised to the 32-char hex `"N"` form; anything else (missing, blank, non-GUID, multi-line) falls through to a freshly generated `Guid.NewGuid().ToString("N")`. The accompanying `ObservabilityTests` were tightened to assert the hex-32 contract on echoes and to add explicit non-GUID-rejection coverage.
 
 ## Symptom
 

@@ -21,9 +21,9 @@ public sealed class CorrelationMiddleware
     {
         string id;
         if (context.Request.Headers.TryGetValue(HeaderName, out var provided)
-            && !string.IsNullOrWhiteSpace(provided.ToString()))
+            && Guid.TryParse(provided.ToString(), out var parsed))
         {
-            id = provided.ToString();
+            id = parsed.ToString("N");
         }
         else
         {
