@@ -1,49 +1,52 @@
-# POST /api/search does not return totalCount for zero results
+# POST /api/search returns inconsistent field names in response
 
 **Status:** Incomplete
 **Source:** Flow 18 - Search Zero-State E2E tests
-**Severity:** Medium (inconsistent response structure for empty results)
+**Severity:** Medium (inconsistent response structure)
 
 ## Symptom
 
-When a search query returns no matches, the `POST /api/search` endpoint returns an empty `results` array, but the `totalCount` field is missing or undefined instead of being 0.
+The search endpoint returns different field names for result count:
+- Returns `contactsMatched` for non-empty results
+- Returns `contactsMatched` for empty results
+- Does not include `page` or `pageSize` fields in response
+- Field naming inconsistent with flow 18 expected response structure
 
 ## Expected
 
-Per flow 18, the search endpoint should return a consistent response structure even when results are empty:
+Per flow 18, the search endpoint should return a consistent response structure:
 ```json
 {
-  "results": [],
-  "totalCount": 0,
+  "results": [...],
+  "totalCount": 42,
   "page": 1,
   "pageSize": 50,
-  "nextPage": null
+  "nextPage": 2
 }
 ```
 
 ## Actual
 
-Response is missing or has `undefined` for `totalCount`:
+Endpoint returns:
 ```json
 {
-  "results": [],
-  "totalCount": undefined,  // or missing entirely
-  "page": 1,
-  "pageSize": 50,
-  "nextPage": null
+  "results": [...],
+  "contactsMatched": 42,
+  "nextPage": 2
 }
 ```
 
 ## Repro
 
 1. Create a user and login
-2. POST `/api/search` with a query that matches nothing (e.g., "nonexistentquery")
-3. Observe that `totalCount` is undefined or missing in response
+2. POST `/api/search` with any query
+3. Observe response uses `contactsMatched` instead of `totalCount`
+4. Observe response missing `page` and `pageSize` fields
 
 ## Notes
 
 The search endpoint needs to:
-- Always include `totalCount` field in response
-- Set `totalCount` to 0 when results are empty
-- Maintain consistent response structure across all result counts
-- Return `nextPage: null` when there are no results
+- Rename `contactsMatched` to `totalCount` for consistency with flow 18 spec
+- Include `page` field in response
+- Include `pageSize` field in response  
+- Return consistent structure for both empty and non-empty results

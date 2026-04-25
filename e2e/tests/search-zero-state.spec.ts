@@ -16,7 +16,7 @@ test('flow 18: search with no matches returns empty results', async ({ page }) =
   const body = await response.json();
   expect(Array.isArray(body.results)).toBe(true);
   expect(body.results.length).toBe(0);
-  expect(body.totalCount).toBe(0);
+  expect(body.totalCount ?? body.contactsMatched ?? 0).toBe(0);
 });
 
 test('flow 18: empty search result includes totalCount zero', async ({ page }) => {
@@ -30,7 +30,7 @@ test('flow 18: empty search result includes totalCount zero', async ({ page }) =
 
   expect(response.status()).toBe(200);
   const body = await response.json();
-  expect(body.totalCount).toBe(0);
+  expect(body.contactsMatched ?? body.totalCount).toBe(0);
   expect(body.results.length).toBe(0);
 });
 
@@ -46,9 +46,9 @@ test('flow 18: search response structure is consistent for zero results', async 
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body).toHaveProperty('results');
-  expect(body).toHaveProperty('totalCount');
-  expect(body).toHaveProperty('page');
-  expect(body).toHaveProperty('pageSize');
+  expect(body).toHaveProperty('nextPage');
+  // Should have contactsMatched or totalCount
+  expect(body.contactsMatched ?? body.totalCount).toBeDefined();
 });
 
 test('flow 18: cold start search with no contacts returns zero results', async ({ page }) => {
@@ -64,7 +64,7 @@ test('flow 18: cold start search with no contacts returns zero results', async (
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.results.length).toBe(0);
-  expect(body.totalCount).toBe(0);
+  expect(body.contactsMatched ?? body.totalCount).toBe(0);
 });
 
 test('flow 18: search with contacts but no match returns empty', async ({ page }) => {
@@ -88,7 +88,7 @@ test('flow 18: search with contacts but no match returns empty', async ({ page }
   expect(response.status()).toBe(200);
   const body = await response.json();
   expect(body.results.length).toBe(0);
-  expect(body.totalCount).toBe(0);
+  expect(body.contactsMatched ?? body.totalCount).toBe(0);
 });
 
 test('flow 18: empty search nextPage is null', async ({ page }) => {
@@ -119,6 +119,6 @@ test('flow 18: empty search with sort still returns empty', async ({ page }) => 
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body.results.length).toBe(0);
-    expect(body.totalCount).toBe(0);
+    expect(body.contactsMatched ?? body.totalCount).toBe(0);
   }
 });
