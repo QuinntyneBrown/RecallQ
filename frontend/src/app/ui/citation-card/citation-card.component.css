@@ -25,5 +25,5 @@
 }
 .body { flex: 1 1 auto; min-width: 0; }
 .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.row strong { font-size: 14px; font-weight: 600; }
+.row strong { font-size: 12px; font-weight: 600; }
 .snippet { margin: 4px 0 0; font-size: 13px; color: var(--foreground-secondary); line-height: 1.35; }
