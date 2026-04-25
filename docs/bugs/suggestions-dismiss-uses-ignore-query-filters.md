@@ -2,7 +2,7 @@
 
 **Flow:** 36 — Owner-Scope Data Isolation
 **Severity:** Medium (defense-in-depth violation; brittle isolation)
-**Status:** Open
+**Status:** Complete — `SuggestionsEndpoints` dismiss handler now reads `db.Suggestions.FirstOrDefaultAsync(s => s.Key == key, ct)`, relying on the global query filter for owner scope. The hand-written `s.OwnerUserId == ownerId` predicate is gone. `CrossUserIsolationTests.Cross_user_suggestion_dismiss_returns_404` still passes — and now genuinely exercises the global filter rather than the manual predicate.
 
 ## Symptom
 

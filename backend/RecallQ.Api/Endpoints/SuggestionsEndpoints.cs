@@ -28,9 +28,7 @@ public static class SuggestionsEndpoints
         app.MapPost("/api/suggestions/{key}/dismiss", [Authorize] async (
             string key, AppDbContext db, ICurrentUser current, CancellationToken ct) =>
         {
-            var ownerId = current.UserId!.Value;
-            var row = await db.Suggestions.IgnoreQueryFilters()
-                .FirstOrDefaultAsync(s => s.OwnerUserId == ownerId && s.Key == key, ct);
+            var row = await db.Suggestions.FirstOrDefaultAsync(s => s.Key == key, ct);
             if (row is null) return Results.NotFound();
             row.DismissedAt = DateTime.UtcNow;
             await db.SaveChangesAsync(ct);
