@@ -59,7 +59,7 @@
 }
 .assistant-bubble {
   align-self: flex-start;
-  background: var(--surface-elevated);
+  background: var(--surface-secondary);
   color: var(--foreground-primary);
 }
 .cursor {
