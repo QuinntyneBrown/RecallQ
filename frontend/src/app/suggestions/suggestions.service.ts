@@ -28,10 +28,14 @@ export class SuggestionsService {
   }
 
   async dismiss(key: string): Promise<void> {
-    const res = await fetch(`/api/suggestions/${encodeURIComponent(key)}/dismiss`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-    if (res.status === 204) this.suggestion.set(null);
+    this.suggestion.set(null);
+    try {
+      await fetch(`/api/suggestions/${encodeURIComponent(key)}/dismiss`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // best-effort; local state is already cleared
+    }
   }
 }

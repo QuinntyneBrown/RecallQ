@@ -1,5 +1,6 @@
 # Suggestion dismiss is not optimistic
 
+**Status:** Complete — `SuggestionsService.dismiss` now clears the signal first and fires the POST best-effort, hiding the card on the same tick the user taps Dismiss.
 **Flow:** [25 — Proactive AI Suggestion](../flows/25-proactive-suggestion/25-proactive-suggestion.md)
 **Traces:** L1-007, L2-029.
 **Severity:** Medium — Flow 25 step 5 says "The SPA hides the card immediately", but the current implementation only clears the signal *after* the server returns `204`. On a slow connection the user taps Dismiss, sees no change, and is unsure if the action registered. If the POST fails entirely (or the user is offline), the card stays visible forever with no error feedback.
