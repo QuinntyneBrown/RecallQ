@@ -2,7 +2,7 @@
 
 **Flow:** 14 — Delete Interaction
 **Severity:** High (broken UI affordance)
-**Status:** Open
+**Status:** Complete — `AllActivityPage.onDeleteInteraction` now confirms via `window.confirm`, calls `InteractionsService.delete`, and refetches `interactions.list` to refresh the rendered list. The template binds `(delete)="onDeleteInteraction($event)"` on `<app-timeline-item>`.
 
 ## Symptom
 

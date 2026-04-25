@@ -35,4 +35,17 @@ export class AllActivityPage implements OnInit {
     if (!id) return;
     void this.router.navigate(['/contacts', id, 'interactions', interactionId, 'edit']);
   }
+
+  async onDeleteInteraction(interactionId: string): Promise<void> {
+    if (!window.confirm('Delete this interaction?')) return;
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+    try {
+      await this.interactions.delete(interactionId);
+      const result = await this.interactions.list(id, 1, 50);
+      this.items.set(result.items);
+    } catch {
+      // leave list as-is on failure
+    }
+  }
 }
