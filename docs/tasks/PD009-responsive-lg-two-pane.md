@@ -27,10 +27,10 @@ Design the two-pane layout used at LG: results list on the left (max 420 wide), 
 
 ## Verification
 
-- [ ] Right-pane detail re-uses existing detail components (`heroAvatar`, `aiSummary`, etc.) — no parallel duplication.
-- [ ] No frame uses absolute positioning where flex would suffice.
+- [x] Right-pane detail re-uses existing detail components (`heroAvatar`, `aiSummary`, etc.) — no parallel duplication.
+- [x] No frame uses absolute positioning where flex would suffice.
 
 ## Definition of Done
 
-- [ ] Four LG frames added.
-- [ ] PNG exports.
+- [x] Four LG frames added.
+- [x] PNG exports.

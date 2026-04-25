@@ -23,10 +23,10 @@ Capture the starred state of the contact detail hero so the engineer building th
 
 ## Verification
 
-- [ ] Star fill color is exactly `$warning`.
-- [ ] No layout shift versus unstarred frame other than the new chip.
+- [x] Star fill color is exactly `$warning`.
+- [x] No layout shift versus unstarred frame other than the new chip.
 
 ## Definition of Done
 
-- [ ] One frame (`26`) added.
-- [ ] PNG export.
+- [x] One frame (`26`) added.
+- [x] PNG export.

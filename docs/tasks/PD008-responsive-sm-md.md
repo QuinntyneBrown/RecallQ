@@ -26,12 +26,12 @@ For each of: `1. Home`, `2. Search Results`, `3. Contact Detail`, `4. AI Ask Mod
 
 ## Verification
 
-- [ ] `Top Nav` component exists once and is referenced (`type: "ref"`) by every MD frame.
-- [ ] Bottom nav is absent on every MD frame.
-- [ ] No frame exceeds its declared width — `snapshot_layout({ problemsOnly: true })` clean.
+- [x] `Top Nav` component exists once and is referenced (`type: "ref"`) by every MD frame.
+- [x] Bottom nav is absent on every MD frame.
+- [x] No frame exceeds its declared width — `snapshot_layout({ problemsOnly: true })` clean.
 
 ## Definition of Done
 
-- [ ] 12 new frames laid out in clearly labeled SM and MD rows.
-- [ ] One reusable `Top Nav` component added to the Design System frame.
-- [ ] PNG exports for all 12.
+- [x] 12 new frames laid out in clearly labeled SM and MD rows.
+- [x] One reusable `Top Nav` component added to the Design System frame.
+- [x] PNG exports for all 12.

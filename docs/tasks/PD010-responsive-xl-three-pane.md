@@ -26,12 +26,12 @@ Design the persistent three-pane experience at XL: sidebar (navigation + Smart S
 
 ## Verification
 
-- [ ] Sidebar is a single reusable component (`Sidebar Nav`) added to the Design System frame.
-- [ ] All three XL frames reference that component, not bespoke copies.
-- [ ] No frame overflows its declared width.
+- [x] Sidebar is a single reusable component (`Sidebar Nav`) added to the Design System frame.
+- [x] All three XL frames reference that component, not bespoke copies.
+- [x] No frame overflows its declared width.
 
 ## Definition of Done
 
-- [ ] Three XL frames added.
-- [ ] One reusable `Sidebar Nav` component added.
-- [ ] PNG exports.
+- [x] Three XL frames added.
+- [x] One reusable `Sidebar Nav` component added.
+- [x] PNG exports.

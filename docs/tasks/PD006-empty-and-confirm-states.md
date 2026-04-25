@@ -25,10 +25,10 @@ Cover the three remaining empty/confirm states that current screens imply but do
 
 ## Verification
 
-- [ ] Zero-state and stack-list both reuse the same top-bar component as `2. Search Results`.
-- [ ] Confirm modal uses the same backdrop opacity as PD005 modals.
+- [x] Zero-state and stack-list both reuse the same top-bar component as `2. Search Results`.
+- [x] Confirm modal uses the same backdrop opacity as PD005 modals.
 
 ## Definition of Done
 
-- [ ] Three frames (`23`, `24`, `25`) added.
-- [ ] PNG exports.
+- [x] Three frames (`23`, `24`, `25`) added.
+- [x] PNG exports.
