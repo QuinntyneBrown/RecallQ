@@ -76,6 +76,7 @@ export class AskPage implements AfterViewChecked, OnInit {
   }
 
   async handleFollowUp(text: string): Promise<void> {
+    this.draft.set('');
     await this.ask.send(text, this.currentContactId());
   }
 }

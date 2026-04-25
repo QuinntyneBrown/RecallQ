@@ -2,7 +2,7 @@
 
 **Flow:** 21 — Ask Follow-Up Chips
 **Severity:** Medium-High (UX confusion)
-**Status:** Open
+**Status:** Complete — `AskPage.handleFollowUp` now calls `this.draft.set('')` before `ask.send(...)`, so a chip tap empties the input bar exactly like a manual `submit()`.
 
 ## Symptom
 
