@@ -2,7 +2,7 @@
 
 **Flow:** 11 — Log Interaction (timeline rendering on contact detail and All Activity)
 **Severity:** Medium (every long-content interaction renders a truncated mid-word title with no indicator that more text exists; users have no way to tell whether what they see is the whole note or a cut-off slice)
-**Status:** Open
+**Status:** Complete — `TimelineItemComponent.titleText()` now walks back to the nearest space before the 60-char cut and appends U+2026 when truncation actually happens. Subjects (used as-is) and short content (≤60 chars) are unchanged. New e2e test `bug-timeline-item-title-ellipsis.spec.ts` mocks a long-content note and asserts the rendered title ends with the ellipsis character.
 
 ## Symptom
 
