@@ -35,7 +35,7 @@
   -webkit-text-fill-color: transparent;
 }
 .hero-subtitle {
-  margin: 8px 0 0;
+  margin: 14px 0 0;
   font-size: 14px;
   color: var(--foreground-secondary);
 }
