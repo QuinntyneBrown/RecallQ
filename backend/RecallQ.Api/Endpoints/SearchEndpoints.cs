@@ -48,7 +48,7 @@ public static class SearchEndpoints
         var ieTotal = await db.InteractionEmbeddings.CountAsync();
         var ieMatch = await db.InteractionEmbeddings.CountAsync(e => e.Model == client.Model);
         var total = ceTotal + ieTotal;
-        if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), nextPage = (int?)null, contactsMatched = 0 });
+        if (total == 0) return Results.Ok(new { results = Array.Empty<object>(), totalCount = 0, page, pageSize, nextPage = (int?)null });
         if ((ceMatch + ieMatch) * 2 < total)
         {
             runner.StartInBackground(userId);
@@ -92,7 +92,7 @@ FROM collapsed ORDER BY {orderBy} LIMIT @limit OFFSET @offset";
             occurredAt = r.OccurredAt
         }).ToList();
         var totalMatches = rows.Count == 0 ? 0 : (int)rows[0].TotalMatches;
-        return Results.Ok(new { results = mapped, nextPage = rows.Count == pageSize ? page + 1 : (int?)null, contactsMatched = totalMatches });
+        return Results.Ok(new { results = mapped, totalCount = totalMatches, page, pageSize, nextPage = rows.Count == pageSize ? page + 1 : (int?)null });
     }
 
     private static string Truncate(string text, int max)
