@@ -2,7 +2,7 @@
 
 **Flow:** 39 — Responsive Breakpoint Resize (LG two-pane layout)
 **Severity:** Medium (visual inconsistency at LG+)
-**Status:** Open
+**Status:** Complete — `search.page.ts` now imports the shared `avatarBackground` helper from `result-card.component.ts` and exposes `avatarBackgroundFor(c)`. The detail-pane template binds `[style.background]="avatarBackgroundFor(c)"` on `.avatar-lg`, so a contact with stored `avatarColorA/B` shows the same gradient in the result list and the detail card.
 
 ## Symptom
 

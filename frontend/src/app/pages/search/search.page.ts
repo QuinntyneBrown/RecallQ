@@ -5,7 +5,7 @@ import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrollin
 import { SearchService, SearchResult, SearchSort } from '../../search/search.service';
 import { ContactsService, ContactDetailDto } from '../../contacts/contacts.service';
 import { QueryChipComponent } from '../../ui/query-chip/query-chip.component';
-import { ResultCardComponent, ResultCardContact } from '../../ui/result-card/result-card.component';
+import { ResultCardComponent, ResultCardContact, avatarBackground } from '../../ui/result-card/result-card.component';
 import { FeaturedResultCardComponent } from '../../ui/featured-result-card/featured-result-card.component';
 import { ZeroStateComponent } from '../../ui/zero-state/zero-state.component';
 import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
@@ -165,5 +165,9 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
 
   subLineFor(c: ResultCardContact): string {
     return [c.role, c.organization].filter(p => p && p.length > 0).join(' · ');
+  }
+
+  avatarBackgroundFor(c: ResultCardContact): string | null {
+    return avatarBackground(c);
   }
 }

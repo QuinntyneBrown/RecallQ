@@ -64,7 +64,7 @@
     @if (selectedContactId() && selectedContact(); as c) {
       <div class="detail-card" data-testid="detail-summary">
         <div class="detail-head">
-          <span class="avatar-lg" aria-hidden="true">{{ c.initials }}</span>
+          <span class="avatar-lg" aria-hidden="true" [style.background]="avatarBackgroundFor(c)">{{ c.initials }}</span>
           <div class="detail-text">
             <h2 class="detail-name" data-testid="detail-name">{{ c.displayName }}</h2>
             @if (c.role || c.organization) {
