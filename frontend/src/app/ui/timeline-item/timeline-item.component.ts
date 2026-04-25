@@ -34,6 +34,10 @@ export class TimelineItemComponent {
   @Output() delete = new EventEmitter<string>();
   @Output() edit = new EventEmitter<string>();
   iconClass() { return ICON_MAP[this.item.type] ?? 'ph-note'; }
+  typeLabel(): string {
+    const t = this.item.type;
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
   titleText() {
     if (this.item.subject && this.item.subject.trim().length) return this.item.subject;
     return (this.item.content || '').slice(0, 60);

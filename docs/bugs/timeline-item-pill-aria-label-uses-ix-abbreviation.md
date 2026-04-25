@@ -2,7 +2,7 @@
 
 **Flow:** 11 — Log Interaction (and timeline rendering generally)
 **Severity:** Low-Medium (a11y clarity)
-**Status:** Open
+**Status:** Complete — `TimelineItemComponent` now exposes a `typeLabel()` helper that returns the type with a capitalised initial; the pill binds `[attr.aria-label]="typeLabel()"`, so SR users hear plain `Email` / `Call` / `Meeting` / `Note` instead of the opaque `Ix email` form.
 
 ## Symptom
 
