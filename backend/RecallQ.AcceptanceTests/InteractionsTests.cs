@@ -128,6 +128,24 @@ public class InteractionsTests : IClassFixture<RecallqFactory>
     }
 
     [Fact]
+    public async Task Patch_interaction_enqueues_summary_refresh()
+    {
+        var (client, _, cookie) = await RegisterAndLogin(UniqueEmail());
+        var contactId = await CreateContact(client, cookie);
+        var createRes = await Send(client, HttpMethod.Post, $"/api/contacts/{contactId}/interactions", cookie, SampleInteraction());
+        var id = (await createRes.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+
+        _factory.SummaryRefreshJobs.Clear();
+        var patchRes = await Send(client, HttpMethod.Patch, $"/api/interactions/{id}", cookie, new { content = "Edited." });
+        Assert.Equal(HttpStatusCode.OK, patchRes.StatusCode);
+
+        var deadline = DateTime.UtcNow.AddSeconds(5);
+        while (DateTime.UtcNow < deadline && !_factory.SummaryRefreshJobs.Any(j => j.ContactId == contactId))
+            await Task.Delay(50);
+        Assert.Contains(_factory.SummaryRefreshJobs, j => j.ContactId == contactId);
+    }
+
+    [Fact]
     public async Task Delete_interaction_removes_embedding_row()
     {
         _factory.SummaryRefreshJobs.Clear();
