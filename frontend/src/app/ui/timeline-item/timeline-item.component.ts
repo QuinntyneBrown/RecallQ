@@ -40,7 +40,12 @@ export class TimelineItemComponent {
   }
   titleText() {
     if (this.item.subject && this.item.subject.trim().length) return this.item.subject;
-    return (this.item.content || '').slice(0, 60);
+    const content = this.item.content ?? '';
+    if (content.length <= 60) return content;
+    const cut = content.slice(0, 60);
+    const sp = cut.lastIndexOf(' ');
+    const head = sp > 30 ? cut.slice(0, sp) : cut;
+    return head + '…';
   }
   timeLabel() { return relativeShort(this.item.occurredAt); }
   onDelete() { this.delete.emit(this.item.id); }

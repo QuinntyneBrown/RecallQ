@@ -23,7 +23,6 @@ public class AppDbContext : DbContext
     public DbSet<RelationshipSummary> RelationshipSummaries => Set<RelationshipSummary>();
     public DbSet<Stack> Stacks => Set<Stack>();
     public DbSet<Suggestion> Suggestions => Set<Suggestion>();
-    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -166,16 +165,6 @@ public class AppDbContext : DbContext
         sug.Property(s => s.CreatedAt).HasColumnName("created_at");
         sug.Property(s => s.DismissedAt).HasColumnName("dismissed_at");
         sug.HasIndex(s => new { s.OwnerUserId, s.Key });
-
-        var prt = builder.Entity<PasswordResetToken>();
-        prt.ToTable("PasswordResetTokens");
-        prt.HasKey(t => t.Id);
-        prt.Property(t => t.Id).HasColumnName("Id");
-        prt.Property(t => t.OwnerUserId).HasColumnName("OwnerUserId");
-        prt.Property(t => t.TokenHash).HasColumnName("TokenHash").IsRequired();
-        prt.Property(t => t.ExpiresAt).HasColumnName("ExpiresAt");
-        prt.Property(t => t.UsedAt).HasColumnName("UsedAt");
-        prt.Property(t => t.CreatedAt).HasColumnName("CreatedAt");
 
         OwnerScope.ConfigureOwnerScope(builder, this);
     }
