@@ -58,6 +58,28 @@ export class AuthService {
     }
   }
 
+  async requestPasswordReset(email: string): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post<void>('/api/auth/request-password-reset', { email })
+      );
+    } catch (err: any) {
+      if (err.status === 429) throw new Error('rate_limited');
+      throw new Error('request_password_reset_failed');
+    }
+  }
+
+  async resetPassword(token: string, password: string): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post<void>('/api/auth/reset-password', { token, password })
+      );
+    } catch (err: any) {
+      if (err.status === 400) throw new Error('invalid_token_or_password');
+      throw new Error('reset_password_failed');
+    }
+  }
+
   async bootstrap(): Promise<void> {
     await this.fetchMe();
   }
