@@ -2,7 +2,7 @@
 
 **Flow:** 31 — CSV Bulk Import
 **Severity:** Low (contract gap)
-**Status:** Open
+**Status:** Complete — `ImportEndpoints` now returns `Results.Json(new { imported, failed, errors }, statusCode: StatusCodes.Status201Created)`. Existing `ImportTests` were updated to assert `HttpStatusCode.Created`.
 
 ## Symptom
 

@@ -64,7 +64,7 @@ public static class ImportEndpoints
             await FlushAsync();
             foreach (var id in created)
                 await embeddingWriter.WriteAsync(new EmbeddingJob(id, ownerId, "contact"));
-            return Results.Ok(new { imported, failed, errors });
+            return Results.Json(new { imported, failed, errors }, statusCode: StatusCodes.Status201Created);
         }).DisableAntiforgery();
         return app;
     }
