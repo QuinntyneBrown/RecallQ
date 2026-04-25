@@ -2,7 +2,7 @@
 
 **Flow:** 02 — User Login
 **Severity:** Medium (the generic-message protection is defeated by a timing oracle: roughly two orders of magnitude difference between the unknown-email path and the wrong-password path; rate limiting at 5/min per (ip, email) limits per-target probing but not per-distinct-email enumeration from a botnet)
-**Status:** Open
+**Status:** Complete — `Argon2Hasher` now exposes a public `DummyHash` constant (a well-formed Argon2id-formatted string whose preimage is unknown). `AuthEndpoints` login runs `hasher.Verify(password, Argon2Hasher.DummyHash)` on the unknown-email path so both failure paths execute the full Argon2id KDF and take indistinguishable wall-clock time. New acceptance test `LoginTimingSideChannelTests` registers 4 known emails (sidesteps per-email rate limit), times the median of three unknown vs known wrong-password attempts, and asserts the ratio is at most 2× — passes after the fix (was ~27× before).
 
 ## Symptom
 
