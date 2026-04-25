@@ -2,7 +2,7 @@
 
 **Flow:** 13 — Update Interaction (and 12 — View Activity Timeline as the entry point)
 **Severity:** High (editing silently fails for any interaction beyond the most recent 3 — including every interaction reached from the All Activity page once the contact has > 3 interactions)
-**Status:** Open
+**Status:** Complete — `ContactsService.get` now takes an optional `take`, and `EditInteractionPage` calls it with `take=50` so the server returns up to the maximum number of interactions instead of the default 3. E2E test `bug-edit-interaction-beyond-recent-3.spec.ts` provisions a contact with 4 interactions and asserts the oldest hydrates correctly. Contacts with > 50 interactions are out of scope for this fix; the cleaner long-term move is a dedicated `GET /api/interactions/{id}`.
 
 ## Symptom
 
