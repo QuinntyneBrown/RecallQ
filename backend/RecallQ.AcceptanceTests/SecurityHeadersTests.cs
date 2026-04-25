@@ -27,11 +27,13 @@ public class SecurityHeadersTests : IClassFixture<RecallqFactory>
             "default-src 'self'; " +
             "connect-src 'self' https://api.openai.com; " +
             "img-src 'self' data:; " +
-            "style-src 'self' 'unsafe-inline'; " +
-            "font-src 'self'; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+            "font-src 'self' https://fonts.gstatic.com; " +
             "frame-ancestors 'none'";
         Assert.Equal(expectedCsp, csp);
         Assert.DoesNotContain("unsafe-eval", csp);
+        Assert.Contains("https://fonts.googleapis.com", csp);
+        Assert.Contains("https://fonts.gstatic.com", csp);
 
         Assert.True(response.Headers.Contains("X-Content-Type-Options"));
         Assert.Equal("nosniff", string.Join(";", response.Headers.GetValues("X-Content-Type-Options")));
