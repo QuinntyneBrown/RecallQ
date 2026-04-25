@@ -1,8 +1,8 @@
-<div class="ai-card">
+<div class="ai-card" [attr.aria-busy]="refreshing ? 'true' : null">
   <div class="hdr">
     <p class="eyebrow">RELATIONSHIP SUMMARY</p>
-    <button type="button" aria-label="Refresh summary" (click)="refresh.emit()">
-      <i class="ph ph-arrows-clockwise"></i>
+    <button type="button" aria-label="Refresh summary" [disabled]="refreshing" (click)="refresh.emit()">
+      <i class="ph ph-arrows-clockwise" [class.spin]="refreshing"></i>
     </button>
   </div>
   @if (summary.status === 'ready') {

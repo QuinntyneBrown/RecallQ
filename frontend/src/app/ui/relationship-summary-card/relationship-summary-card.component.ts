@@ -9,6 +9,7 @@ import { SummaryResponse } from '../../contacts/contacts.service';
 })
 export class RelationshipSummaryCardComponent {
   @Input({ required: true }) summary!: SummaryResponse;
+  @Input() refreshing: boolean = false;
   @Output() refresh = new EventEmitter<void>();
 
   sinceLast(): string {

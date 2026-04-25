@@ -70,7 +70,7 @@
     </div>
 
     <div class="summary-wrap">
-      <app-relationship-summary-card [summary]="summary()" (refresh)="onRefreshSummary()" />
+      <app-relationship-summary-card [summary]="summary()" [refreshing]="refreshing()" (refresh)="onRefreshSummary()" />
     </div>
 
     <section class="activity">

@@ -32,6 +32,7 @@ export class ContactDetailPage implements OnInit {
   readonly notFound = signal(false);
   readonly contactId = signal<string | null>(null);
   readonly summary = signal<SummaryResponse>({ status: 'pending' });
+  readonly refreshing = signal(false);
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
   readonly starred = computed(() => this.contact()?.starred ?? false);
   readonly hasEmail = computed(() => (this.contact()?.emails?.length ?? 0) > 0);
@@ -59,27 +60,33 @@ export class ContactDetailPage implements OnInit {
     if (!id) return;
     try {
       const s = await this.contacts.getSummary(id);
-      this.summary.set(s);
+      if (s.status !== 'pending' || this.summary().status !== 'ready') {
+        this.summary.set(s);
+      }
       if (s.status === 'pending' && attempt < 10) {
         this.pollTimer = setTimeout(() => this.loadSummary(attempt + 1), 3000);
+      } else {
+        this.refreshing.set(false);
       }
     } catch {
-      // leave as-is
+      this.refreshing.set(false);
     }
   }
 
   async onRefreshSummary() {
     const id = this.contactId();
     if (!id) return;
-    this.summary.set({ status: 'pending' });
+    this.refreshing.set(true);
     try {
       await this.contacts.refreshSummary(id);
     } catch (e: any) {
+      this.refreshing.set(false);
       if (e?.message === 'rate_limited') {
         this.toast.show('Refresh available in a minute');
       } else {
         this.toast.show('Could not refresh summary');
       }
+      return;
     }
     this.loadSummary(0);
   }

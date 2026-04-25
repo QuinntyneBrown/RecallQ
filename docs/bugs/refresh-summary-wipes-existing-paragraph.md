@@ -2,7 +2,7 @@
 
 **Flow:** 27 — Refresh Relationship Summary (Manual)
 **Severity:** Medium-High (UX regression)
-**Status:** Open
+**Status:** Complete — `ContactDetailPage` now exposes a `refreshing` signal; `onRefreshSummary` no longer overwrites the summary to `pending` and `loadSummary` only replaces a `ready` summary with a `pending` poll response when no ready content exists. `relationship-summary-card` accepts `[refreshing]`, sets `aria-busy="true"` on the card, disables the refresh button, and spins the icon (respecting `prefers-reduced-motion`).
 
 ## Symptom
 
