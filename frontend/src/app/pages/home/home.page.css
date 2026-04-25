@@ -18,10 +18,19 @@
 }
 .hero-sub {
   margin: 0;
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--foreground-muted);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -1.2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-gradient-start),
+    var(--accent-gradient-end)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 .hero-subtitle {
   margin: 8px 0 0;
