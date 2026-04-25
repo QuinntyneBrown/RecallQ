@@ -2,7 +2,7 @@
 
 **Flow:** 19 — Ask Mode (Streaming Answer); auth handling per Flow 04
 **Severity:** Medium-High (a session timeout while using Ask shows a generic "Could not reach the assistant" error and leaves the user stuck on `/ask` with no path back to login; their only recovery is to manually navigate, which loses the question they were typing)
-**Status:** Open
+**Status:** Complete — `AskService.send` now branches on `res.status === 401`: clears `authState`, builds a `returnUrl` from the router's current URL, and `navigateByUrl('/login?returnUrl=...')`. Mirrors the `HttpClient` `apiInterceptor`'s redirect logic. New e2e `bug-ask-401-redirects-to-login.spec.ts` stubs the endpoint to 401 and asserts the SPA lands on `/login?returnUrl=...`.
 
 ## Symptom
 
