@@ -71,6 +71,7 @@ test('T027 LG/XL multi-pane with state preservation across resize', async ({ pag
 
   await pom.gotoQuery('resizeme');
   await expect(page.getByTestId('query-chip')).toContainText('resizeme');
+  await expect.poll(async () => (await pom.standardCards().count()) + (await pom.featured().count())).toBeGreaterThan(0);
   const beforeCount = await pom.standardCards().count();
   const featuredBefore = await pom.featured().isVisible();
 
@@ -80,6 +81,7 @@ test('T027 LG/XL multi-pane with state preservation across resize', async ({ pag
   await expect(page.getByTestId('query-chip')).toContainText('resizeme');
   await expect(pom.listPane()).toBeVisible();
   await expect(pom.detailPane()).toBeVisible();
+  await expect.poll(async () => (await pom.standardCards().count()) + (await pom.featured().count())).toBeGreaterThan(0);
   // results still visible (either featured card or standard cards)
   const afterCount = await pom.standardCards().count();
   const featuredAfter = await pom.featured().isVisible();

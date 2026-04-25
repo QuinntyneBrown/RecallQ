@@ -69,10 +69,10 @@ test('star button aria-label flips between Star / Unstar', async ({ page }) => {
 
   await page.goto(`/contacts/${contactId}`);
 
-  await expect(page.getByRole('button', { name: 'Star contact' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Star contact', exact: true })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Star contact' }).click();
+  await page.getByRole('button', { name: 'Star contact', exact: true }).click();
 
-  await expect(page.getByRole('button', { name: 'Unstar contact' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Star contact' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Unstar contact', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Star contact', exact: true })).toHaveCount(0);
 });

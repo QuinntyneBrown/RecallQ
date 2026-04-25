@@ -61,7 +61,7 @@ test('detail-pane avatar uses server avatarColors at LG', async ({ page }) => {
 
   await page.goto('/search?q=anything');
 
-  await page.getByTestId('result-card').first().click();
+  await page.getByTestId('featured-result').click();
 
   const avatar = page.locator('[data-testid="results-detail-pane"] .avatar-lg');
   await expect(avatar).toBeVisible();

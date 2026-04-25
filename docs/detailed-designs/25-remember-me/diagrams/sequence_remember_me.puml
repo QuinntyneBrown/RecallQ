@@ -1,0 +1,29 @@
+@startuml sequence_remember_me
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Login with Remember Me
+
+actor User
+participant "LoginPage" as PG
+participant "AuthService" as SVC
+participant "/api/auth/login" as EP
+participant "Argon2Hasher" as H
+participant "Cookie\nmiddleware" as CK
+
+User -> PG: check "Remember me", submit
+PG -> SVC: login(email, pw, true)
+SVC -> EP: POST { email, password, rememberMe: true }
+EP -> H: Verify(pw, hash)
+H --> EP: true
+EP -> CK: SignInAsync(principal, { IsPersistent=true,\n  ExpiresUtc=now+30d })
+CK --> EP: Set-Cookie\n  rq_auth=...; Expires=<utc+30d>;\n  HttpOnly; Secure; SameSite=Strict
+EP --> SVC: 200 OK { id, email }
+SVC --> PG: authState updated
+
+note over User,CK
+  rememberMe=false → IsPersistent=false,
+  ExpiresUtc=now+24h → session cookie
+end note
+
+@enduml

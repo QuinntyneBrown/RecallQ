@@ -18,7 +18,14 @@ export class AllActivityPage implements OnInit, AfterViewInit, OnDestroy {
   readonly loading = signal(true);
   readonly loadingMore = signal(false);
   readonly nextPage = signal<number | null>(null);
-  @ViewChild('sentinel') sentinel?: ElementRef<HTMLElement>;
+  private sentinel?: ElementRef<HTMLElement>;
+  @ViewChild('sentinel') set sentinelRef(ref: ElementRef<HTMLElement> | undefined) {
+    this.observer?.disconnect();
+    this.observer = undefined;
+    this.observed = false;
+    this.sentinel = ref;
+    this.tryObserveSentinel();
+  }
   private observer?: IntersectionObserver;
   private observed = false;
 

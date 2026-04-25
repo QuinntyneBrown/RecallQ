@@ -19,7 +19,7 @@ test('add-email PATCH failure surfaces a toast', async ({ page }) => {
   });
 
   await page.getByRole('button', { name: 'Email this contact' }).click();
-  await page.getByLabel('Email').fill('someone@example.com');
+  await page.getByRole('dialog', { name: 'Add email' }).getByRole('textbox', { name: 'Email' }).fill('someone@example.com');
   await page.getByRole('button', { name: 'Save' }).click();
 
   await expect(page.getByText('Could not update contact')).toBeVisible();

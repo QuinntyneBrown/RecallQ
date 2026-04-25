@@ -6,6 +6,7 @@ import { ContactDetailPage } from '../pages/contact-detail.page';
 import { AddEmailModal } from '../pages/modals/add-email.modal';
 import { AddPhoneModal } from '../pages/modals/add-phone.modal';
 import { screenshot } from '../fixtures/screenshot';
+import { VIEWPORTS } from '../fixtures/viewports';
 
 const IPHONE_UA =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
@@ -139,6 +140,8 @@ test.describe('T022 mobile scenarios', () => {
 });
 
 test.describe('T022 desktop scenarios', () => {
+  test.use({ viewport: VIEWPORTS.md });
+
   test('D: desktop, phone present → clipboard + toast', async ({ page, context, browserName }) => {
     test.skip(browserName !== 'chromium', 'clipboard permission API is chromium-only');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -155,8 +158,9 @@ test.describe('T022 desktop scenarios', () => {
     await pom.goto(contactId);
     await pom.callTile().click();
 
-    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clipboardText).toBe('+15550000');
+    await expect
+      .poll(async () => await page.evaluate(() => navigator.clipboard.readText()))
+      .toBe('+15550000');
 
     await expect(page.getByRole('status')).toContainText(/copied/i);
   });

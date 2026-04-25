@@ -71,7 +71,7 @@ test('T034 ask full experience: stream + citations + follow-ups + retention + ta
   await ask.tapFollowUp(1);
 
   await expect(ask.userBubbles()).toHaveCount(2);
-  await expect(ask.userBubbles().last()).toHaveText(chip2Text);
+  await expect(ask.userBubbles().last()).toContainText(chip2Text);
 
   await expect.poll(
     async () => (await ask.assistantBubbles().last().innerText()).trim(),

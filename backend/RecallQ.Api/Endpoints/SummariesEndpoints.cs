@@ -18,9 +18,9 @@ public static class SummariesEndpoints
             if (contact is null) return Results.NotFound();
 
             var row = await db.RelationshipSummaries.FirstOrDefaultAsync(r => r.ContactId == id);
+            var interactionCount = await db.Interactions.CountAsync(i => i.ContactId == id);
             if (row is null)
             {
-                var interactionCount = await db.Interactions.CountAsync(i => i.ContactId == id);
                 if (interactionCount == 0)
                     return Results.Ok(new { status = "not_enough_data" });
                 await writer.WriteAsync(new SummaryRefreshJob(id, current.UserId!.Value));
@@ -29,6 +29,12 @@ public static class SummariesEndpoints
 
             if (row.Paragraph is null && row.InteractionCount == 0)
                 return Results.Ok(new { status = "not_enough_data" });
+
+            if (row.Paragraph is not null && row.InteractionCount != interactionCount)
+            {
+                await writer.WriteAsync(new SummaryRefreshJob(id, current.UserId!.Value));
+                return Results.Ok(new { status = "pending" });
+            }
 
             if (row.Paragraph is null)
                 return Results.Ok(new { status = "pending" });

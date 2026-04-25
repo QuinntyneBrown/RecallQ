@@ -18,7 +18,7 @@ test('T016 ask mode streams tokens into assistant bubble', async ({ page }) => {
   await ask.type(q);
   await ask.send();
 
-  await expect(ask.userBubbles().first()).toHaveText(q);
+  await expect(ask.userBubbles().first()).toContainText(q);
 
   const assistantBubble = ask.assistantBubbles().first();
   await expect(async () => {

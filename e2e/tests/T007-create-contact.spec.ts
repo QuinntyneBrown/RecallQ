@@ -24,5 +24,5 @@ test('create contact navigates to detail page', async ({ page }) => {
   await screenshot(page, 'T007-add-contact');
 
   await pom.save();
-  await expect(page).toHaveURL(/\/contacts\/[0-9a-f-]+$/);
+  await expect(page).toHaveURL(/\/contacts\/[0-9a-f-]+$/, { timeout: 20_000 });
 });

@@ -1,0 +1,44 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+
+title Remember Me - Domain (delta only)
+
+class LoginRequest <<record>> {
+    +Email: string?
+    +Password: string?
+    +RememberMe: bool?
+}
+
+class AuthenticationProperties <<framework>> {
+    +IsPersistent: bool
+    +ExpiresUtc: DateTimeOffset?
+    +AllowRefresh: bool
+}
+
+class CheckboxComponent <<Angular>> {
+    +checked: input<bool>
+    +label: input<string>
+    +disabled: input<bool>
+    +checkedChange: output<bool>
+    +onToggle(): void
+}
+
+class LoginPage <<Angular>> {
+    +email: signal<string>
+    +password: signal<string>
+    +rememberMe: signal<bool>
+    +onSubmit(ev): Promise<void>
+}
+
+class AuthService <<Angular>> {
+    +login(email, password, rememberMe): Promise<void>
+}
+
+LoginPage --> CheckboxComponent : <<uses>>
+LoginPage --> AuthService : login(...)
+AuthService ..> LoginRequest : POST body
+LoginRequest ..> AuthenticationProperties : maps to
+
+@enduml

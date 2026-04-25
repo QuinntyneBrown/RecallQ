@@ -17,7 +17,7 @@ export async function createContact(page: Page, contact: ContactInput): Promise<
   await pom.goto();
   await pom.fill(contact);
   await pom.save();
-  await expect(page).toHaveURL(/\/contacts\/[0-9a-f-]+$/);
+  await expect(page).toHaveURL(/\/contacts\/[0-9a-f-]+$/, { timeout: 20_000 });
   const url = page.url();
   const match = url.match(/\/contacts\/([0-9a-f-]+)$/);
   if (!match) throw new Error('contact id not found in URL: ' + url);

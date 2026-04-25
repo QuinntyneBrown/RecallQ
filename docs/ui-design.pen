@@ -6166,6 +6166,72 @@
                   ]
                 },
                 {
+                  "type": "frame",
+                  "id": "mJfJ2",
+                  "name": "rememberRow",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "wse0b",
+                      "name": "rememberMe",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "uS3Hj",
+                          "name": "checkbox",
+                          "width": 20,
+                          "height": 20,
+                          "fill": "$surface-elevated",
+                          "cornerRadius": "$radius-sm",
+                          "stroke": {
+                            "thickness": 1.5,
+                            "fill": "$border-strong"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "LUTIu",
+                              "name": "checkIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "check",
+                              "iconFontFamily": "lucide",
+                              "fill": "$foreground-muted"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "iUkk2",
+                          "name": "remLabel",
+                          "fill": "$foreground-secondary",
+                          "content": "Remember me",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "KTo4x",
+                      "name": "forgot",
+                      "fill": "$accent-tertiary",
+                      "content": "Forgot password?",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
                   "id": "hDerc",
                   "type": "ref",
                   "ref": "8VJjL",
@@ -6206,6 +6272,319 @@
                   "name": "logAuxLink",
                   "fill": "$accent-tertiary",
                   "content": "Create one",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kIobx",
+      "x": 3310,
+      "y": -200,
+      "name": "7. Forgot Password",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "$surface-primary",
+      "cornerRadius": 40,
+      "layout": "none",
+      "children": [
+        {
+          "id": "3MnwL",
+          "type": "ref",
+          "ref": "kauhQ",
+          "x": 0,
+          "y": 0,
+          "name": "sb"
+        },
+        {
+          "type": "ellipse",
+          "id": "YRWCB",
+          "x": -120,
+          "y": -160,
+          "name": "ambient glow",
+          "opacity": 0.9,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 0.8,
+              "height": 0.8
+            },
+            "colors": [
+              {
+                "color": "#7C3AFF66",
+                "position": 0
+              },
+              {
+                "color": "#BF40FF33",
+                "position": 0.5
+              },
+              {
+                "color": "#0A0A1600",
+                "position": 1
+              }
+            ]
+          },
+          "width": 640,
+          "height": 520
+        },
+        {
+          "type": "ellipse",
+          "id": "Tiezy",
+          "x": 200,
+          "y": 120,
+          "name": "ambient glow cyan",
+          "opacity": 0.7,
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 0.8,
+              "height": 0.8
+            },
+            "colors": [
+              {
+                "color": "#4BE8FF40",
+                "position": 0
+              },
+              {
+                "color": "#0A0A1600",
+                "position": 1
+              }
+            ]
+          },
+          "width": 380,
+          "height": 380
+        },
+        {
+          "id": "eHFcu",
+          "type": "ref",
+          "ref": "JRdjy",
+          "x": 0,
+          "y": 810,
+          "name": "hi"
+        },
+        {
+          "type": "frame",
+          "id": "uevQr",
+          "x": 24,
+          "y": 70,
+          "name": "content",
+          "width": 342,
+          "layout": "vertical",
+          "gap": 32,
+          "children": [
+            {
+              "type": "frame",
+              "id": "UZHtz",
+              "name": "backRow",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "Ne4I5",
+                  "name": "backIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "arrow-left",
+                  "iconFontFamily": "lucide",
+                  "fill": "$foreground-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "8lMQG",
+                  "name": "backText",
+                  "fill": "$foreground-secondary",
+                  "content": "Back to sign in",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "0OPSx",
+              "name": "brand",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "9Fhi6",
+                  "name": "dot",
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 90,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "$accent-gradient-start",
+                        "position": 0
+                      },
+                      {
+                        "color": "$accent-gradient-end",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "width": 10,
+                  "height": 10
+                },
+                {
+                  "type": "text",
+                  "id": "LmvFn",
+                  "name": "brandText",
+                  "fill": "$foreground-primary",
+                  "content": "RecallQ",
+                  "fontFamily": "Geist",
+                  "fontSize": 18,
+                  "fontWeight": "600",
+                  "letterSpacing": -0.3
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gd6ev",
+              "name": "hero",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "lxKY9",
+                  "name": "heading",
+                  "fill": "$foreground-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Forgot password?",
+                  "fontFamily": "Geist",
+                  "fontSize": 32,
+                  "fontWeight": "700",
+                  "letterSpacing": -0.8
+                },
+                {
+                  "type": "text",
+                  "id": "BKIJx",
+                  "name": "sub",
+                  "fill": "$foreground-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Enter your email and we'll send you a secure link to reset your password.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "T1Fcj",
+              "name": "form",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bu5lE",
+                  "name": "emLabel",
+                  "fill": "$foreground-secondary",
+                  "content": "Email",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "b3YiZ",
+                  "name": "emailInput",
+                  "width": "fill_container",
+                  "height": 48,
+                  "fill": "$surface-elevated",
+                  "cornerRadius": "$radius-md",
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "$border-subtle"
+                  },
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "gNR3i",
+                      "name": "emPh",
+                      "fill": "$foreground-muted",
+                      "content": "you@example.com",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "id": "KMIYU",
+                  "type": "ref",
+                  "ref": "8VJjL",
+                  "width": "fill_container",
+                  "name": "btn",
+                  "descendants": {
+                    "a7Ii2": {
+                      "enabled": false
+                    },
+                    "K01yN": {
+                      "content": "Send reset link"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Qe6D3",
+              "name": "hint",
+              "width": "fill_container",
+              "gap": 6,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dtSoR",
+                  "name": "hintT",
+                  "fill": "$foreground-secondary",
+                  "content": "Remember it?",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "8seNJ",
+                  "name": "hintL",
+                  "fill": "$accent-tertiary",
+                  "content": "Sign in",
                   "fontFamily": "Inter",
                   "fontSize": 14,
                   "fontWeight": "600"

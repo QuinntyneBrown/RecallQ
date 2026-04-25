@@ -1,0 +1,26 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Remember Me - Components (delta only)
+
+Person(user, "User", "On login screen")
+
+Container_Boundary(spa, "Angular SPA") {
+    Component(login, "LoginPage", "standalone", "rememberMe signal + checkbox row")
+    Component(checkbox, "CheckboxComponent", "standalone", "role=checkbox, Space toggles")
+    Component(authSvc, "AuthService", "service", "login(email, pw, rememberMe)")
+}
+
+Container_Boundary(api, "RecallQ.Api") {
+    Component(authEp, "AuthEndpoints", "Minimal API", "/api/auth/login adds rememberMe")
+    Component(cookies, "Cookie middleware", "ASP.NET", "SignInAsync with AuthenticationProperties")
+}
+
+Rel(user, login, "checks box, submits")
+Rel(login, checkbox, "binds [checked]")
+Rel(login, authSvc, "login(.., rememberMe)")
+Rel(authSvc, authEp, "POST {email, password, rememberMe}", "JSON/HTTPS")
+Rel(authEp, cookies, "SignInAsync(props)")
+
+@enduml
