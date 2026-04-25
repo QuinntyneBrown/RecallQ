@@ -1,5 +1,6 @@
 # Bottom-nav and sidebar Profile buttons miss aria-haspopup/expanded
 
+**Status:** Complete — both Profile `<button>`s now carry `aria-haspopup="menu"` and `[attr.aria-expanded]="menuOpen()"`.
 **Flow:** [03 — User Logout](../flows/03-user-logout/03-user-logout.md)
 **Traces:** L1-001, L1-015, L2-066.
 **Severity:** Low — Both `BottomNavComponent` and `SidebarComponent` render a Profile `<button>` that toggles a `role="menu"` popup, but the button itself only carries `aria-label="Profile"`. WAI-ARIA's menu-button pattern expects `aria-haspopup="menu"` and `aria-expanded="true|false"` so screen-reader users hear "Profile, menu, collapsed" before they activate the trigger and "expanded" once the menu opens.

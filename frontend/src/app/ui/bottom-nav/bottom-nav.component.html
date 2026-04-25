@@ -9,7 +9,7 @@
   <a routerLink="/search" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
   <a routerLink="/ask" aria-label="Ask"><i class="ph ph-sparkle"></i></a>
   <div class="profile-wrap">
-    <button type="button" aria-label="Profile" (click)="toggleMenu()"><i class="ph ph-user"></i></button>
+    <button type="button" aria-label="Profile" aria-haspopup="menu" [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()"><i class="ph ph-user"></i></button>
     @if (menuOpen()) {
       <div role="menu" class="menu">
         <button role="menuitem" aria-label="Log out" type="button" (click)="logout()">Log out</button>
