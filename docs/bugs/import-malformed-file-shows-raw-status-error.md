@@ -1,5 +1,6 @@
 # Import malformed file shows raw `import_failed_400`
 
+**Status:** Complete — `ImportsService.upload` now throws `'malformed'` on 400, and `ImportPage` renders a descriptive CSV-format hint with a generic `'Upload failed.'` fallback.
 **Flow:** [31 — CSV Bulk Import](../flows/31-csv-bulk-import/31-csv-bulk-import.md)
 **Traces:** L1-018, L2-077.
 **Severity:** Medium — when the server rejects a non-CSV / wrong-encoding upload with `400 Bad Request`, the SPA renders the raw identifier `import_failed_400`, breaking the "descriptive error" promise from Flow 31's alternatives section.

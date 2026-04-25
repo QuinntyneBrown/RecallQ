@@ -18,6 +18,7 @@ export class ImportsService {
       body: form,
     });
     if (res.status === 413) throw new ImportTooLargeError();
+    if (res.status === 400) throw new Error('malformed');
     if (!res.ok) throw new Error('import_failed_' + res.status);
     return (await res.json()) as ImportResult;
   }

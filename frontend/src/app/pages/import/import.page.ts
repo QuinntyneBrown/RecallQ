@@ -113,8 +113,10 @@ export class ImportPage {
     } catch (e: unknown) {
       if (e instanceof ImportTooLargeError) {
         this.error.set('File is too large (max 10 MB).');
+      } else if ((e as Error)?.message === 'malformed') {
+        this.error.set("We couldn't read that file. Make sure it's a CSV.");
       } else {
-        this.error.set((e as Error)?.message ?? 'Upload failed.');
+        this.error.set('Upload failed.');
       }
     } finally {
       this.loading.set(false);
