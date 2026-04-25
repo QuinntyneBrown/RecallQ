@@ -2,7 +2,7 @@
 
 **Flow:** 07 — View Contact Detail
 **Severity:** Low (visual consistency)
-**Status:** Open
+**Status:** Complete — `contact-detail.page.css` now declares `linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end))` on `.avatar`, matching the angle used by every other avatar in the app.
 
 ## Symptom
 
