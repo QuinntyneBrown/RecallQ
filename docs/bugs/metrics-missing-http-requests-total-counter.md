@@ -2,7 +2,7 @@
 
 **Flow:** 38 — Metrics Scrape (/metrics)
 **Severity:** High (alerting rule unimplementable)
-**Status:** Open
+**Status:** Complete — `RecallQMetrics` now declares `HttpRequestsTotal = recallq_http_requests_total{endpoint, status_code}`. `ApiLatencyMiddleware`'s `finally` increments it once per response with the resolved endpoint label and `context.Response.StatusCode` as `status_code`. The `Metrics_endpoint_exposes_labeled_histograms` test asserts the metric name appears and that at least one labelled sample carries a numeric `status_code`.
 
 ## Symptom
 

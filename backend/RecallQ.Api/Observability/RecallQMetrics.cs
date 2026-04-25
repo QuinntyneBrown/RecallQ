@@ -27,4 +27,9 @@ public static class RecallQMetrics
     public static readonly Counter LlmCostUsd = Metrics.CreateCounter(
         "recallq_llm_cost_usd",
         "LLM cost USD");
+
+    public static readonly Counter HttpRequestsTotal = Metrics.CreateCounter(
+        "recallq_http_requests_total",
+        "HTTP requests",
+        new CounterConfiguration { LabelNames = new[] { "endpoint", "status_code" } });
 }

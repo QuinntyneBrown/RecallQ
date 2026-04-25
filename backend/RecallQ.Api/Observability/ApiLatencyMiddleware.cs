@@ -28,6 +28,7 @@ public sealed class ApiLatencyMiddleware
                 endpoint = routePattern ?? context.Request.Path.Value ?? "unknown";
             }
             RecallQMetrics.ApiLatencySeconds.WithLabels(endpoint).Observe(sw.Elapsed.TotalSeconds);
+            RecallQMetrics.HttpRequestsTotal.WithLabels(endpoint, context.Response.StatusCode.ToString()).Inc();
         }
     }
 }
