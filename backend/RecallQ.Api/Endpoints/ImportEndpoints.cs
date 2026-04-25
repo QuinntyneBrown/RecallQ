@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using RecallQ.Api.Embeddings;
 using RecallQ.Api.Entities;
 using RecallQ.Api.Security;
+using RecallQ.Api.Stacks;
 
 namespace RecallQ.Api.Endpoints;
 
@@ -16,7 +17,8 @@ public static class ImportEndpoints
     {
         app.MapPost("/api/import/contacts", [Authorize] async (
             HttpRequest request, AppDbContext db, ICurrentUser current,
-            ChannelWriter<EmbeddingJob> embeddingWriter) =>
+            ChannelWriter<EmbeddingJob> embeddingWriter,
+            StackCountCache stackCache) =>
         {
             if (request.ContentLength > MaxBytes) return Results.StatusCode(413);
             if (!request.HasFormContentType) return Results.BadRequest(new { error = "multipart required" });
@@ -62,6 +64,7 @@ public static class ImportEndpoints
                 if (batch.Count >= ImportContactsHelper.BatchSize) await FlushAsync();
             }
             await FlushAsync();
+            if (imported > 0) stackCache.InvalidateOwner(ownerId);
             foreach (var id in created)
                 await embeddingWriter.WriteAsync(new EmbeddingJob(id, ownerId, "contact"));
             return Results.Json(new { imported, failed, errors }, statusCode: StatusCodes.Status201Created);
