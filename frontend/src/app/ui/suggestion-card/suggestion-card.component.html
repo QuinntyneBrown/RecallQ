@@ -1,0 +1,11 @@
+<article class="sug" data-testid="suggestion-card">
+  <div class="row">
+    <span class="dot" aria-hidden="true"></span>
+    <p class="eyebrow">AI SUGGESTION</p>
+  </div>
+  <p class="body">{{ suggestion.body }}</p>
+  <div class="actions">
+    <a [attr.href]="suggestion.actionHref" (click)="nav($event)" role="link" class="primary">{{ suggestion.actionLabel }}</a>
+    <button type="button" (click)="dismiss.emit(suggestion.key)" class="ghost">Dismiss</button>
+  </div>
+</article>

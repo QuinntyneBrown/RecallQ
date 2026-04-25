@@ -26,51 +26,8 @@ export function relativeShort(dateIso: string, now: Date = new Date()): string {
 @Component({
   selector: 'app-timeline-item',
   standalone: true,
-  template: `
-    <span class="pill" [attr.data-type]="item.type" [attr.aria-label]="'Ix ' + item.type">
-      <i class="ph" [class]="iconClass()"></i>
-    </span>
-    <span class="body">
-      <span class="title">{{ titleText() }}</span>
-    </span>
-    <span class="time">{{ timeLabel() }}</span>
-    <button type="button" class="del" aria-label="Delete interaction" (click)="onDelete()">
-      <i class="ph ph-trash" aria-hidden="true"></i>
-    </button>
-  `,
-  styles: [`
-    :host {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 0;
-    }
-    .pill {
-      width: 32px; height: 32px; border-radius: var(--radius-full);
-      display: inline-flex; align-items: center; justify-content: center;
-      color: var(--foreground-primary);
-      background: var(--surface-elevated);
-      flex: 0 0 auto;
-    }
-    .pill[data-type="email"] { background: color-mix(in srgb, var(--accent-primary) 35%, transparent); }
-    .pill[data-type="call"]  { background: color-mix(in srgb, var(--success) 35%, transparent); }
-    .pill[data-type="meeting"] { background: color-mix(in srgb, var(--accent-secondary) 35%, transparent); }
-    .pill[data-type="note"]  { background: color-mix(in srgb, var(--accent-tertiary) 35%, transparent); }
-    .body { flex: 1 1 auto; min-width: 0; }
-    .title {
-      display: block; font-weight: 600; color: var(--foreground-primary);
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .time { color: var(--foreground-secondary); font-size: 12px; flex: 0 0 auto; }
-    .ph { font-size: 16px; }
-    .del {
-      background: transparent; border: 0; cursor: pointer;
-      color: var(--foreground-muted);
-      padding: 4px 8px;
-      border-radius: var(--radius-md);
-      flex: 0 0 auto;
-    }
-    .del:hover, .del:focus-visible { color: var(--accent-secondary); background: color-mix(in srgb, var(--accent-secondary) 12%, transparent); }
-    .del .ph { font-size: 16px; }
-  `],
+  templateUrl: './timeline-item.component.html',
+  styleUrl: './timeline-item.component.css',
 })
 export class TimelineItemComponent {
   @Input({ required: true }) item!: InteractionDto;
