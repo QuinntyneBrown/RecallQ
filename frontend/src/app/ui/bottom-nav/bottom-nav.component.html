@@ -5,9 +5,9 @@
     [class.online]="online()"
     aria-hidden="true"
   ></span>
-  <a routerLink="/home" aria-label="Home"><i class="ph ph-house"></i></a>
-  <a routerLink="/search" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
-  <a routerLink="/ask" aria-label="Ask"><i class="ph ph-sparkle"></i></a>
+  <a routerLink="/home" routerLinkActive="active" aria-label="Home"><i class="ph ph-house"></i></a>
+  <a routerLink="/search" routerLinkActive="active" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
+  <a routerLink="/ask" routerLinkActive="active" aria-label="Ask"><i class="ph ph-sparkle"></i></a>
   <div class="profile-wrap">
     <button type="button" aria-label="Profile" aria-haspopup="menu" [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()"><i class="ph ph-user"></i></button>
     @if (menuOpen()) {
