@@ -1,0 +1,50 @@
+<h2 id="intro-modal-title">Draft intro</h2>
+
+<label for="second-party">Second party</label>
+<input
+  id="second-party"
+  aria-label="Second party"
+  type="text"
+  [value]="query()"
+  (input)="onQuery($event)"
+  autocomplete="off"
+/>
+
+@if (candidates().length && !secondParty()) {
+  <ul role="listbox" class="results">
+    @for (c of candidates(); track c.id) {
+      <li role="option" (click)="pick(c)">{{ c.displayName }}</li>
+    }
+  </ul>
+}
+
+@if (secondParty(); as sp) {
+  <p class="picked" data-testid="second-party-picked">Picked: {{ sp.displayName }}</p>
+}
+
+<div class="actions">
+  <button type="button" (click)="cancel()">Cancel</button>
+  <button type="button" (click)="generate()" [disabled]="!secondParty() || generating()">
+    Generate draft
+  </button>
+</div>
+
+@if (generated()) {
+  <label for="draft-subject">Subject</label>
+  <input id="draft-subject" type="text" readonly [value]="subject()" />
+
+  <label for="draft-body">Draft body</label>
+  <textarea
+    id="draft-body"
+    role="textbox"
+    aria-label="Draft body"
+    [value]="body()"
+    (input)="onBodyInput($event)"
+    rows="10"
+  ></textarea>
+
+  <div class="actions">
+    <button type="button" (click)="copy()">Copy</button>
+    <button type="button" (click)="sendEmail()" [disabled]="!canEmailBoth()">Send via email</button>
+  </div>
+}

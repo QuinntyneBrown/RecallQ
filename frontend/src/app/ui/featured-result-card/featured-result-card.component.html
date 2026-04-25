@@ -1,0 +1,20 @@
+<a class="card"
+   data-testid="featured-result"
+   role="link"
+   [attr.data-contact-id]="contact.id"
+   [attr.href]="'/contacts/' + contact.id"
+   (click)="nav($event)">
+  <span class="eyebrow">WHY THIS MATCH</span>
+  <span class="matched">{{ result.matchedText }}</span>
+  <span class="row">
+    <span class="avatar" aria-hidden="true">{{ contact.initials }}</span>
+    <span class="body">
+      <span class="name">{{ contact.displayName }}</span>
+      <span class="sub">{{ subLine() }}</span>
+      <app-interaction-pills [pills]="pills()"></app-interaction-pills>
+    </span>
+    <span class="score">
+      <app-score-chip [value]="result.similarity"></app-score-chip>
+    </span>
+  </span>
+</a>

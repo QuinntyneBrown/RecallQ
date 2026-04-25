@@ -1,0 +1,35 @@
+<section class="home">
+  <section aria-labelledby="hero-title">
+    <p class="greeting">Good {{ timeOfDay() }}, {{ greetingName() }}</p>
+    <h1 id="hero-title" class="hero-title">Find anyone.</h1>
+    <p class="hero-sub">By meaning, not memory.</p>
+    <p class="hero-subtitle" data-testid="hero-subtitle">{{ heroSubtitle() }}</p>
+
+    <div class="search-wrap">
+      <label class="sr-only" for="q">Search contacts</label>
+      <i class="ph ph-magnifying-glass search-icon" aria-hidden="true"></i>
+      <input id="q" class="search-input" type="search" role="searchbox"
+             aria-label="Search contacts"
+             placeholder="Search contacts"
+             (keyup.enter)="goSearch($event)" />
+    </div>
+  </section>
+
+  @if (suggestionsService.suggestion()) {
+    <app-suggestion-card [suggestion]="suggestionsService.suggestion()!" (dismiss)="handleDismiss($event)"/>
+  }
+
+  @if (stacksService.stacks().length > 0) {
+    <section class="stacks-row" aria-labelledby="stacks-heading">
+      <h2 id="stacks-heading">Smart stacks <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
+      <div class="stacks-scroll">
+        @for (s of stacksService.stacks(); track s.id) {
+          <app-stack-card [stack]="s"/>
+        }
+      </div>
+    </section>
+  }
+
+  <a class="add-link" href="/contacts/new" (click)="goAdd($event)">Add contact</a>
+  <a class="add-link" href="/import" (click)="goImport($event)">Import CSV</a>
+</section>

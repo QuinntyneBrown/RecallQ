@@ -1,0 +1,28 @@
+<section class="page">
+  <app-brand/>
+  <h1>Create account</h1>
+  <form (submit)="onSubmit($event)">
+    <app-input-field
+      label="Email"
+      type="email"
+      name="email"
+      autocomplete="email"
+      [value]="email()"
+      (valueChange)="email.set($event)"
+    />
+    <app-input-field
+      label="Password"
+      type="password"
+      name="password"
+      autocomplete="new-password"
+      [value]="password()"
+      (valueChange)="password.set($event)"
+    />
+    @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
+    <app-button-primary type="submit" [disabled]="busy()">Create account</app-button-primary>
+  </form>
+  <p class="aux">
+    Already have an account?
+    <a routerLink="/login">Log in</a>
+  </p>
+</section>

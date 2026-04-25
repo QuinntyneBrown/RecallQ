@@ -3,34 +3,8 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'app-button-primary',
   standalone: true,
-  template: `
-    <button [type]="type" [disabled]="disabled">
-      <ng-content/>
-    </button>
-  `,
-  styles: [`
-    button {
-      height: 48px;
-      padding: 0 24px;
-      border: 0;
-      border-radius: var(--radius-full);
-      color: #fff;
-      background: linear-gradient(
-        90deg,
-        var(--accent-gradient-start),
-        var(--accent-gradient-end)
-      );
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 8px 24px -4px rgba(124, 58, 255, 0.40);
-      width: 100%;
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  `],
+  templateUrl: './button-primary.component.html',
+  styleUrl: './button-primary.component.css',
 })
 export class ButtonPrimaryComponent {
   @Input() type: 'button' | 'submit' = 'button';

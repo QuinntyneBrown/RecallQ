@@ -1,0 +1,42 @@
+<section class="page">
+  <h1>Import Contacts</h1>
+
+  <label for="csv-file" class="drop-zone" data-testid="drop-zone">
+    <input id="csv-file" type="file" accept=".csv"
+           aria-label="CSV file" (change)="onFileChange($event)" hidden>
+    @if (file()) {
+      <span>{{ file()!.name }}</span>
+    } @else {
+      <span>Drag CSV or click to choose</span>
+    }
+  </label>
+
+  <button type="button" class="upload-btn"
+          (click)="submit()" [disabled]="!file() || loading()">
+    {{ loading() ? 'Uploading...' : 'Upload' }}
+  </button>
+
+  @if (error()) {
+    <p class="err" role="alert">{{ error() }}</p>
+  }
+
+  @if (result()) {
+    <div class="summary">
+      <p data-testid="imported-count">{{ result()!.imported }} imported</p>
+      <p data-testid="failed-count">{{ result()!.failed }} failed</p>
+      @if (result()!.errors && result()!.errors.length) {
+        <button type="button" class="errors-toggle"
+                (click)="errorsOpen.set(!errorsOpen())">
+          See {{ result()!.errors.length }} errors
+        </button>
+        @if (errorsOpen()) {
+          <ul class="errors-list">
+            @for (e of result()!.errors; track e.row) {
+              <li><strong>Row {{ e.row }}</strong> &mdash; {{ e.reason }}</li>
+            }
+          </ul>
+        }
+      }
+    </div>
+  }
+</section>

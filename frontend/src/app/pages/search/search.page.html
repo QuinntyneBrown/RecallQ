@@ -1,0 +1,78 @@
+<section class="page">
+  <div class="list-pane" data-testid="results-list-pane">
+    <div class="toolbar">
+      @if (q()) {
+        <app-query-chip [q]="q()"></app-query-chip>
+      }
+      @if (stackName()) {
+        <span class="stack-chip" data-testid="stack-chip">Stack: {{ stackName() }}</span>
+      }
+      <app-sort-menu [sort]="sort()" [disabled]="!q()" (sortChange)="onSortChange($event)"></app-sort-menu>
+    </div>
+    <div class="meta">
+      <span data-testid="match-count">{{ contactsMatched() }} contacts matched</span>
+    </div>
+
+    @if (error()) {
+      <div class="error" role="alert">{{ error() }}</div>
+    }
+
+    @if (!loading() && !error() && results().length === 0) {
+      <app-zero-state [q]="q()"></app-zero-state>
+    }
+
+    @if (results().length > 0) {
+      @if (featured(); as f) {
+        @if (contactFor(f.contactId); as c) {
+          <app-featured-result-card [result]="f" [contact]="c" (select)="onSelect($event)"></app-featured-result-card>
+        }
+      }
+      <cdk-virtual-scroll-viewport
+        itemSize="96"
+        class="results-viewport"
+        data-testid="results-viewport"
+        (scrolledIndexChange)="onScrolledIndexChange($event)"
+      >
+        <ng-container *cdkVirtualFor="let r of standardResults(); trackBy: trackById">
+          @if (contactFor(r.contactId); as c) {
+            <app-result-card [result]="r" [contact]="c" (select)="onSelect($event)"></app-result-card>
+          }
+        </ng-container>
+      </cdk-virtual-scroll-viewport>
+      @if (!searchService.hasMore() && !loading()) {
+        <p class="end-of-results" data-testid="end-of-results">End of results</p>
+      }
+    }
+
+    @if (loading()) {
+      <div class="skeletons" aria-live="polite">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    }
+  </div>
+
+  <aside class="detail-pane" data-testid="results-detail-pane">
+    @if (selectedContactId() && selectedContact(); as c) {
+      <div class="detail-card" data-testid="detail-summary">
+        <div class="detail-head">
+          <span class="avatar-lg" aria-hidden="true">{{ c.initials }}</span>
+          <div class="detail-text">
+            <h2 class="detail-name" data-testid="detail-name">{{ c.displayName }}</h2>
+            @if (c.role || c.organization) {
+              <p class="detail-sub">{{ subLineFor(c) }}</p>
+            }
+          </div>
+        </div>
+        <a class="open-link" [routerLink]="['/contacts', c.id]" data-testid="open-full-profile">
+          Open full profile →
+        </a>
+      </div>
+    } @else {
+      <div data-testid="select-placeholder" class="placeholder">
+        Select a contact to see details
+      </div>
+    }
+  </aside>
+</section>
