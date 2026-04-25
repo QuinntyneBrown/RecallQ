@@ -7,7 +7,7 @@
   background: var(--surface-elevated);
   color: var(--foreground-primary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   font-size: 12px;
   cursor: pointer;
   transition: border-color 120ms ease, transform 120ms ease;
