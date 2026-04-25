@@ -18,6 +18,9 @@
       [value]="password()"
       (valueChange)="password.set($event)"
     />
+    <div class="forgotRow">
+      <a routerLink="/forgot-password" [queryParams]="{ email: email() }">Forgot password?</a>
+    </div>
     <div class="rememberRow">
       <app-checkbox
         label="Remember me"

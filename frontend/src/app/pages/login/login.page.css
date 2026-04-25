@@ -18,6 +18,17 @@ form {
   flex-direction: column;
   gap: 16px;
 }
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+.forgotRow a {
+  color: var(--accent-tertiary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
 .rememberRow {
   display: flex;
   align-items: center;

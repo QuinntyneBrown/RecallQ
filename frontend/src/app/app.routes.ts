@@ -6,6 +6,8 @@ export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage) },
   { path: 'register', loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage) },
   { path: 'logout', loadComponent: () => import('./pages/logout/logout.page').then(m => m.LogoutPage) },
+  { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password.page').then(m => m.ResetPasswordPage) },
+  { path: 'forgot-password', loadComponent: () => import('./pages/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage) },
   { path: 'home', canMatch: [authGuard], loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage) },
   { path: 'contacts/new', canMatch: [authGuard], loadComponent: () => import('./pages/add-contact/add-contact.page').then(m => m.AddContactPage) },
   { path: 'import', canMatch: [authGuard], loadComponent: () => import('./pages/import/import.page').then(m => m.ImportPage) },

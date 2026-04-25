@@ -61,7 +61,7 @@ export class AuthService {
   async requestPasswordReset(email: string): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post<void>('/api/auth/request-password-reset', { email })
+        this.http.post<void>('/api/auth/forgot-password', { email })
       );
     } catch (err: any) {
       if (err.status === 429) throw new Error('rate_limited');
@@ -75,8 +75,8 @@ export class AuthService {
         this.http.post<void>('/api/auth/reset-password', { token, password })
       );
     } catch (err: any) {
-      if (err.status === 400) throw new Error('invalid_token_or_password');
-      throw new Error('reset_password_failed');
+      const code = err.error?.error ?? (err.status === 400 ? 'invalid_token' : 'reset_password_failed');
+      throw new Error(code);
     }
   }
 
