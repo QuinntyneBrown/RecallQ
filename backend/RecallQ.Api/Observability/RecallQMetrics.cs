@@ -17,7 +17,7 @@ public static class RecallQMetrics
         new HistogramConfiguration { LabelNames = new[] { "model" } });
 
     public static readonly Histogram SearchLatencySeconds = Metrics.CreateHistogram(
-        "recallq_search_latency_seconds",
+        "recallq_vector_search_latency_seconds",
         "Search latency");
 
     public static readonly Counter LlmTokensTotal = Metrics.CreateCounter(
