@@ -2,7 +2,7 @@
 
 **Flow:** 30 — Quick Action: Intro Draft
 **Severity:** Medium
-**Status:** Open
+**Status:** Complete — `intro.modal.html` post-generation actions row now renders a third button — `Close` — that wires to the existing `cancel()` handler, matching the flow's three-button contract.
 
 ## Symptom
 

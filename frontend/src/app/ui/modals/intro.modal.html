@@ -46,5 +46,6 @@
   <div class="actions">
     <button type="button" (click)="copy()">Copy</button>
     <button type="button" (click)="sendEmail()" [disabled]="!canEmailBoth()">Send via email</button>
+    <button type="button" (click)="cancel()">Close</button>
   </div>
 }
