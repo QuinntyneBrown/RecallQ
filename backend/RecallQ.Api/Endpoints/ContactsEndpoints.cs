@@ -79,11 +79,22 @@ public static class ContactsEndpoints
         {
             var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
             if (c is null) return Results.NotFound();
+
+            var needsEmbedding = false;
             if (req.Starred.HasValue) c.Starred = req.Starred.Value;
             if (req.Emails is not null) c.Emails = req.Emails;
             if (req.Phones is not null) c.Phones = req.Phones;
+            if (req.DisplayName is not null) { c.DisplayName = req.DisplayName.Trim(); needsEmbedding = true; }
+            if (req.Initials is not null) { c.Initials = req.Initials.Trim(); }
+            if (req.Role is not null) { c.Role = req.Role.Trim(); needsEmbedding = true; }
+            if (req.Organization is not null) { c.Organization = req.Organization.Trim(); needsEmbedding = true; }
+            if (req.Location is not null) { c.Location = req.Location.Trim(); needsEmbedding = true; }
+            if (req.Tags is not null) { c.Tags = req.Tags; needsEmbedding = true; }
+
             await db.SaveChangesAsync();
-            await embeddingWriter.WriteAsync(new EmbeddingJob(c.Id, current.UserId!.Value, "contact"));
+            if (needsEmbedding)
+                await embeddingWriter.WriteAsync(new EmbeddingJob(c.Id, current.UserId!.Value, "contact"));
+
             var total = await db.Interactions.CountAsync(i => i.ContactId == id);
             var rows = await db.Interactions.Where(i => i.ContactId == id)
                 .OrderByDescending(i => i.OccurredAt).Take(3).ToListAsync();
