@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 
 namespace RecallQ.Api.Security;
@@ -14,6 +15,19 @@ public static class RateLimitPolicies
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = 429;
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                var seconds = 60;
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var ts) && ts.TotalSeconds > 0)
+                {
+                    seconds = (int)Math.Ceiling(ts.TotalSeconds);
+                }
+                var http = context.HttpContext;
+                http.Response.Headers["Retry-After"] = seconds.ToString();
+                http.Response.ContentType = "application/json";
+                var payload = JsonSerializer.SerializeToUtf8Bytes(new { error = "rate_limited", retryAfter = seconds });
+                await http.Response.Body.WriteAsync(payload, cancellationToken);
+            };
 
             // login: 5 per 60s keyed by ip+email
             options.AddPolicy(LoginRateLimit.PolicyName, httpCtx =>

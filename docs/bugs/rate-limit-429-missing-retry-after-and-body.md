@@ -2,7 +2,7 @@
 
 **Flow:** 35 — Rate Limiting (429 Response)
 **Severity:** Medium-High (clients can't back off correctly)
-**Status:** Open
+**Status:** Complete — `RateLimitPolicies.AddRecallQRateLimits` now sets `options.OnRejected` to a callback that reads `MetadataName.RetryAfter` from the lease (falling back to 60 s when the FixedWindow limiter doesn't surface it), writes the integer to the `Retry-After` header, and serializes a `{ error: "rate_limited", retryAfter: N }` JSON body to the response stream.
 
 ## Symptom
 
