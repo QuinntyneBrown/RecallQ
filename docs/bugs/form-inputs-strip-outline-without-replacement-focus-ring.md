@@ -2,7 +2,7 @@
 
 **Flow:** 40 — Keyboard Navigation
 **Severity:** High (a11y)
-**Status:** Open
+**Status:** Complete — `ask.page.css` (`.input-bar input`), `add-contact.page.css` (`.tag-label input`), `add-interaction.page.css` and `edit-interaction.page.css` (`.field input, .field textarea`) each gained a `:focus-visible` rule that re-applies a `border-color + 2 px box-shadow` ring matching `input-field.component.css`. The replacement lives in the same component scope, so view-encapsulated specificity keeps it ahead of the global outline rule.
 
 ## Symptom
 

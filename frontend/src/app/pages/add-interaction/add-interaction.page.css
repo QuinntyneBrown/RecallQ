@@ -39,4 +39,8 @@ form { display: flex; flex-direction: column; gap: 16px; }
 }
 .field input { height: 48px; }
 .field textarea { resize: vertical; min-height: 120px; }
+.field input:focus-visible, .field textarea:focus-visible {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
 .err { color: var(--accent-secondary); font-size: 14px; }

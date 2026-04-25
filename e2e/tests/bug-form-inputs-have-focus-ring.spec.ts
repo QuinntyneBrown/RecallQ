@@ -25,10 +25,10 @@ test('Ask input bar has a visible focus ring when focused', async ({ page }) => 
   expect(await focusedRingPresent(page, '.input-bar input')).toBe(true);
 });
 
-test('Add contact form fields have a visible focus ring', async ({ page }) => {
+test('Add contact tags input has a visible focus ring', async ({ page }) => {
   const email = `frac-${Date.now()}-${Math.floor(Math.random() * 10000)}@example.com`;
   await registerAndLogin(page, email, 'correcthorse12');
 
   await page.goto('/contacts/new');
-  expect(await focusedRingPresent(page, '.field input')).toBe(true);
+  expect(await focusedRingPresent(page, '.tag-label input')).toBe(true);
 });
