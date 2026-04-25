@@ -15,9 +15,21 @@ h1 { font-size: 24px; margin: 0; }
   font-size: 14px;
 }
 .upload-btn {
-  height: 48px; border: 0; border-radius: var(--radius-md);
-  background: var(--accent-primary); color: #fff;
-  font-size: 15px; font-weight: 600; cursor: pointer;
+  height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    var(--accent-gradient-start),
+    var(--accent-gradient-end)
+  );
+  color: #fff;
+  font-family: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -4px rgba(124, 58, 255, 0.40);
 }
 .upload-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 .err { color: #FFB3B3; font-size: 14px; margin: 0; }
