@@ -20,6 +20,11 @@
   background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid));
 }
 .body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.name {
+  font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .sub { color: var(--foreground-secondary); font-size: 13px; }
 .score { flex: 0 0 auto; }
