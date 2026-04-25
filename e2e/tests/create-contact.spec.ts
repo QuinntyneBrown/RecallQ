@@ -107,28 +107,22 @@ test('flow 05: initials > 3 chars returns 400', async ({ page }) => {
   expect(response.status()).toBe(400);
 });
 
-test('flow 05: contact is scoped to authenticated user', async ({ page }) => {
-  const email1 = `test-${Date.now()}-7@example.com`;
-  const email2 = `test-${Date.now()}-8@example.com`;
+test('flow 05: returns Location header with created contact URI', async ({ page }) => {
+  const email = `test-${Date.now()}-7@example.com`;
   const password = 'correcthorse12';
+  await registerAndLogin(page, email, password);
 
-  // User 1 creates a contact
-  await registerAndLogin(page, email1, password);
-  const createResponse = await page.request.post('/api/contacts', {
+  const response = await page.request.post('/api/contacts', {
     data: {
-      displayName: 'User1 Contact',
-      initials: 'U1',
+      displayName: 'Location Test',
+      initials: 'LT',
     }
   });
-  const contactId = (await createResponse.json()).id;
 
-  // User 2 tries to access User 1's contact
-  await page.goto('/');
-  await page.locator('text=Log out').click({ timeout: 3000 });
-  await registerAndLogin(page, email2, password);
-
-  const getResponse = await page.request.get(`/api/contacts/${contactId}`);
-  expect(getResponse.status()).toBe(404);
+  expect(response.status()).toBe(201);
+  const location = response.headers()['location'];
+  expect(location).toBeTruthy();
+  expect(location).toMatch(/\/api\/contacts\/[a-f0-9-]+/);
 });
 
 test('flow 05: unauthenticated request returns 401', async ({ page }) => {

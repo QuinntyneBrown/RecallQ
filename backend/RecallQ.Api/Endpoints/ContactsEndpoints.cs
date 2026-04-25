@@ -40,6 +40,11 @@ public static class ContactsEndpoints
                 errors["initials"] = new[] { "Initials must be 1–3 chars." };
             if (errors.Count > 0) return Results.ValidationProblem(errors);
 
+            var colorPalette = new[] { "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2" };
+            var nameHash = displayName.GetHashCode();
+            var defaultColorA = colorPalette[Math.Abs(nameHash) % colorPalette.Length];
+            var defaultColorB = colorPalette[Math.Abs(nameHash + 1) % colorPalette.Length];
+
             var contact = new Contact
             {
                 OwnerUserId = current.UserId!.Value,
@@ -51,8 +56,8 @@ public static class ContactsEndpoints
                 Tags = req.Tags ?? Array.Empty<string>(),
                 Emails = req.Emails ?? Array.Empty<string>(),
                 Phones = req.Phones ?? Array.Empty<string>(),
-                AvatarColorA = req.AvatarColorA,
-                AvatarColorB = req.AvatarColorB,
+                AvatarColorA = req.AvatarColorA ?? defaultColorA,
+                AvatarColorB = req.AvatarColorB ?? defaultColorB,
             };
             db.Contacts.Add(contact);
             await db.SaveChangesAsync();
