@@ -2,7 +2,7 @@
 
 **Flow:** 02 — User Login (with auth guard from flow 04)
 **Severity:** Medium-High (UX, deep links lose destination)
-**Status:** Open
+**Status:** Complete — `authGuard` now reads the attempted segments and redirects to `/login?returnUrl=<encoded path>`. New `auth/return-url.ts` exports a `safeReturnUrl()` helper that defaults to `/home` and rejects protocol-relative `//` strings. `LoginPage` and `RegisterPage` inject `ActivatedRoute` and route through `safeReturnUrl(queryParamMap.get('returnUrl'))` after a successful sign-in / register.
 
 ## Symptom
 
