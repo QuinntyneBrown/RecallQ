@@ -2,7 +2,7 @@
 
 **Flow:** 32 — Embedding Pipeline
 **Severity:** Medium-High (memory pressure under bulk writes)
-**Status:** Open
+**Status:** Complete — `Program.cs` now registers `Channel.CreateBounded<EmbeddingJob>(new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.Wait })`. Producers backpressure naturally instead of growing the heap; capacity 1 000 is large enough that normal writes never block, and bulk writes (large CSV imports / model-upgrade backfills) throttle to the worker's rate.
 
 ## Symptom
 

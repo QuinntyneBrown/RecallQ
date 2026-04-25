@@ -60,7 +60,7 @@ builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddSingleton<Argon2Hasher>();
 builder.Services.AddSingleton<SessionRevocationStore>();
 
-builder.Services.AddSingleton(Channel.CreateUnbounded<EmbeddingJob>());
+builder.Services.AddSingleton(Channel.CreateBounded<EmbeddingJob>(new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.Wait }));
 builder.Services.AddSingleton<ChannelWriter<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Writer);
 builder.Services.AddSingleton<ChannelReader<EmbeddingJob>>(sp => sp.GetRequiredService<Channel<EmbeddingJob>>().Reader);
 builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("Embeddings:OpenAI"));
