@@ -1,0 +1,29 @@
+<div class="ai-card">
+  <div class="hdr">
+    <p class="eyebrow">RELATIONSHIP SUMMARY</p>
+    <button type="button" aria-label="Refresh summary" (click)="refresh.emit()">
+      <i class="ph ph-arrows-clockwise"></i>
+    </button>
+  </div>
+  @if (summary.status === 'ready') {
+    <p data-testid="summary-paragraph">{{ summary.paragraph }}</p>
+    <div class="stats">
+      <div data-testid="stat-interactions">
+        <strong>{{ summary.interactionCount }}</strong>
+        <span>Interactions</span>
+      </div>
+      <div data-testid="stat-sentiment" [attr.data-tone]="summary.sentiment?.toLowerCase()">
+        <strong>{{ summary.sentiment }}</strong>
+        <span>Sentiment</span>
+      </div>
+      <div data-testid="stat-since-last">
+        <strong>{{ sinceLast() }}</strong>
+        <span>Since last</span>
+      </div>
+    </div>
+  } @else if (summary.status === 'not_enough_data') {
+    <p>Not enough data to summarize this relationship yet.</p>
+  } @else {
+    <p class="skeleton">Generating summary…</p>
+  }
+</div>

@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="tile"
+  [class.active]="active"
+  [class.gradient]="gradient"
+  [disabled]="disabled"
+  [attr.aria-label]="ariaLabel"
+  (click)="onClick($event)"
+>
+  <i class="ph ph-{{ icon }}" aria-hidden="true"></i>
+  <span>{{ label }}</span>
+</button>

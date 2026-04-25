@@ -1,0 +1,8 @@
+<span class="row">
+  @for (p of pills; track p.label) {
+    <span class="pill" [attr.data-type]="p.type">
+      <i class="ph" [class]="iconFor(p.type)" aria-hidden="true"></i>
+      <span class="label">{{ p.label }}</span>
+    </span>
+  }
+</span>

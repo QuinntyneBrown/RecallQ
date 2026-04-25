@@ -1,0 +1,14 @@
+.home-indicator {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-primary);
+}
+.pill {
+  width: 140px;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--foreground-primary);
+  display: block;
+}

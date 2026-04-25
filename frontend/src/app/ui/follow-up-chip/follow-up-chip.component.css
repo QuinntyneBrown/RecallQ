@@ -1,0 +1,11 @@
+.chip {
+  background: var(--surface-elevated);
+  color: var(--foreground-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.chip:hover { border-color: var(--accent-primary); }

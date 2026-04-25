@@ -1,0 +1,11 @@
+<div class="field">
+  <label [attr.for]="inputId">{{ label }}</label>
+  <input
+    [id]="inputId"
+    [type]="type"
+    [name]="name || inputId"
+    [value]="value"
+    (input)="onInput($event)"
+    [attr.autocomplete]="autocomplete"
+  />
+</div>

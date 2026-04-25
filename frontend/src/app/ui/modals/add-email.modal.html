@@ -1,0 +1,15 @@
+<h2 id="add-email-title">Add email</h2>
+<form (ngSubmit)="save()">
+  <input
+    type="email"
+    aria-label="Email"
+    required
+    [(ngModel)]="value"
+    name="email"
+    autofocus
+  />
+  <div class="actions">
+    <button type="button" (click)="cancel()">Cancel</button>
+    <button type="submit">Save</button>
+  </div>
+</form>

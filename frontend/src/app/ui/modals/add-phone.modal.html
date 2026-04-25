@@ -1,0 +1,15 @@
+<h2 id="add-phone-title">Add phone</h2>
+<form (ngSubmit)="save()">
+  <input
+    type="tel"
+    aria-label="Phone"
+    required
+    [(ngModel)]="value"
+    name="phone"
+    autofocus
+  />
+  <div class="actions">
+    <button type="button" (click)="cancel()">Cancel</button>
+    <button type="submit">Save</button>
+  </div>
+</form>
