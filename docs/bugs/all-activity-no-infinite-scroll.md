@@ -2,7 +2,7 @@
 
 **Flow:** 12 — View Activity Timeline
 **Severity:** High (data loss for high-activity contacts)
-**Status:** Open
+**Status:** Complete — `AllActivityPage` now tracks `nextPage` and `loadingMore` signals; an `IntersectionObserver` (`rootMargin: 200px`) observes a `<div #sentinel>` rendered after the list and calls `loadMore()` when it intersects. `loadMore()` fetches the next page, appends rows, updates `nextPage` from the server, and bails when no more pages exist. Observer is disconnected on destroy.
 
 ## Symptom
 

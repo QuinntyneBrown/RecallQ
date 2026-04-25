@@ -12,5 +12,11 @@
         </li>
       }
     </ul>
+    @if (nextPage()) {
+      <div #sentinel class="sentinel" data-testid="all-activity-sentinel" aria-hidden="true"></div>
+    }
+    @if (loadingMore()) {
+      <p class="muted">Loading more…</p>
+    }
   }
 </section>
