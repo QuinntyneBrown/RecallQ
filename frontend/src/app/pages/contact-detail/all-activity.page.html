@@ -1,0 +1,16 @@
+<section class="page">
+  <h1>All activity</h1>
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (items().length === 0) {
+    <p class="empty">No activity yet</p>
+  } @else {
+    <ul data-testid="all-activity" role="list" class="timeline">
+      @for (item of items(); track item.id) {
+        <li role="listitem" class="timeline-item">
+          <app-timeline-item [item]="item"></app-timeline-item>
+        </li>
+      }
+    </ul>
+  }
+</section>

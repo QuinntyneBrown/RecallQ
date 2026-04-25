@@ -1,0 +1,64 @@
+<section class="ask-shell">
+  <header class="top-bar">
+    <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+      <i class="ph ph-arrow-left"></i>
+    </button>
+    <h1><i class="ph ph-sparkle"></i> Ask RecallQ</h1>
+    <button type="button" class="icon-btn" aria-label="New session" (click)="newSession()">
+      <i class="ph ph-plus"></i>
+    </button>
+  </header>
+
+  <div class="chat-list" #list role="log" aria-live="polite" aria-relevant="additions text">
+    @if (messages().length === 0) {
+      <div data-testid="greet-bubble" class="bubble assistant-bubble">
+        Hi — ask me anything about your contacts.
+      </div>
+    }
+    @for (m of messages(); track m.id) {
+      @if (m.role === 'user') {
+        <div data-testid="user-bubble" class="bubble user-bubble"><span class="sr-only">You said: </span>{{ m.text }}</div>
+      } @else {
+        <div data-testid="assistant-bubble" class="bubble assistant-bubble" [attr.aria-busy]="m.streaming ? 'true' : null">
+          <span class="sr-only">RecallQ said: </span>{{ m.text }}@if (m.streaming) {<span class="cursor">▎</span>}
+          @if (m.citations?.length) {
+            <div class="citations">
+              @for (c of m.citations; track c.contactId; let i = $index) {
+                <app-citation-card [citation]="c" [top]="i === 0"/>
+              }
+            </div>
+          }
+          @if (m.followUps?.length) {
+            <div class="follow-up-section">
+              <p class="follow-up-label">FOLLOW-UP</p>
+              <div class="follow-up-chips">
+                @for (t of m.followUps; track t) {
+                  <app-follow-up-chip [text]="t" (picked)="handleFollowUp($event)"/>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+    @if (error()) {
+      <div class="error" role="alert">{{ error() }}</div>
+    }
+  </div>
+
+  <div class="input-bar" data-testid="input-bar">
+    <button type="button" class="icon-btn" aria-label="Add context" disabled>
+      <i class="ph ph-plus"></i>
+    </button>
+    <input #inp type="text" aria-label="Ask anything" placeholder="Ask anything"
+           [value]="draft()" (input)="draft.set($any($event.target).value)"
+           (keyup.enter)="submit(inp)" [disabled]="pending()" />
+    <button type="button" class="icon-btn" aria-label="Voice" disabled>
+      <i class="ph ph-microphone"></i>
+    </button>
+    <button type="button" class="send-btn" aria-label="Send"
+            [disabled]="pending()" (click)="submit(inp)">
+      <i class="ph ph-paper-plane-tilt"></i>
+    </button>
+  </div>
+</section>

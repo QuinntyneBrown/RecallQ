@@ -1,0 +1,34 @@
+<section class="page">
+  <h1>Log Interaction</h1>
+  <form (submit)="onSubmit($event)">
+    <fieldset class="types">
+      <legend class="sr-only">Type</legend>
+      @for (opt of options; track opt.value) {
+        <label class="pill pill-{{opt.value}}" [class.selected]="type() === opt.value">
+          <input type="radio" name="type" [value]="opt.value"
+            [checked]="type() === opt.value"
+            (change)="type.set(opt.value)"
+            class="sr-only" />
+          <i class="ph ph-{{opt.icon}}" aria-hidden="true"></i>
+          <span>{{ opt.label }}</span>
+        </label>
+      }
+    </fieldset>
+
+    <app-input-field label="Subject" name="subject"
+      [value]="subject()" (valueChange)="subject.set($event)" />
+
+    <label class="field" for="when">When
+      <input id="when" type="datetime-local" name="when"
+        [value]="when()" (input)="onWhenChange($event)" />
+    </label>
+
+    <label class="field" for="content">Content
+      <textarea id="content" name="content" maxlength="8000" rows="6"
+        [value]="content()" (input)="onContentChange($event)"></textarea>
+    </label>
+
+    @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
+    <app-button-primary type="submit" [disabled]="busy()">Save</app-button-primary>
+  </form>
+</section>

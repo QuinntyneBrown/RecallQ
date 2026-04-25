@@ -1,0 +1,34 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  max-width: 390px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+h1 { color: var(--foreground-primary); font-size: 28px; margin: 0; }
+form { display: flex; flex-direction: column; gap: 16px; }
+.err { color: var(--accent-secondary); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--surface-elevated); color: var(--foreground-primary);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
+  padding: 4px 8px; font-size: 13px;
+}
+.chip button {
+  background: transparent; color: inherit; border: 0; cursor: pointer;
+  padding: 0 2px; font-size: 12px;
+}
+.tag-label {
+  display: flex; flex-direction: column; gap: 8px;
+  color: var(--foreground-secondary); font-size: 14px;
+}
+.tag-label input {
+  width: 100%; height: 48px; padding: 0 16px;
+  background: var(--surface-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); color: var(--foreground-primary);
+  font-size: 16px; box-sizing: border-box; outline: none;
+}

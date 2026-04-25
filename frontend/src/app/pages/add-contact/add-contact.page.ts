@@ -16,80 +16,8 @@ function deriveInitials(name: string): string {
   selector: 'app-add-contact-page',
   standalone: true,
   imports: [InputFieldComponent, ButtonPrimaryComponent],
-  template: `
-    <section class="page">
-      <h1>Add Contact</h1>
-      <form (submit)="onSubmit($event)">
-        <app-input-field label="Display name" name="displayName"
-          [value]="displayName()" (valueChange)="onDisplayNameChange($event)" />
-        @if (fieldError('displayName')) { <div class="err" role="alert">{{ fieldError('displayName') }}</div> }
-
-        <app-input-field label="Initials" name="initials"
-          [value]="initials()" (valueChange)="onInitialsChange($event)" />
-        @if (fieldError('initials')) { <div class="err" role="alert">{{ fieldError('initials') }}</div> }
-
-        <app-input-field label="Role" name="role" [value]="role()" (valueChange)="role.set($event)" />
-        <app-input-field label="Organization" name="organization"
-          [value]="organization()" (valueChange)="organization.set($event)" />
-        <app-input-field label="Location" name="location"
-          [value]="location()" (valueChange)="location.set($event)" />
-
-        <div class="chips">
-          @for (t of tags(); track t) {
-            <span class="chip">{{ t }}<button type="button" (click)="removeTag(t)" aria-label="Remove tag">x</button></span>
-          }
-        </div>
-        <label class="tag-label">Tags
-          <input name="tags" [value]="tagInput()" (input)="onTagInput($event)"
-            (keydown.enter)="commitTag($event)" />
-        </label>
-
-        <app-input-field label="Email" name="email" type="email"
-          [value]="email()" (valueChange)="email.set($event)" />
-        <app-input-field label="Phone" name="phone"
-          [value]="phone()" (valueChange)="phone.set($event)" />
-
-        @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
-        <app-button-primary type="submit" [disabled]="busy()">Save</app-button-primary>
-      </form>
-    </section>
-  `,
-  styles: [`
-    .page {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 24px;
-      max-width: 390px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    h1 { color: var(--foreground-primary); font-size: 28px; margin: 0; }
-    form { display: flex; flex-direction: column; gap: 16px; }
-    .err { color: var(--accent-secondary); font-size: 14px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: var(--surface-elevated); color: var(--foreground-primary);
-      border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
-      padding: 4px 8px; font-size: 13px;
-    }
-    .chip button {
-      background: transparent; color: inherit; border: 0; cursor: pointer;
-      padding: 0 2px; font-size: 12px;
-    }
-    .tag-label {
-      display: flex; flex-direction: column; gap: 8px;
-      color: var(--foreground-secondary); font-size: 14px;
-    }
-    .tag-label input {
-      width: 100%; height: 48px; padding: 0 16px;
-      background: var(--surface-elevated); border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md); color: var(--foreground-primary);
-      font-size: 16px; box-sizing: border-box; outline: none;
-    }
-  `],
+  templateUrl: './add-contact.page.html',
+  styleUrl: './add-contact.page.css',
 })
 export class AddContactPage {
   private readonly contacts = inject(ContactsService);

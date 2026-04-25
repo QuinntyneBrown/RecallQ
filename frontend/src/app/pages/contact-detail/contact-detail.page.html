@@ -1,0 +1,98 @@
+<section class="page">
+  @if (contact(); as c) {
+    <header class="hero">
+      <div class="topbar">
+        <button type="button" class="icon-btn" aria-label="Back" (click)="back()">
+          <i class="ph ph-caret-left"></i>
+        </button>
+        <div class="spacer"></div>
+        <button type="button" class="icon-btn" aria-label="Star contact" (click)="toggleStar()">
+          <i class="ph"
+             [class.ph-star]="!starred()"
+             [class.ph-star-fill]="starred()"
+             [style.color]="starred() ? 'var(--star-fill)' : 'var(--foreground-primary)'"></i>
+        </button>
+        <button type="button" class="icon-btn" aria-label="Delete contact" (click)="deleteContact()">
+          <i class="ph ph-dots-three"></i>
+        </button>
+      </div>
+
+      <div class="hero-content">
+        <div class="avatar" data-testid="hero-avatar">{{ c.initials }}</div>
+        <h1 data-testid="hero-name">{{ c.displayName }}</h1>
+        @if (roleLine()) {
+          <p data-testid="hero-role">{{ roleLine() }}</p>
+        }
+        @if (c.tags?.length) {
+          <ul data-testid="hero-tags" role="list" class="chips">
+            @for (tag of c.tags; track tag) {
+              <li role="listitem"><span class="chip">{{ tag }}</span></li>
+            }
+          </ul>
+        }
+      </div>
+    </header>
+
+    <div class="actions">
+      <app-quick-action-tile
+        icon="envelope"
+        label="Message"
+        ariaLabel="Email this contact"
+        [active]="hasEmail()"
+        (tileClick)="onMessage()"
+      />
+      <app-quick-action-tile
+        icon="phone"
+        label="Call"
+        ariaLabel="Call this contact"
+        [active]="hasPhone()"
+        (tileClick)="onCall()"
+      />
+      <app-quick-action-tile
+        icon="users"
+        label="Intro"
+        ariaLabel="Draft intro"
+        (tileClick)="onIntro()"
+      />
+      <app-quick-action-tile
+        icon="sparkle"
+        label="Ask AI"
+        ariaLabel="Ask AI about this contact"
+        [gradient]="true"
+        (tileClick)="onAskAi()"
+      />
+    </div>
+
+    <div class="summary-wrap">
+      <app-relationship-summary-card [summary]="summary()" (refresh)="onRefreshSummary()" />
+    </div>
+
+    <section class="activity">
+      <div class="activity-head">
+        <h2>Recent activity</h2>
+        <div class="activity-actions">
+          <button type="button" class="log-btn" aria-label="Log interaction" (click)="onLogInteraction()">
+            <i class="ph ph-plus" aria-hidden="true"></i>
+            Log
+          </button>
+          @if (c.interactionTotal > 3) {
+            <a [routerLink]="['/contacts', c.id, 'activity']" role="link">See all {{ c.interactionTotal }}</a>
+          }
+        </div>
+      </div>
+      @if (c.recentInteractions?.length) {
+        <ul data-testid="timeline" role="list" class="timeline">
+          @for (item of c.recentInteractions; track item.id) {
+            <li role="listitem" class="timeline-item">
+              <app-timeline-item [item]="item" (delete)="onDeleteInteraction($event)"></app-timeline-item>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty">No interactions yet.</p>
+      }
+    </section>
+  } @else if (notFound()) {
+    <p class="err">Contact not found.</p>
+  }
+</section>
