@@ -1,5 +1,6 @@
 # `/contacts/:id/activity` renders a coming-soon stub
 
+**Status:** Complete — `InteractionsService.list` fetches the first page of interactions and `AllActivityPage` now renders them via `<app-timeline-item>` with a "No activity yet" empty state.
 **Flow:** [12 — View Activity Timeline](../flows/12-view-activity-timeline/12-view-activity-timeline.md)
 **Traces:** L1-003, L1-009, L2-011.
 **Severity:** High — Flow 12's entire full-timeline view is unimplemented. The `See all N` link on the contact detail page routes to `/contacts/:id/activity`, and the user lands on a static page that reads only "All activity — coming soon".

@@ -32,8 +32,23 @@ export class InteractionsValidationError extends Error {
   }
 }
 
+export interface InteractionListResult {
+  items: InteractionDto[];
+  nextPage: number | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class InteractionsService {
+  async list(contactId: string, page = 1, pageSize = 50): Promise<InteractionListResult> {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    const res = await fetch(
+      `/api/contacts/${contactId}/interactions?${params.toString()}`,
+      { credentials: 'include' },
+    );
+    if (res.status !== 200) throw new Error('list_failed_' + res.status);
+    return (await res.json()) as InteractionListResult;
+  }
+
   async create(contactId: string, payload: CreateInteractionPayload): Promise<InteractionDto> {
     const res = await fetch(`/api/contacts/${contactId}/interactions`, {
       method: 'POST',
