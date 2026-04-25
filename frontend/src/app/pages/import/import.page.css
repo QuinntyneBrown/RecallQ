@@ -3,7 +3,7 @@
   padding: 24px; max-width: 480px; margin: 0 auto;
   color: var(--foreground-primary);
 }
-h1 { font-size: 24px; margin: 0; }
+h1 { font-size: 28px; letter-spacing: -0.6px; margin: 0; }
 .drop-zone {
   display: flex; align-items: center; justify-content: center;
   border: 2px dashed var(--border-subtle);
