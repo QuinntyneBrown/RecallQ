@@ -2,7 +2,7 @@
 
 **Flow:** 08 — Update Contact (intersecting flow 32 — Embedding Pipeline)
 **Severity:** Medium-High (semantic search becomes stale on every email edit; the user adds `john@stripe.com`, the embedding still references the old emails forever)
-**Status:** Open
+**Status:** Complete — `ContactsEndpoints` PATCH now flips `needsEmbedding = true` for both `req.Emails` and `req.Phones`, mirroring the existing tags branch. Worker's hash+model idempotency keeps no-op patches free. New acceptance test `PatchContactEmailsTriggersEmbedTests` creates a contact, snapshots the captured-job count, PATCHes emails, and asserts a new embedding job lands on the channel for that contact.
 
 ## Symptom
 
