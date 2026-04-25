@@ -26,5 +26,5 @@
   font-weight: 600;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.sub { color: var(--foreground-secondary); font-size: 13px; }
+.sub { color: var(--foreground-secondary); font-size: 12px; }
 .score { flex: 0 0 auto; }
