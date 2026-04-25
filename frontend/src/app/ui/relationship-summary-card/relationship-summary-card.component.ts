@@ -7,7 +7,7 @@ import { SummaryResponse } from '../../contacts/contacts.service';
   template: `
     <div class="ai-card">
       <div class="hdr">
-        <p class="eyebrow">AI SUMMARY</p>
+        <p class="eyebrow">RELATIONSHIP SUMMARY</p>
         <button type="button" aria-label="Refresh summary" (click)="refresh.emit()">
           <i class="ph ph-arrows-clockwise"></i>
         </button>
