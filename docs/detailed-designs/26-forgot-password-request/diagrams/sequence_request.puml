@@ -1,0 +1,40 @@
+@startuml sequence_request
+!theme plain
+skinparam sequenceMessageAlign center
+
+title Forgot Password - Request Reset Link
+
+actor User
+participant "ForgotPasswordPage" as PG
+participant "AuthService" as SVC
+participant "/api/auth/forgot-password" as EP
+participant "PasswordResetTokenService" as TKN
+participant "AppDbContext" as CTX
+database "password_reset_tokens" as DB
+participant "IPasswordResetEmailSender" as MAIL
+
+User -> PG: type email, submit
+PG -> SVC: requestPasswordReset(email)
+SVC -> EP: POST { email }
+EP -> CTX: find user by email
+alt user exists
+    CTX --> EP: user
+    EP -> TKN: Issue(user.Id)
+    TKN --> EP: { rawToken, expiresAt }
+    EP -> TKN: Hash(rawToken)
+    TKN --> EP: tokenHash
+    EP -> TKN: PersistAsync(userId, hash, expiresAt)
+    TKN -> CTX: INSERT password_reset_tokens
+    CTX -> DB: INSERT
+    EP -> MAIL: SendAsync(email, rawToken, ttl)
+end
+EP --> SVC: 202 Accepted
+SVC --> PG: success
+PG --> User: "If an account exists, we've sent a link"
+
+note over EP
+  Both branches return 202 with
+  identical body — no account-existence leak.
+end note
+
+@enduml

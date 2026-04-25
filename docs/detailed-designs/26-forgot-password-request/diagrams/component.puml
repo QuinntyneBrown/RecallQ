@@ -1,0 +1,39 @@
+@startuml component
+!theme plain
+!include <C4/C4_Component>
+
+title Forgot Password Request - Components
+
+Person(user, "User", "Anonymous")
+System_Ext(mailbox, "User mailbox", "External")
+
+Container_Boundary(spa, "Angular SPA") {
+    Component(login, "LoginPage", "standalone", "Forgot password? link")
+    Component(fpPage, "ForgotPasswordPage", "standalone", "email field + success panel")
+    Component(authSvc, "AuthService", "service", "requestPasswordReset(email)")
+}
+
+Container_Boundary(api, "RecallQ.Api") {
+    Component(fp, "AuthEndpoints.ForgotPassword", "Minimal API", "POST /api/auth/forgot-password")
+    Component(rl, "RateLimitPolicies", "builtin", "forgot-password 5/60s ip+email")
+    Component(svc, "PasswordResetTokenService", "scoped", "Issue / Hash / Persist")
+    Component(mail, "IPasswordResetEmailSender", "interface", "default: Logging\ntests: Fake")
+    Component(ctx, "AppDbContext", "EF Core", "users + password_reset_tokens")
+}
+
+ContainerDb(db, "password_reset_tokens", "Postgres")
+
+Rel(user, login, "tap Forgot password?")
+Rel(login, fpPage, "navigate /forgot-password?email=...")
+Rel(user, fpPage, "type email, submit")
+Rel(fpPage, authSvc, "requestPasswordReset(email)")
+Rel(authSvc, fp, "POST /api/auth/forgot-password")
+Rel(fp, rl, "decorated")
+Rel(fp, ctx, "find user")
+Rel(fp, svc, "Issue + Persist (if user found)")
+Rel(svc, ctx, "INSERT")
+Rel(ctx, db, "SQL")
+Rel(fp, mail, "SendAsync (if user found)")
+Rel(mail, mailbox, "deliver email")
+
+@enduml

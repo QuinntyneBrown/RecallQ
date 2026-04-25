@@ -1,0 +1,58 @@
+@startuml class
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+
+title Forgot Password Request - Domain
+
+class PasswordResetToken <<entity>> {
+    +Id: Guid
+    +OwnerUserId: Guid
+    +TokenHash: string
+    +ExpiresAt: DateTime
+    +UsedAt: DateTime?
+    +CreatedAt: DateTime
+}
+
+class ResetTokenIssue <<record>> {
+    +RawToken: string
+    +ExpiresAt: DateTime
+}
+
+class PasswordResetTokenService {
+    +Issue(userId): ResetTokenIssue
+    +Hash(rawToken): string
+    +PersistAsync(userId, hash, expires, ct): Task
+}
+
+interface IPasswordResetEmailSender {
+    +SendAsync(email, rawToken, ttl, ct): Task
+}
+
+class LoggingPasswordResetEmailSender
+class FakePasswordResetEmailSender <<test only>>
+
+class ForgotPasswordRequest <<record>> {
+    +Email: string?
+}
+
+class AuthOptions {
+    +CookieName: string
+    +AppBaseUrl: string
+    +ResetTokenTtl: TimeSpan
+}
+
+class ForgotPasswordPage <<Angular>> {
+    +email: signal<string>
+    +busy: signal<bool>
+    +submitted: signal<bool>
+    +error: signal<string?>
+    +onSubmit(): Promise<void>
+}
+
+PasswordResetTokenService --> PasswordResetToken : creates
+PasswordResetTokenService ..> ResetTokenIssue : returns
+LoggingPasswordResetEmailSender ..|> IPasswordResetEmailSender
+FakePasswordResetEmailSender ..|> IPasswordResetEmailSender
+
+@enduml
