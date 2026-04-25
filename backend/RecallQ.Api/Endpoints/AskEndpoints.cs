@@ -91,7 +91,7 @@ public static class AskEndpoints
         await http.Response.WriteAsync("event: done\ndata: {}\n\n", http.RequestAborted);
         await http.Response.Body.FlushAsync(http.RequestAborted);
 
-        RecallQMetrics.LlmTokensTotal.WithLabels("in").Inc(q.Length / 4);
-        RecallQMetrics.LlmTokensTotal.WithLabels("out").Inc(answer.Length / 4);
+        RecallQMetrics.LlmTokensTotal.WithLabels("ask", "in").Inc(q.Length / 4);
+        RecallQMetrics.LlmTokensTotal.WithLabels("ask", "out").Inc(answer.Length / 4);
     }
 }

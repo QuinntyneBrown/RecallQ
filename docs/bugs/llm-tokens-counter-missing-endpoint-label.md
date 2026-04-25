@@ -2,7 +2,7 @@
 
 **Flow:** 38 — Metrics Scrape (/metrics)
 **Severity:** Low-Medium (cost attribution gap)
-**Status:** Open
+**Status:** Complete — `RecallQMetrics.LlmTokensTotal` now declares `LabelNames = new[] { "endpoint", "direction" }`. The two `Inc` call sites in `AskEndpoints` pass `"ask"` as the endpoint label. Existing token-counter tests still match because they use a permissive regex anchored only on the `direction` label.
 
 ## Symptom
 

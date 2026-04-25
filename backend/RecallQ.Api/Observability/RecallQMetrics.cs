@@ -23,7 +23,7 @@ public static class RecallQMetrics
     public static readonly Counter LlmTokensTotal = Metrics.CreateCounter(
         "recallq_llm_tokens_total",
         "LLM tokens",
-        new CounterConfiguration { LabelNames = new[] { "direction" } });
+        new CounterConfiguration { LabelNames = new[] { "endpoint", "direction" } });
 
     public static readonly Counter LlmCostUsd = Metrics.CreateCounter(
         "recallq_llm_cost_usd",
