@@ -163,6 +163,51 @@ public class StacksTests : IClassFixture<RecallqFactory>
         Assert.Empty(aIds.Intersect(bIds));
     }
 
+    // Bug: docs/bugs/contact-patch-does-not-invalidate-stack-count-cache.md
+    [Fact]
+    public async Task Patch_contact_invalidates_stack_count_cache()
+    {
+        var (client, _, cookie) = await RegisterLogin(_factory);
+
+        // Create a contact whose name and tags don't match any default stack.
+        var payload = new { displayName = "Plain Person", initials = "PP",
+            tags = Array.Empty<string>(), emails = Array.Empty<string>(), phones = Array.Empty<string>() };
+        using (var createReq = new HttpRequestMessage(HttpMethod.Post, "/api/contacts") { Content = JsonContent.Create(payload) })
+        {
+            createReq.Headers.Add("Cookie", cookie);
+            var createRes = await client.SendAsync(createReq);
+            Assert.Equal(HttpStatusCode.Created, createRes.StatusCode);
+        }
+        var created = await GetStacks(client, cookie);
+        Assert.DoesNotContain(created, s => s.GetProperty("name").GetString() == "AI founders");
+
+        // Find the contact id we just created.
+        Guid contactId;
+        using (var listReq = new HttpRequestMessage(HttpMethod.Get, "/api/contacts?page=1&pageSize=10"))
+        {
+            listReq.Headers.Add("Cookie", cookie);
+            var listRes = await client.SendAsync(listReq);
+            var listBody = await listRes.Content.ReadFromJsonAsync<JsonElement>();
+            contactId = listBody.GetProperty("items")[0].GetProperty("id").GetGuid();
+        }
+
+        // PATCH the tags to include a token that the "AI founders" Query stack
+        // tokenizer matches ("founders" >= 3 chars).
+        using (var patchReq = new HttpRequestMessage(HttpMethod.Patch, $"/api/contacts/{contactId}")
+            { Content = JsonContent.Create(new { tags = new[] { "AI founders" } }) })
+        {
+            patchReq.Headers.Add("Cookie", cookie);
+            var patchRes = await client.SendAsync(patchReq);
+            Assert.Equal(HttpStatusCode.OK, patchRes.StatusCode);
+        }
+
+        // Immediately re-fetch stacks. The cache should have been invalidated by
+        // the PATCH so the recomputed count picks up the new tag.
+        var after = await GetStacks(client, cookie);
+        Assert.Contains(after, s => s.GetProperty("name").GetString() == "AI founders"
+                                    && s.GetProperty("count").GetInt32() >= 1);
+    }
+
     // Bug: docs/bugs/stacks-contacts-endpoint-no-pagination.md
     [Fact]
     public async Task Stack_contacts_endpoint_returns_paginated_envelope()
