@@ -70,6 +70,14 @@ public class EmbeddingIdempotencyTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public void Embedding_channel_is_bounded()
+    {
+        var channel = _factory.Services.GetRequiredService<Channel<EmbeddingJob>>();
+        var typeName = channel.GetType().FullName ?? string.Empty;
+        Assert.DoesNotContain("UnboundedChannel", typeName);
+    }
+
+    [Fact]
     public async Task Contact_patch_changing_emails_re_embeds()
     {
         var (client, userId, cookie) = await RegisterLogin();
