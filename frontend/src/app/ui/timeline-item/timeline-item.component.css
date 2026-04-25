@@ -27,6 +27,6 @@
   border-radius: var(--radius-md);
   flex: 0 0 auto;
 }
-.edit:hover, .edit:focus-visible { color: var(--accent-primary); background: color-mix(in srgb, var(--accent-primary) 12%, transparent); }
+.edit:hover, .edit:focus-visible { color: var(--accent-tertiary); background: color-mix(in srgb, var(--accent-tertiary) 12%, transparent); }
 .del:hover, .del:focus-visible { color: #FF6B6B; background: color-mix(in srgb, #FF6B6B 12%, transparent); }
 .edit .ph, .del .ph { font-size: 16px; }
