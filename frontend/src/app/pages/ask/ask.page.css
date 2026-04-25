@@ -132,8 +132,8 @@
 }
 .input-bar input::placeholder { color: var(--foreground-muted); }
 .input-bar input:focus-visible {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px var(--accent-primary);
+  border-color: var(--accent-tertiary);
+  box-shadow: 0 0 0 2px var(--accent-tertiary);
 }
 .send-btn {
   background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
