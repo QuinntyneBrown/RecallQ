@@ -1,10 +1,10 @@
 // Traces to: L2-085
-import { test, expect } from '@playwright/test';
+import { test, expect, type APIRequestContext } from '@playwright/test';
 import { AuthPage } from '../pages/auth.page';
 
 const password = 'correcthorse12';
 
-async function registerUser(request: any, email: string) {
+async function registerUser(request: APIRequestContext, email: string) {
   const response = await request.post('/api/auth/register', {
     data: { email, password },
   });

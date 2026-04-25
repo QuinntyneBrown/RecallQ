@@ -26,10 +26,10 @@ Design the bulk-import flow used to seed contacts from a CSV file. Must cover th
 
 ## Verification
 
-- [ ] All three states share the same outer chrome (top bar, padding).
-- [ ] Error list rows are visually distinguishable from success rows but stay readable.
+- [x] All three states share the same outer chrome — `kauhQ` status bar, identical top bar (chevron-left + "Import contacts" title + 36-px spacer), `JRdjy` home indicator, 24-px content margins.
+- [x] Error list rows are visually distinguishable (Geist Mono row numbers in `$foreground-muted`, reasons right-aligned in `$foreground-secondary`, divider strokes via `$border-subtle`) but stay readable against the elevated card surface.
 
 ## Definition of Done
 
-- [ ] Three frames (`17`, `18`, `19`) added.
-- [ ] PNG exports.
+- [x] Three frames (`4Hnlr` = `17. Import — Idle`, `232sO` = `18. Import — Processing`, `C3BEu` = `19. Import — Result`) added with `placeholder: false`.
+- [x] PNG exports under `docs/designs/exports/` (`4Hnlr.png`, `232sO.png`, `C3BEu.png`).

@@ -27,10 +27,10 @@ Design the three modal overlays that hang off the quick-action row on contact de
 
 ## Verification
 
-- [ ] All three modals share the same sheet header (handle + title metrics).
-- [ ] Backdrop opacity does not cause text-on-blur contrast failures.
+- [x] All three modals share the same sheet header — 12-px top padding, 40×4 `$border-strong` drag handle, `$radius-xl` top corners, 24-px content padding, `gap: 20`, identical title typography (Geist 20 / 700 / -0.4 letter-spacing).
+- [x] Backdrop opacity (`#0A0A16` at 70%) keeps the behind-content readably dimmed without crushing the sheet's foreground text — primary copy stays at `$foreground-primary`, never overlaying blurred regions.
 
 ## Definition of Done
 
-- [ ] Three frames (`20`, `21`, `22`) added.
-- [ ] PNG exports.
+- [x] Three frames (`bI0Dw` = `20. Intro Modal`, `cvmLO` = `21. Add-Email Modal`, `DwZkZ` = `22. Add-Phone Modal`) added with `placeholder: false`.
+- [x] PNG exports under `docs/designs/exports/` (`bI0Dw.png`, `cvmLO.png`, `DwZkZ.png`).
