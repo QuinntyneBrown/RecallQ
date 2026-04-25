@@ -26,7 +26,7 @@ test('tapping a follow-up chip clears the input draft', async ({ page }) => {
 
   await page.goto('/ask');
 
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('first question');
   await page.getByRole('button', { name: 'Send' }).click();
 

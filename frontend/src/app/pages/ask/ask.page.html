@@ -50,7 +50,7 @@
     <button type="button" class="icon-btn" aria-label="Add context" disabled>
       <i class="ph ph-plus"></i>
     </button>
-    <input #inp type="text" aria-label="Ask anything" placeholder="Ask anything"
+    <input #inp type="text" aria-label="Ask a question" placeholder="Ask anything"
            [value]="draft()" (input)="draft.set($any($event.target).value)"
            (keyup.enter)="submit(inp)" [disabled]="pending()" />
     <button type="button" class="icon-btn" aria-label="Voice" disabled>

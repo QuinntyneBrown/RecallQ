@@ -39,7 +39,7 @@ test.describe('T024 ask from contact', () => {
     const ask = new AskModePage(page);
     await expect.poll(async () => ask.seededInputValue()).toBe('What should I say to Carol Contact next?');
 
-    const input = page.getByRole('textbox', { name: 'Ask anything' });
+    const input = page.getByRole('textbox', { name: 'Ask a question' });
     await input.fill('Custom question instead');
     await ask.send();
 

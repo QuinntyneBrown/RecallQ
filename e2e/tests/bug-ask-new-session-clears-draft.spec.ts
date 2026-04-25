@@ -10,7 +10,7 @@ test('ask + button clears the input draft', async ({ page }) => {
 
   await page.goto('/ask');
 
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('Tell me about Avery');
   await expect(input).toHaveValue('Tell me about Avery');
 

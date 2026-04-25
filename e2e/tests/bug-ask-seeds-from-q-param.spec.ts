@@ -11,6 +11,6 @@ test('/ask?q=<text> seeds the draft input', async ({ page }) => {
   const seed = 'investors who liked AI tools';
   await page.goto(`/ask?q=${encodeURIComponent(seed)}`);
 
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await expect(input).toHaveValue(seed);
 });

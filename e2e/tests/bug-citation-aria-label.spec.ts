@@ -20,7 +20,7 @@ test('citation card carries a Contact: aria-label', async ({ page }) => {
   );
 
   await page.goto('/ask');
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('who matches?');
   await input.press('Enter');
 

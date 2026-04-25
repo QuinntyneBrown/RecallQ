@@ -2,7 +2,7 @@
 
 **Flow:** 41 — Screen Reader Announcement for Streaming Chat
 **Severity:** Low-Medium (a11y consistency)
-**Status:** Open
+**Status:** Complete — `ask.page.html` now sets `aria-label="Ask a question"` (the placeholder stays as `Ask anything` so sighted UX is unchanged); the page-object helper and all existing e2e tests that selected by the old accessible name were updated to match.
 
 ## Symptom
 

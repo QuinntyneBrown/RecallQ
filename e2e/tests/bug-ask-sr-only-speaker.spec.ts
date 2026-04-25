@@ -17,7 +17,7 @@ test('Ask user bubble carries a sr-only "You said:" speaker prefix', async ({ pa
   );
 
   await page.goto('/ask');
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('hello');
   await input.press('Enter');
 

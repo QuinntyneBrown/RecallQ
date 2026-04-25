@@ -20,7 +20,7 @@ test('Ask new-session prompts confirm and dismiss preserves messages', async ({ 
 
   await page.goto('/ask');
 
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('hello');
   await input.press('Enter');
 

@@ -19,7 +19,7 @@ test('Ask renders a friendly error when /api/ask returns 429', async ({ page }) 
 
   await page.goto('/ask');
 
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('what should I say?');
   await input.press('Enter');
 

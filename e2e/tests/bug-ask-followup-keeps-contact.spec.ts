@@ -26,7 +26,7 @@ test('follow-up chip keeps contactId on the next /api/ask post', async ({ page }
   });
 
   await page.goto(`/ask?contactId=${id}`);
-  const input = page.getByRole('textbox', { name: 'Ask anything' });
+  const input = page.getByRole('textbox', { name: 'Ask a question' });
   await input.fill('what should I say?');
   await input.press('Enter');
 

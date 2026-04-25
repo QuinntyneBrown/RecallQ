@@ -30,7 +30,7 @@ test('citation mini-card renders avatar with computed initials', async ({ page }
 
   await page.goto('/ask');
 
-  await page.getByRole('textbox', { name: 'Ask anything' }).fill('who should I meet next?');
+  await page.getByRole('textbox', { name: 'Ask a question' }).fill('who should I meet next?');
   await page.getByRole('button', { name: 'Send' }).click();
 
   const cards = page.getByTestId('citation-card');
