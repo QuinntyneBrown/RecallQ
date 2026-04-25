@@ -2,7 +2,7 @@
 
 **Flow:** 20 — Ask Citations (Mini-Cards)
 **Severity:** Medium
-**Status:** Open
+**Status:** Complete — `CitationCardComponent` exposes an `initials()` getter (first character of each whitespace-delimited word in `contactName`, capped at 2 chars, upper-cased); the template renders `<span class="avatar">` as the first child, and the CSS gives it a 28 px gradient circle while the existing name+score row sits in a flex `.body` slot beside it.
 
 ## Symptom
 

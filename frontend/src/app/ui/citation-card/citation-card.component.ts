@@ -26,6 +26,15 @@ export class CitationCardComponent {
     return `Contact: ${this.citation.contactName}, similarity ${this.citation.similarity.toFixed(2)}`;
   }
 
+  initials(): string {
+    return (this.citation.contactName ?? '')
+      .split(/\s+/)
+      .filter(s => s.length > 0)
+      .slice(0, 2)
+      .map(s => s[0].toUpperCase())
+      .join('');
+  }
+
   nav(e: MouseEvent): void {
     e.preventDefault();
     this.router.navigate(['/contacts', this.citation.contactId]);

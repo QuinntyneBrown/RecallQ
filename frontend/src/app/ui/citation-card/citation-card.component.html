@@ -1,8 +1,11 @@
 <a class="citation" [class.top]="top" [attr.href]="'/contacts/' + citation.contactId"
    (click)="nav($event)" role="link" [attr.aria-label]="ariaLabel()" data-testid="citation-card">
-  <div class="row">
-    <strong>{{ citation.contactName }}</strong>
-    <app-score-chip [value]="citation.similarity"/>
+  <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+  <div class="body">
+    <div class="row">
+      <strong>{{ citation.contactName }}</strong>
+      <app-score-chip [value]="citation.similarity"/>
+    </div>
+    <p class="snippet">{{ citation.snippet }}</p>
   </div>
-  <p class="snippet">{{ citation.snippet }}</p>
 </a>
