@@ -2,7 +2,7 @@
 
 **Flow:** 18 — Search Zero-Result State
 **Severity:** Medium (design fidelity)
-**Status:** Open
+**Status:** Complete — `.link` in `zero-state.component.css` now renders as a Button-Primary pill: 90° brand-gradient background, on-accent text, 8 / 16 px padding, full radius, and the same `0 8px 24px -4px rgba(124, 58, 255, 0.40)` shadow used by the existing Button-Primary tier.
 
 ## Symptom
 

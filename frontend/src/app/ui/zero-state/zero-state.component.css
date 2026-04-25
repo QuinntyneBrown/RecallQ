@@ -17,7 +17,17 @@
   align-items: center;
   margin-top: 4px;
 }
-.link { color: var(--accent-primary); text-decoration: none; font-weight: 600; }
+.link {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+  color: var(--on-accent, var(--foreground-primary));
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 24px -4px rgba(124, 58, 255, 0.40);
+}
+.link:hover, .link:focus-visible { filter: brightness(1.05); }
 .ghost {
   background: transparent;
   border: 0;
