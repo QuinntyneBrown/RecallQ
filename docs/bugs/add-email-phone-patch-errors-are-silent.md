@@ -1,5 +1,6 @@
 # Add-email / add-phone PATCH errors are silent
 
+**Status:** Complete — both `catch {}` branches now call `this.toast.show('Could not update contact')`.
 **Flow:** [08 — Update Contact](../flows/08-update-contact/08-update-contact.md)
 **Traces:** L1-002, L2-007.
 **Severity:** Medium — the only ways a user can currently trigger Flow 08 from the SPA (adding an email via the Message tile or a phone via the Call tile) swallow PATCH failures with `catch {}`. If the server returns 400/500 the modal closes, the contact is unchanged, and the user receives no signal at all — the tile just appears to do nothing on the next tap.

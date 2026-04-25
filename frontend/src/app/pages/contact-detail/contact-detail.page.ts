@@ -297,7 +297,9 @@ export class ContactDetailPage implements OnInit {
         const updated = await this.contacts.patch(c.id, { emails: [v] });
         this.contact.set(updated);
         this.onMessage();
-      } catch {}
+      } catch {
+        this.toast.show('Could not update contact');
+      }
     });
   }
 
@@ -315,7 +317,9 @@ export class ContactDetailPage implements OnInit {
           const updated = await this.contacts.patch(c.id, { phones: [v] });
           this.contact.set(updated);
           this.onCall();
-        } catch {}
+        } catch {
+          this.toast.show('Could not update contact');
+        }
       });
       return;
     }
