@@ -1,6 +1,6 @@
 # Search latency metric has inconsistent name
 
-**Status:** Open
+**Status:** Complete
 **Source:** Flow 38 - Metrics Scrape E2E tests
 **Severity:** Medium (metric name does not match spec)
 
