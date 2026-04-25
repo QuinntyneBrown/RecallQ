@@ -113,23 +113,30 @@ public static class ContactsEndpoints
         });
 
         app.MapGet("/api/contacts", [Authorize] async (
-            AppDbContext db, int? page, int? pageSize, string? sort) =>
+            AppDbContext db, ICurrentUser current, int? page, int? pageSize, string? sort) =>
         {
             var p = page is null or < 1 ? 1 : page.Value;
             var ps = pageSize is null or < 1 ? 20 : Math.Min(pageSize.Value, 100);
-            var query = db.Contacts.AsQueryable();
+            var query = db.Contacts.Where(c => c.OwnerUserId == current.UserId).AsQueryable();
             query = (sort ?? "recent") switch
             {
                 "createdAt_asc" => query.OrderBy(c => c.CreatedAt),
                 "createdAt_desc" => query.OrderByDescending(c => c.CreatedAt),
-                "name_asc" => query.OrderBy(c => c.DisplayName),
+                "name" or "name_asc" => query.OrderBy(c => c.DisplayName),
                 "name_desc" => query.OrderByDescending(c => c.DisplayName),
                 _ => query.OrderByDescending(c =>
                     db.Interactions.Where(i => i.ContactId == c.Id).Max(i => (DateTime?)i.OccurredAt) ?? c.CreatedAt),
             };
             var totalCount = await query.CountAsync();
             var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync();
-            var items = rows.Select(ContactDto.From).ToArray();
+            var items = new List<ContactListDto>();
+            foreach (var row in rows)
+            {
+                var interactionTotal = await db.Interactions.CountAsync(i => i.ContactId == row.Id);
+                var lastInteraction = await db.Interactions.Where(i => i.ContactId == row.Id)
+                    .OrderByDescending(i => i.OccurredAt).Select(i => (DateTime?)i.OccurredAt).FirstOrDefaultAsync();
+                items.Add(ContactListDto.From(row, interactionTotal, lastInteraction));
+            }
             var nextPage = totalCount > p * ps ? p + 1 : (int?)null;
             return Results.Ok(new { items, totalCount, page = p, pageSize = ps, nextPage });
         });

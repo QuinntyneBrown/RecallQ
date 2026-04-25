@@ -1,6 +1,6 @@
 # GET /api/contacts sort by name does not return contacts in alphabetical order
 
-**Status:** Incomplete
+**Status:** Complete
 **Source:** Flow 06 - List Contacts E2E tests
 **Severity:** High (user cannot sort contacts by name as expected)
 

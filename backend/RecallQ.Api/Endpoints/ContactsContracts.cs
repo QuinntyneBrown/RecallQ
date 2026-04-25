@@ -7,6 +7,13 @@ public record PatchContactRequest(
     string? DisplayName, string? Initials, string? Role, string? Organization,
     string? Location, string[]? Tags);
 
+public record ContactListDto(
+    Guid Id, string DisplayName, string Initials, bool Starred, int InteractionTotal, DateTime? LastInteraction)
+{
+    public static ContactListDto From(Contact c, int interactionTotal, DateTime? lastInteraction) => new(
+        c.Id, c.DisplayName, c.Initials, c.Starred, interactionTotal, lastInteraction);
+}
+
 public record ContactDetailDto(
     Guid Id, string DisplayName, string Initials, string? Role, string? Organization,
     string? Location, string[] Tags, string[] Emails, string[] Phones,
