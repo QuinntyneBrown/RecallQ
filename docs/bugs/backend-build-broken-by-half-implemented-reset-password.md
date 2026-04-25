@@ -2,7 +2,7 @@
 
 **Flow:** 43 — Reset Password (in progress; not yet a working flow)
 **Severity:** Critical (the entire backend won't compile, so the API can't start, the e2e suite can't reach a server, and the acceptance test project — which references the API — can't build either)
-**Status:** Open
+**Status:** Complete — `AppDbContext.cs` no longer declares `DbSet<PasswordResetToken>`, the dead `forgot-password` / `reset-password` endpoints are removed from `AuthEndpoints.cs` along with the now-unused `using Microsoft.Extensions.Options;`, and `SchemaMigrationTests.cs` is unstuck (unused `Microsoft.Data.SqlClient` import dropped, plus xunit `Assert.DoesNotContain` calls reduced to the supported two-arg overload). Verified by new `BuildHealthTests.cs` which boots the WebApplicationFactory and hits `/api/ping` — it now passes.
 
 ## Symptom
 
