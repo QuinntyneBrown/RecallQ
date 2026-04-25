@@ -31,7 +31,7 @@ form {
   gap: 16px;
 }
 .err {
-  color: var(--accent-secondary);
+  color: #FFB3B3;
   font-size: 14px;
 }
 .hint {
