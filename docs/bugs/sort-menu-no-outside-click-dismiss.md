@@ -2,7 +2,7 @@
 
 **Flow:** 16 — Search Sort
 **Severity:** Medium-High (UX trap, a11y)
-**Status:** Open
+**Status:** Complete — `SortMenuComponent` now injects `ElementRef` and uses `@HostListener('document:click')` to close the popup when the click target is not contained by the host element, mirroring the bottom-nav and sidebar Profile menu fixes.
 
 ## Symptom
 

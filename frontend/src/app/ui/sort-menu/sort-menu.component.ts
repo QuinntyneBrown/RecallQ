@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, computed, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, computed, inject, signal } from '@angular/core';
 import { Sort } from '../../search/sort.util';
 
 @Component({
@@ -8,6 +8,7 @@ import { Sort } from '../../search/sort.util';
   styleUrl: './sort-menu.component.css',
 })
 export class SortMenuComponent {
+  private readonly host = inject(ElementRef<HTMLElement>);
   private readonly _sort = signal<Sort>('similarity');
   @Input({ required: true }) set sort(v: Sort) { this._sort.set(v); }
   get sort(): Sort { return this._sort(); }
@@ -26,5 +27,14 @@ export class SortMenuComponent {
     if (this.disabled) return;
     this.open.set(false);
     this.sortChange.emit(s);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(ev: MouseEvent): void {
+    if (!this.open()) return;
+    const target = ev.target as Node | null;
+    if (target && !this.host.nativeElement.contains(target)) {
+      this.open.set(false);
+    }
   }
 }
