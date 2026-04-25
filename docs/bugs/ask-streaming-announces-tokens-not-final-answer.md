@@ -2,7 +2,7 @@
 
 **Flow:** 41 — Screen Reader Announcement for Streaming Chat
 **Severity:** Medium-High (every screen-reader user who asks a question gets a fragment-by-fragment readout — usually a stuttering, half-word stream — instead of a single clean announcement of the assistant's reply)
-**Status:** Open
+**Status:** Complete — `ask.page.html` now drops `text` from the chat-list `aria-relevant` so per-token DOM mutations don't trigger SR announcements, wraps the visible streaming text in `aria-hidden="true"`, and gates the sr-only "RecallQ said: {{ m.text }}" span on `!m.streaming` so it only enters the live region after `event: done`. The user bubble is parallel-fixed (full text in sr-only, visible span aria-hidden). New e2e `bug-ask-sr-only-only-after-done.spec.ts` asserts the sr-only span contains the full answer body once streaming completes. All 20 existing ask tests still pass.
 
 ## Symptom
 
