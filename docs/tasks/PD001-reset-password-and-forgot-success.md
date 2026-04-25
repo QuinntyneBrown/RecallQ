@@ -33,13 +33,13 @@ Design two screens that complete the password-recovery flow: (1) the success/"ch
 
 ## Verification
 
-- [ ] `snapshot_layout({ problemsOnly: true })` returns no overlaps.
-- [ ] `get_screenshot` for each new frame confirms hierarchy, contrast, and no clipping.
-- [ ] All three frames export cleanly to `docs/designs/exports/`.
-- [ ] Tokens are referenced as `$…` variables — no hard-coded hex except already-shared gradient stops.
+- [x] `snapshot_layout({ problemsOnly: true })` returns no overlaps. (Only the expected ambient-glow clipping by the rounded frame chrome — same as `7. Forgot Password`.)
+- [x] `get_screenshot` for each new frame confirms hierarchy, contrast, and no clipping.
+- [x] All three frames export cleanly to `docs/designs/exports/` (`79Vtv.png`, `9ejDY.png`, `sBy06.png`).
+- [x] Tokens are referenced as `$…` variables — no hard-coded hex except already-shared gradient stops.
 
 ## Definition of Done
 
-- [ ] Three frames added to `ui-design.pen` with `placeholder: false`.
-- [ ] PNG exports under `docs/designs/exports/`.
-- [ ] Visual review against `7. Forgot Password` confirms identical chrome/ambient/typographic style.
+- [x] Three frames added to `ui-design.pen` with `placeholder: false` (`79Vtv` = `8. Forgot Password — Sent`, `9ejDY` = `9. Reset Password`, `sBy06` = `10. Reset Password — Invalid Link`).
+- [x] PNG exports under `docs/designs/exports/`.
+- [x] Visual review against `7. Forgot Password` confirms identical chrome/ambient/typographic style.

@@ -19,6 +19,9 @@ const largerProjects = [
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
+  // The E2E suite shares one API process and one database. Keep local runs
+  // bounded so default CPU-count parallelism does not overload the harness.
+  workers: process.env.PW_WORKERS ? Number(process.env.PW_WORKERS) : 4,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: 'list',
