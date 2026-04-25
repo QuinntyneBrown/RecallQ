@@ -15,7 +15,7 @@ namespace RecallQ.Api.Endpoints;
 public static class SearchEndpoints
 {
     public record SearchRequest(string? Q, int? Page, int? PageSize, string? Sort);
-    public record SearchRow(Guid ContactId, string MatchedSource, float Similarity, string MatchedText, DateTime? OccurredAt);
+    public record SearchRow(Guid ContactId, string MatchedSource, float Similarity, string MatchedText, DateTime? OccurredAt, long TotalMatches);
 
     public static IEndpointRouteBuilder MapSearch(this IEndpointRouteBuilder app)
     {
@@ -76,7 +76,8 @@ collapsed AS (
   SELECT DISTINCT ON (""ContactId"") ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt""
   FROM hits ORDER BY ""ContactId"", ""Similarity"" DESC
 )
-SELECT ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt""
+SELECT ""ContactId"", ""MatchedSource"", ""Similarity"", ""MatchedText"", ""OccurredAt"",
+       COUNT(*) OVER () AS ""TotalMatches""
 FROM collapsed ORDER BY {orderBy} LIMIT @limit OFFSET @offset";
 
         var vec = new Vector(await client.EmbedAsync(q, default));
@@ -90,7 +91,8 @@ FROM collapsed ORDER BY {orderBy} LIMIT @limit OFFSET @offset";
             matchedText = Truncate((r.MatchedText ?? "").Trim(), 240),
             occurredAt = r.OccurredAt
         }).ToList();
-        return Results.Ok(new { results = mapped, nextPage = rows.Count == pageSize ? page + 1 : (int?)null, contactsMatched = rows.Count });
+        var totalMatches = rows.Count == 0 ? 0 : (int)rows[0].TotalMatches;
+        return Results.Ok(new { results = mapped, nextPage = rows.Count == pageSize ? page + 1 : (int?)null, contactsMatched = totalMatches });
     }
 
     private static string Truncate(string text, int max)

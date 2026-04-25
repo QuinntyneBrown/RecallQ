@@ -2,7 +2,7 @@
 
 **Flow:** 15 — Vector Semantic Search (meta-band "N contacts matched")
 **Severity:** High (visible undercount on every multi-page search)
-**Status:** Open
+**Status:** Complete — `SearchRow` gained a `long TotalMatches` field; the search SQL appends `COUNT(*) OVER () AS "TotalMatches"` to the outer `SELECT`, and the response derives `contactsMatched` from `rows[0].TotalMatches` (or `0` when empty), so the meta-band reflects the real total across pages.
 
 ## Symptom
 
