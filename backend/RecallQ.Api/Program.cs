@@ -81,12 +81,18 @@ builder.Services.AddOptions<LlmOptions>()
     .ValidateOnStart();
 var embeddingsProvider = builder.Configuration["Embeddings:Provider"];
 var openAiKey = builder.Configuration["Embeddings:OpenAI:ApiKey"];
-var useFake = string.Equals(embeddingsProvider, "fake", StringComparison.OrdinalIgnoreCase)
-              || string.IsNullOrWhiteSpace(openAiKey);
+var useFake = string.Equals(embeddingsProvider, "fake", StringComparison.OrdinalIgnoreCase);
 if (useFake)
 {
     builder.Services.AddSingleton<IEmbeddingClient, FakeEmbeddingClient>();
     builder.Services.AddSingleton<IChatClient, FakeChatClient>();
+}
+else if (string.IsNullOrWhiteSpace(openAiKey))
+{
+    throw new InvalidOperationException(
+        $"Embeddings provider '{embeddingsProvider}' requires Embeddings:OpenAI:ApiKey to be configured. " +
+        "Set Embeddings:Provider to 'fake' for testing without an API key."
+    );
 }
 else
 {

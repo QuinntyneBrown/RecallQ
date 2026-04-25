@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<RelationshipSummary> RelationshipSummaries => Set<RelationshipSummary>();
     public DbSet<Stack> Stacks => Set<Stack>();
     public DbSet<Suggestion> Suggestions => Set<Suggestion>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
