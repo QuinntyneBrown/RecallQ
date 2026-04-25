@@ -2,7 +2,7 @@
 
 **Flow:** 26 — View Relationship Summary
 **Severity:** Medium (slower-than-spec UI)
-**Status:** Open
+**Status:** Complete — `ContactDetailPage.loadSummary` now schedules its self-recursion with `setTimeout(..., 1500)`, halving the cadence to match flow 26's 1.5 s spec; max attempts stays at 10 so total polling is now ≤ 15 s.
 
 ## Symptom
 

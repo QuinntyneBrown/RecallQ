@@ -64,7 +64,7 @@ export class ContactDetailPage implements OnInit {
         this.summary.set(s);
       }
       if (s.status === 'pending' && attempt < 10) {
-        this.pollTimer = setTimeout(() => this.loadSummary(attempt + 1), 3000);
+        this.pollTimer = setTimeout(() => this.loadSummary(attempt + 1), 1500);
       } else {
         this.refreshing.set(false);
       }
