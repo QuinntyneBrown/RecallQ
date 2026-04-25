@@ -10,7 +10,8 @@
 }
 h1 {
   color: var(--foreground-primary);
-  font-size: 28px;
+  font-size: 32px;
+  letter-spacing: -0.8px;
   margin: 0;
 }
 form {
