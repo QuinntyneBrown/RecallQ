@@ -1,5 +1,6 @@
 # Home greeting name uses raw lowercase email local-part
 
+**Status:** Complete — `home.page.ts` `greetingName` computed now upper-cases the first character of the local-part before rendering.
 **Flow:** [06 — List Contacts](../flows/06-list-contacts/06-list-contacts.md) (audited via Flow 28 home shell)
 **Traces:** L1-002.
 **Severity:** Low — `docs/ui-design.pen` (home frame `SZRuv`) shows the greeting as `Good morning, Quinn`. The implementation pulls the part before `@` from the email and prints it as-is, so a visitor whose email is `quinn@example.com` sees the lowercase `Good morning, quinn`.

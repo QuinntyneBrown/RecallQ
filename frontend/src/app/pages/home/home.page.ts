@@ -179,7 +179,8 @@ export class HomePage implements OnInit {
   readonly greetingName = computed(() => {
     const s = this.auth.authState();
     if (!s) return '';
-    return s.email.split('@')[0];
+    const local = s.email.split('@')[0];
+    return local.length === 0 ? '' : local.charAt(0).toUpperCase() + local.slice(1);
   });
 
   readonly timeOfDay = computed(() => {
