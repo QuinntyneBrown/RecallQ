@@ -1,0 +1,78 @@
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  z-index: 100;
+  padding: 8px 12px;
+  background: var(--surface-elevated);
+  color: var(--foreground-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.skip-link:focus {
+  top: 8px;
+  outline: 2px solid var(--accent-tertiary);
+  outline-offset: 2px;
+}
+
+:host {
+  display: grid;
+  height: 100dvh;
+  background: var(--surface-primary);
+  color: var(--foreground-primary);
+  /* XS (default, < 576px — --bp-sm): single column, bottom nav visible, sidebar hidden. */
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-areas:
+    "status"
+    "content"
+    "bottom"
+    "home-ind";
+}
+.status      { grid-area: status; }
+.content     { grid-area: content; overflow: auto; display: flex; flex-direction: column; }
+.bottom      { grid-area: bottom; }
+.home-ind    { grid-area: home-ind; }
+.sidebar     { display: none; }
+
+/* SM: >= --bp-sm (576px). Content column centered, max-width 560px. Bottom nav still visible. */
+@media (min-width: 576px) {
+  :host {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "status"
+      "content"
+      "bottom"
+      "home-ind";
+  }
+  .content {
+    max-width: 560px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* MD: >= --bp-md (768px). Sidebar left column replaces bottom nav. */
+@media (min-width: 768px) {
+  :host {
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "sidebar status"
+      "sidebar content";
+  }
+  .sidebar  { display: block; grid-area: sidebar; }
+  .bottom   { display: none; }
+  .home-ind { display: none; }
+  .content {
+    max-width: 720px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

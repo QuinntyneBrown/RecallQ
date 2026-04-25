@@ -1,0 +1,5 @@
+<div class="toast-host" role="status" aria-live="polite">
+  @for (t of toasts.toasts(); track t.id) {
+    <div class="toast">{{ t.text }}</div>
+  }
+</div>

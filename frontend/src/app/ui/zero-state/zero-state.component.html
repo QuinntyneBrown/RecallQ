@@ -1,0 +1,10 @@
+<div class="zero" data-testid="zero-state">
+  <i class="ph ph-magnifying-glass icon" aria-hidden="true"></i>
+  <h2 class="head">No matches yet</h2>
+  <p class="body">Your query didn't match any indexed contacts or interactions.</p>
+  <a
+    [routerLink]="['/ask']"
+    [queryParams]="q ? { q } : null"
+    class="link"
+  >Ask RecallQ</a>
+</div>

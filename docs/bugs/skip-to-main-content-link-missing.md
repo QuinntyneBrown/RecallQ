@@ -1,5 +1,6 @@
 # "Skip to main content" link is missing
 
+**Status:** Complete — `app.html` now opens with `<a class="skip-link" href="#main">Skip to main content</a>`; `<main id="main" tabindex="-1">` is the target; `app.css` styles the link as visually hidden until focused.
 **Flow:** [40 — Keyboard Navigation](../flows/40-keyboard-navigation/40-keyboard-navigation.md)
 **Traces:** L1-015, L2-064.
 **Severity:** Low — Flow 40 alternatives explicitly call for "**Skip link** at the top of the page jumps past chrome to the main content." A keyboard-only visitor on a wide viewport currently has to Tab through the sidebar and any chrome controls before reaching the page content. WCAG 2.1 SC 2.4.1 (Bypass Blocks) flags the absence as an A-level violation.
