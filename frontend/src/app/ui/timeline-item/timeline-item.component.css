@@ -9,10 +9,10 @@
   background: var(--surface-elevated);
   flex: 0 0 auto;
 }
-.pill[data-type="email"] { background: color-mix(in srgb, var(--accent-primary) 35%, transparent); }
+.pill[data-type="email"] { background: color-mix(in srgb, var(--accent-tertiary) 35%, transparent); }
 .pill[data-type="call"]  { background: color-mix(in srgb, var(--success) 35%, transparent); }
 .pill[data-type="meeting"] { background: color-mix(in srgb, var(--accent-secondary) 35%, transparent); }
-.pill[data-type="note"]  { background: color-mix(in srgb, var(--accent-tertiary) 35%, transparent); }
+.pill[data-type="note"]  { background: color-mix(in srgb, var(--star-fill) 35%, transparent); }
 .body { flex: 1 1 auto; min-width: 0; }
 .title {
   display: block; font-weight: 600; color: var(--foreground-primary);
