@@ -44,7 +44,7 @@ test('flow 01: email already in use returns 409', async ({ page }) => {
 
   // Try to register same email
   const secondResponse = await page.request.post('/api/auth/register', {
-    data: { email, password: 'different12' }
+    data: { email, password: 'differentpass123' }
   });
   expect(secondResponse.status()).toBe(409);
 });
