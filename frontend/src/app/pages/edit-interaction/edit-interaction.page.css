@@ -20,7 +20,11 @@ form { display: flex; flex-direction: column; gap: 16px; }
   border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
   font-size: 14px;
 }
-.pill i { color: var(--accent-primary); font-size: 18px; }
+.pill i { font-size: 18px; }
+.pill.pill-email i   { color: var(--accent-tertiary); }
+.pill.pill-call i    { color: var(--success); }
+.pill.pill-meeting i { color: var(--accent-secondary); }
+.pill.pill-note i    { color: var(--star-fill); }
 .pill.selected {
   background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-mid), var(--accent-gradient-end));
   border-color: transparent; color: var(--foreground-primary);

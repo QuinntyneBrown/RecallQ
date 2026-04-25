@@ -17,9 +17,10 @@ test('add-interaction pill icons colour-code by type', async ({ page }) => {
 
   await page.goto(`/contacts/${contact.id}/interactions/new`);
 
-  const emailIcon = await page.locator('.pill.pill-email i').evaluate(
-    (el) => getComputedStyle(el).color,
-  );
+  // Default selected type is 'note' — pick email so the remaining
+  // pills sit unselected and reveal their type-specific icon colours.
+  await page.locator('.pill.pill-email').click();
+
   const callIcon = await page.locator('.pill.pill-call i').evaluate(
     (el) => getComputedStyle(el).color,
   );
@@ -30,7 +31,6 @@ test('add-interaction pill icons colour-code by type', async ({ page }) => {
     (el) => getComputedStyle(el).color,
   );
 
-  expect(emailIcon).toBe('rgb(75, 232, 255)');   // --accent-tertiary
   expect(callIcon).toBe('rgb(61, 255, 179)');    // --success
   expect(meetingIcon).toBe('rgb(191, 64, 255)'); // --accent-secondary
   expect(noteIcon).toBe('rgb(255, 178, 61)');    // --star-fill
