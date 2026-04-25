@@ -32,7 +32,7 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
           @if (stackName()) {
             <span class="stack-chip" data-testid="stack-chip">Stack: {{ stackName() }}</span>
           }
-          <app-sort-menu [sort]="sort()" (sortChange)="onSortChange($event)"></app-sort-menu>
+          <app-sort-menu [sort]="sort()" [disabled]="!q()" (sortChange)="onSortChange($event)"></app-sort-menu>
         </div>
         <div class="meta">
           <span data-testid="match-count">{{ contactsMatched() }} contacts matched</span>

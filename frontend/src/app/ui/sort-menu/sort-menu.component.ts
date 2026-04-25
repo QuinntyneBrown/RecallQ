@@ -12,6 +12,7 @@ import { Sort } from '../../search/sort.util';
         aria-label="Sort"
         aria-haspopup="menu"
         [attr.aria-expanded]="open()"
+        [disabled]="disabled"
         data-testid="sort-menu-trigger"
         (click)="toggle()"
       >
@@ -37,6 +38,7 @@ import { Sort } from '../../search/sort.util';
       font-size: 13px;
       cursor: pointer;
     }
+    .chip:disabled { opacity: 0.5; cursor: not-allowed; }
     .menu {
       position: absolute;
       top: calc(100% + 6px);
@@ -68,14 +70,19 @@ export class SortMenuComponent {
   private readonly _sort = signal<Sort>('similarity');
   @Input({ required: true }) set sort(v: Sort) { this._sort.set(v); }
   get sort(): Sort { return this._sort(); }
+  @Input() disabled = false;
   @Output() sortChange = new EventEmitter<Sort>();
 
   readonly open = signal(false);
   readonly label = computed(() => (this._sort() === 'recent' ? 'Most recent' : 'Similarity'));
 
-  toggle(): void { this.open.update(v => !v); }
+  toggle(): void {
+    if (this.disabled) return;
+    this.open.update(v => !v);
+  }
 
   pick(s: Sort): void {
+    if (this.disabled) return;
     this.open.set(false);
     this.sortChange.emit(s);
   }
