@@ -1,5 +1,6 @@
 # `/ask` does not seed the input from the `?q=` query parameter
 
+**Status:** Complete — `AskModePage.ngOnInit` now reads `q` (after `contactId`) and seeds `draft()` when no contactId is present.
 **Flow:** [23 — Ask AI from Contact Detail](../flows/23-ask-from-contact/23-ask-from-contact.md) (and Flow 18 zero-state handoff)
 **Traces:** L1-005, L1-010, L2-014.
 **Severity:** Medium — Flow 18 step 4 promises that tapping `Ask RecallQ` from the search zero state navigates to `/ask?q={query}` "where the input is pre-seeded and auto-focused". The frontend does navigate there, but `AskModePage.ngOnInit` only reads `contactId` — `q` is ignored, so the input remains empty and the visitor still has to retype.

@@ -220,12 +220,19 @@ export class AskPage implements AfterViewChecked, OnInit {
     this.route.queryParamMap.subscribe(async (params) => {
       const contactId = params.get('contactId');
       this.currentContactId.set(contactId);
-      if (contactId && !this.seededOnce && this.messages().length === 0) {
+      if (this.seededOnce || this.messages().length > 0) return;
+      if (contactId) {
         this.seededOnce = true;
         try {
           const c = await this.contacts.get(contactId);
           if (c) this.draft.set(`What should I say to ${c.displayName} next?`);
         } catch { /* ignore */ }
+        return;
+      }
+      const q = params.get('q');
+      if (q && q.trim()) {
+        this.seededOnce = true;
+        this.draft.set(q);
       }
     });
   }
