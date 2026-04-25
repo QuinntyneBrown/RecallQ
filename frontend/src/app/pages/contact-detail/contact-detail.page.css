@@ -53,7 +53,7 @@ h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 24px
   font-size: 12px;
 }
 .actions {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
   padding: 0 24px;
 }
 .summary-wrap { padding: 0 24px; }
