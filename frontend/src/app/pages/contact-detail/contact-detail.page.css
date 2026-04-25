@@ -84,4 +84,4 @@ h1 { margin: 8px 0 0; font-family: Geist, system-ui, sans-serif; font-size: 24px
 .timeline-item { border-bottom: 1px solid var(--border-subtle); }
 .timeline-item:last-child { border-bottom: 0; }
 .empty { color: var(--foreground-secondary); }
-.err { color: var(--accent-secondary); padding: 24px; }
+.err { color: #FFB3B3; padding: 24px; }
