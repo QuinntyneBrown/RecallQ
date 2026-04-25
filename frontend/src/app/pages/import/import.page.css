@@ -1,5 +1,5 @@
 .page {
-  display: flex; flex-direction: column; gap: 16px;
+  display: flex; flex-direction: column; gap: 24px;
   padding: 24px; max-width: 480px; margin: 0 auto;
   color: var(--foreground-primary);
 }
