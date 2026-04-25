@@ -61,7 +61,7 @@ public static class AuthEndpoints
             await db.SaveChangesAsync();
             await SeedDefaultStacksAsync(db, user.Id);
             return Results.Created($"/api/auth/users/{user.Id}", new { id = user.Id, email = user.Email });
-        });
+        }).RequireRateLimiting("register");
 
         app.MapPost("/api/auth/login", async (LoginRequest req, AppDbContext db, Argon2Hasher hasher, HttpContext http) =>
         {

@@ -29,6 +29,19 @@ public static class RateLimitPolicies
                 await http.Response.Body.WriteAsync(payload, cancellationToken);
             };
 
+            // register: 5 per 60s keyed by ip
+            options.AddPolicy("register", httpCtx =>
+            {
+                var key = httpCtx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromSeconds(60),
+                    QueueLimit = 0,
+                    AutoReplenishment = true
+                });
+            });
+
             // login: 5 per 60s keyed by ip+email
             options.AddPolicy(LoginRateLimit.PolicyName, httpCtx =>
             {

@@ -2,7 +2,7 @@
 
 **Flow:** 35 — Rate Limiting (with auth flow 01)
 **Severity:** High (registration flood / abuse)
-**Status:** Open
+**Status:** Complete — `RateLimitPolicies` declares a new `register` policy keyed by `RemoteIpAddress` with `PermitLimit = 5` and `Window = 60s`. `AuthEndpoints` tags the register endpoint with `.RequireRateLimiting("register")`. Over-limit responses inherit the existing `OnRejected` callback that emits `Retry-After` and the `{ error: "rate_limited", retryAfter: N }` body.
 
 ## Symptom
 
