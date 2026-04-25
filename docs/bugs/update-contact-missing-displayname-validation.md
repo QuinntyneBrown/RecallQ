@@ -1,6 +1,6 @@
 # PATCH /api/contacts does not validate displayName length
 
-**Status:** Incomplete
+**Status:** Complete
 **Source:** Flow 08 - Update Contact E2E tests
 **Severity:** Medium (inconsistent validation between create and update)
 
