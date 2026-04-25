@@ -1,5 +1,6 @@
 # Bottom-nav profile menu does not dismiss on outside click
 
+**Status:** Complete — `BottomNavComponent` now uses `@HostListener('document:click')` to close the menu when the click target is outside the component's host element.
 **Flow:** [03 — User Logout](../flows/03-user-logout/03-user-logout.md)
 **Traces:** L1-001, L2-003, L2-066.
 **Severity:** Low-Medium — Once the visitor taps the Profile icon in the bottom nav and opens the Log out menu, tapping anywhere else on the screen (other than Profile or Log out) leaves the menu mounted. Standard menu UX expects an outside click or Escape to dismiss the popover.
