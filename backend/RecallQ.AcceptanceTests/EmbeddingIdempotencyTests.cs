@@ -94,6 +94,14 @@ public class EmbeddingIdempotencyTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public void Summary_refresh_channel_is_bounded()
+    {
+        var channel = _factory.Services.GetRequiredService<Channel<SummaryRefreshJob>>();
+        var typeName = channel.GetType().FullName ?? string.Empty;
+        Assert.DoesNotContain("UnboundedChannel", typeName);
+    }
+
+    [Fact]
     public async Task Admin_embedding_status_reports_failed_counts()
     {
         Environment.SetEnvironmentVariable("ADMIN_ENABLED", "true");
