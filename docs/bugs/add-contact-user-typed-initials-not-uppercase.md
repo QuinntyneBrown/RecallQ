@@ -1,5 +1,6 @@
 # Add contact user-typed initials are not uppercased
 
+**Status:** Complete — `onInitialsChange` now applies `.toUpperCase()` after the slice so user-typed initials match the auto-derived all-caps form.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md)
 **Traces:** L1-002, L2-005.
 **Severity:** Low — `deriveInitials` produces uppercase initials when the visitor types a Display name, but if they then edit the Initials field directly the typed characters are stored as-is. A contact saved with `"ab"` displays a lowercase avatar, breaking the visual consistency of every other contact's all-caps initials chip.

@@ -50,7 +50,7 @@ export class AddContactPage {
 
   onInitialsChange(v: string) {
     this.initialsTouched = true;
-    this.initials.set(v.slice(0, 3));
+    this.initials.set(v.slice(0, 3).toUpperCase());
   }
 
   onTagInput(ev: Event) {
