@@ -5,8 +5,8 @@ import { AuthService } from '../../auth/auth.service';
 @Component({
   selector: 'app-logout-page',
   standalone: true,
-  template: `<p class="msg">Signing out…</p>`,
-  styles: [`.msg { padding: 24px; color: var(--foreground-secondary); }`],
+  templateUrl: './logout.page.html',
+  styleUrl: './logout.page.css',
 })
 export class LogoutPage implements OnInit {
   private readonly auth = inject(AuthService);
