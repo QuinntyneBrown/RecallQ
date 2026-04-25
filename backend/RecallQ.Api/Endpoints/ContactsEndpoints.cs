@@ -106,7 +106,8 @@ public static class ContactsEndpoints
             var totalCount = await query.CountAsync();
             var rows = await query.Skip((p - 1) * ps).Take(ps).ToListAsync();
             var items = rows.Select(ContactDto.From).ToArray();
-            return Results.Ok(new { items, totalCount, page = p, pageSize = ps });
+            var nextPage = totalCount > p * ps ? p + 1 : (int?)null;
+            return Results.Ok(new { items, totalCount, page = p, pageSize = ps, nextPage });
         });
 
         app.MapGet("/api/contacts/count", [Authorize] async (AppDbContext db) =>

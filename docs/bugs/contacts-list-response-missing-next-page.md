@@ -2,7 +2,7 @@
 
 **Flow:** 06 — List Contacts
 **Severity:** Medium (contract gap; blocks paged consumers)
-**Status:** Open
+**Status:** Complete — `GET /api/contacts` now computes `nextPage = totalCount > p * ps ? p + 1 : null` and returns it alongside the existing `items` / `totalCount` / `page` / `pageSize` fields. Consumers no longer have to derive the cursor from total + offset.
 
 ## Symptom
 
