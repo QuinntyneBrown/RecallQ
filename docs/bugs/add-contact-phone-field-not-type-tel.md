@@ -2,7 +2,7 @@
 
 **Flow:** 05 — Create Contact
 **Severity:** Low-Medium (mobile UX, autocomplete)
-**Status:** Open
+**Status:** Complete — `add-contact.page.html` now passes `type="tel"` to the Phone `<app-input-field>`, matching the Email field's `type="email"` opt-in. Mobile keyboards switch to the phone-numeric layout and platform phone autofill triggers.
 
 ## Symptom
 

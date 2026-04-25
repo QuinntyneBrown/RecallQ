@@ -27,7 +27,7 @@
 
     <app-input-field label="Email" name="email" type="email"
       [value]="email()" (valueChange)="email.set($event)" />
-    <app-input-field label="Phone" name="phone"
+    <app-input-field label="Phone" name="phone" type="tel"
       [value]="phone()" (valueChange)="phone.set($event)" />
 
     @if (error()) { <div class="err" role="alert">{{ error() }}</div> }
