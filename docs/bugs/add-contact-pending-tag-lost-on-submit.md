@@ -1,5 +1,6 @@
 # Add contact loses pending tag input when the form is submitted
 
+**Status:** Complete — `add-contact.page.ts` `onSubmit` now folds the trimmed `tagInput()` into `tags()` before reading the payload.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md)
 **Traces:** L1-002, L2-005.
 **Severity:** Medium — Tags only join `tags()` after the visitor explicitly presses Enter inside the tag input. If they type a tag but tap Save without pressing Enter, the in-progress text in `tagInput()` is silently dropped from the payload — the new contact saves without that tag.

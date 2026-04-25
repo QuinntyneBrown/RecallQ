@@ -75,6 +75,11 @@ export class AddContactPage {
     this.error.set(null);
     this.errors.set({});
     this.busy.set(true);
+    const pending = this.tagInput().trim();
+    if (pending && !this.tags().includes(pending)) {
+      this.tags.set([...this.tags(), pending]);
+      this.tagInput.set('');
+    }
     try {
       const payload = {
         displayName: this.displayName(),
