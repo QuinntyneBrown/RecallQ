@@ -2,7 +2,7 @@
 
 **Flow:** 25 — Proactive AI Suggestion (Render and Dismiss)
 **Severity:** Medium-High (every user who has ≥ 2 unreplied emails older than 7 days sees this suggestion; tapping the only call-to-action it offers — "Triage" — silently bounces them to `/login`)
-**Status:** Open
+**Status:** Complete — `SuggestionDetector` now sets `owed_replies` `ActionHref` to `/search?sort=recent`, an existing SPA route that lands the user on the search screen with the recent-first sort. New acceptance test `SuggestionOwedRepliesActionTests` ticks the detector against seeded old-email interactions and asserts the resulting `actionHref` starts with one of the SPA's known route prefixes (and is not `/contacts?…`).
 
 ## Symptom
 
