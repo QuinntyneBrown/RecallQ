@@ -133,6 +133,16 @@ export class ContactsService {
     throw new Error('refresh_summary_failed_' + res.status);
   }
 
+  async delete(id: string): Promise<void> {
+    const res = await fetch(`/api/contacts/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    if (res.status !== 204 && res.status !== 200) {
+      throw new Error('delete_failed_' + res.status);
+    }
+  }
+
   async refreshCount(): Promise<void> {
     try {
       const c = await this.count();

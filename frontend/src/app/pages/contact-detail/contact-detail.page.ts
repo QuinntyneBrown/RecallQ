@@ -30,7 +30,7 @@ import { navigateExternal } from '../../shared/navigate-external';
                  [class.ph-star-fill]="starred()"
                  [style.color]="starred() ? 'var(--star-fill)' : 'var(--foreground-primary)'"></i>
             </button>
-            <button type="button" class="icon-btn" aria-label="More">
+            <button type="button" class="icon-btn" aria-label="Delete contact" (click)="deleteContact()">
               <i class="ph ph-dots-three"></i>
             </button>
           </div>
@@ -322,6 +322,19 @@ export class ContactDetailPage implements OnInit {
     } catch {
       this.contact.set(c);
       this.toast.show('Could not update star');
+    }
+  }
+
+  async deleteContact() {
+    const c = this.contact();
+    if (!c) return;
+    if (!window.confirm('Delete this contact? This cannot be undone.')) return;
+    try {
+      await this.contacts.delete(c.id);
+      this.toast.show('Contact deleted');
+      await this.router.navigateByUrl('/home');
+    } catch {
+      this.toast.show('Could not delete contact');
     }
   }
 }

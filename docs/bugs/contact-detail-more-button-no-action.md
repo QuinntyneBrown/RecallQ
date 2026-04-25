@@ -1,5 +1,6 @@
 # Contact detail "More" button is non-functional; delete contact is not wired up
 
+**Status:** Complete — the three-dots button is now labelled `Delete contact`, triggers a `window.confirm`, calls the new `ContactsService.delete`, toasts "Contact deleted", and navigates to `/home`.
 **Flow:** [09 — Delete Contact (Cascade)](../flows/09-delete-contact/09-delete-contact.md)
 **Traces:** L1-002, L2-008.
 **Severity:** High — Flow 09's primary user trigger ("User taps **Delete contact** and confirms the modal.") has no frontend implementation. The three-dots `More` button on the contact detail hero is rendered without a click handler or a menu, and there is no other path to delete a contact from the SPA.
