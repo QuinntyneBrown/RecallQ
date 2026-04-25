@@ -1,5 +1,6 @@
 # Citation card renders raw similarity instead of the Score chip
 
+**Status:** Complete — `CitationCardComponent` now imports `ScoreChipComponent` and renders `<app-score-chip [value]="similarity"/>` in place of the bare `<span>`.
 **Flow:** [20 — Ask Citations](../flows/20-ask-citations/20-ask-citations.md)
 **Traces:** L1-005, L2-023.
 **Severity:** Medium — Flow 20 step 4 says "Each card uses the `Score High` / `Mid` / `Low` component for its similarity tier." The implementation prints the raw `0.91` style number in a plain muted span, so visitors do not get the tiered chip the design system already exposes (`0QZrm` / `lzlpQ` / `fiEpD` in `docs/ui-design.pen`, mirrored by `ScoreChipComponent` in code).

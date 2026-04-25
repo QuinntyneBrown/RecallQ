@@ -1,5 +1,6 @@
 import { Component, Input, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { ScoreChipComponent } from '../score-chip/score-chip.component';
 
 export interface Citation {
   contactId: string;
@@ -12,12 +13,13 @@ export interface Citation {
 @Component({
   selector: 'app-citation-card',
   standalone: true,
+  imports: [ScoreChipComponent],
   template: `
     <a class="citation" [class.top]="top" [attr.href]="'/contacts/' + citation.contactId"
        (click)="nav($event)" role="link" data-testid="citation-card">
       <div class="row">
         <strong>{{ citation.contactName }}</strong>
-        <span class="score">{{ citation.similarity.toFixed(2) }}</span>
+        <app-score-chip [value]="citation.similarity"/>
       </div>
       <p class="snippet">{{ citation.snippet }}</p>
     </a>
@@ -35,7 +37,6 @@ export interface Citation {
     .citation.top { border: 1px solid var(--citation-border-top); }
     .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
     .row strong { font-size: 14px; font-weight: 600; }
-    .score { font-size: 12px; color: var(--foreground-muted); }
     .snippet { margin: 4px 0 0; font-size: 13px; color: var(--foreground-secondary); line-height: 1.35; }
   `],
 })
