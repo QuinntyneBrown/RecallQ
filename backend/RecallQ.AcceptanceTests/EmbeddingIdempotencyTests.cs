@@ -70,6 +70,22 @@ public class EmbeddingIdempotencyTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public async Task Embedding_latency_metric_carries_model_label()
+    {
+        var (client, _, cookie) = await RegisterLogin();
+        var id = await CreateContact(client, cookie, "Metric Probe " + Guid.NewGuid().ToString("N"));
+        var row = await WaitForEmbedding(id);
+        Assert.NotNull(row);
+
+        var res = await client.GetAsync("/metrics");
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        var body = await res.Content.ReadAsStringAsync();
+        Assert.Matches(new System.Text.RegularExpressions.Regex(
+            @"recallq_embedding_latency_seconds_bucket\{[^}]*model=""[^""]+""[^}]*le="),
+            body);
+    }
+
+    [Fact]
     public void Embedding_channel_is_bounded()
     {
         var channel = _factory.Services.GetRequiredService<Channel<EmbeddingJob>>();
