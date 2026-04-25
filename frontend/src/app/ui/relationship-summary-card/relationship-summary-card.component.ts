@@ -15,13 +15,12 @@ export class RelationshipSummaryCardComponent {
   sinceLast(): string {
     const iso = this.summary.lastInteractionAt;
     if (!iso) return '—';
-    const then = new Date(iso).getTime();
-    const now = Date.now();
-    const diffMs = now - then;
+    const diffMs = Date.now() - new Date(iso).getTime();
     if (diffMs < 60_000) return 'just now';
-    const h = Math.floor(diffMs / 3_600_000);
+    const m = Math.floor(diffMs / 60_000);
+    if (m < 60) return `${m}m`;
+    const h = Math.floor(m / 60);
     if (h < 24) return `${h}h`;
-    const d = Math.floor(h / 24);
-    return `${d}d`;
+    return `${Math.floor(h / 24)}d`;
   }
 }
