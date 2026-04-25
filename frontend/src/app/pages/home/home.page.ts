@@ -35,7 +35,7 @@ import { SuggestionCardComponent } from '../../ui/suggestion-card/suggestion-car
 
       @if (stacksService.stacks().length > 0) {
         <section class="stacks-row" aria-labelledby="stacks-heading">
-          <h2 id="stacks-heading" class="eyebrow">SMART STACKS <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
+          <h2 id="stacks-heading">Smart stacks <a href="/stacks" (click)="$event.preventDefault()">See all</a></h2>
           <div class="stacks-scroll">
             @for (s of stacksService.stacks(); track s.id) {
               <app-stack-card [stack]="s"/>

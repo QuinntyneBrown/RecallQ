@@ -1,5 +1,6 @@
 # Home Smart Stacks heading uppercases the label
 
+**Status:** Complete — `home.page.ts` now renders `<h2 id="stacks-heading">Smart stacks <a …>See all</a></h2>`; the empty `eyebrow` class is removed.
 **Flow:** [24 — Smart Stacks](../flows/24-smart-stacks/24-smart-stacks.md) (audited via Flow 39 home shell)
 **Traces:** L1-006, L2-026.
 **Severity:** Low — `frontend/src/app/pages/home/home.page.ts` renders the stacks-row heading as `SMART STACKS` with `class="eyebrow"`, treating it as a mono-style eyebrow. Node `0OyoH` in `docs/ui-design.pen` defines the heading as plain `Smart stacks` in Geist 17 / 700, matching the typography of the contact-detail `Recent activity` heading.
