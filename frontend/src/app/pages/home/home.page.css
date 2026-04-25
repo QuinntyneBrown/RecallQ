@@ -60,7 +60,7 @@
   border-radius: var(--radius-full);
   background: var(--surface-elevated);
   border: 1px solid var(--border-subtle);
-  padding: 0 24px 0 52px;
+  padding: 0 18px 0 52px;
   color: var(--foreground-primary);
   font-size: 15px;
   outline: none;
