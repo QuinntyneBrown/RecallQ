@@ -39,8 +39,10 @@ public class ContactsTests : IClassFixture<RecallqFactory>
         using var meReq = new HttpRequestMessage(HttpMethod.Get, "/api/auth/me");
         meReq.Headers.Add("Cookie", cookie);
         var me = await client.SendAsync(meReq);
+        Assert.Equal(HttpStatusCode.OK, me.StatusCode);
         var body = await me.Content.ReadFromJsonAsync<JsonElement>();
-        var userId = body.GetProperty("id").GetGuid();
+        Assert.True(body.TryGetProperty("id", out var idProp) && idProp.ValueKind != JsonValueKind.Null, $"Response: {body}");
+        var userId = idProp.GetGuid();
         return (client, userId, cookie);
     }
 
@@ -147,5 +149,41 @@ public class ContactsTests : IClassFixture<RecallqFactory>
         getReq.Headers.Add("Cookie", cookieB);
         var getRes = await clientB.SendAsync(getReq);
         Assert.Equal(HttpStatusCode.NotFound, getRes.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_contact_as_owner_returns_204()
+    {
+        var (client, _, cookie) = await RegisterAndLogin(_factory, UniqueEmail());
+        var createRes = await PostContact(client, cookie, SamplePayload("Delete Me"));
+        Assert.Equal(HttpStatusCode.Created, createRes.StatusCode);
+        var body = await createRes.Content.ReadFromJsonAsync<JsonElement>();
+        var id = body.GetProperty("id").GetGuid();
+
+        using var deleteReq = new HttpRequestMessage(HttpMethod.Delete, $"/api/contacts/{id}");
+        deleteReq.Headers.Add("Cookie", cookie);
+        var deleteRes = await client.SendAsync(deleteReq);
+        Assert.Equal(HttpStatusCode.NoContent, deleteRes.StatusCode);
+
+        using var getReq = new HttpRequestMessage(HttpMethod.Get, $"/api/contacts/{id}");
+        getReq.Headers.Add("Cookie", cookie);
+        var getRes = await client.SendAsync(getReq);
+        Assert.Equal(HttpStatusCode.NotFound, getRes.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_contact_as_non_owner_returns_404()
+    {
+        var (clientA, _, cookieA) = await RegisterAndLogin(_factory, UniqueEmail());
+        var createRes = await PostContact(clientA, cookieA, SamplePayload("Delete Me"));
+        Assert.Equal(HttpStatusCode.Created, createRes.StatusCode);
+        var body = await createRes.Content.ReadFromJsonAsync<JsonElement>();
+        var id = body.GetProperty("id").GetGuid();
+
+        var (clientB, _, cookieB) = await RegisterAndLogin(_factory, UniqueEmail());
+        using var deleteReq = new HttpRequestMessage(HttpMethod.Delete, $"/api/contacts/{id}");
+        deleteReq.Headers.Add("Cookie", cookieB);
+        var deleteRes = await clientB.SendAsync(deleteReq);
+        Assert.Equal(HttpStatusCode.NotFound, deleteRes.StatusCode);
     }
 }

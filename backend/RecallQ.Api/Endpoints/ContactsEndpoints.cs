@@ -90,6 +90,16 @@ public static class ContactsEndpoints
             return Results.Ok(ContactDetailDto.From(c, rows.Select(InteractionDto.From).ToArray(), total));
         });
 
+        app.MapDelete("/api/contacts/{id:guid}", [Authorize] async (
+            Guid id, AppDbContext db) =>
+        {
+            var c = await db.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+            if (c is null) return Results.NotFound();
+            db.Contacts.Remove(c);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        });
+
         app.MapGet("/api/contacts", [Authorize] async (
             AppDbContext db, int? page, int? pageSize, string? sort) =>
         {
