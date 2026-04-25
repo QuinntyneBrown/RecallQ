@@ -78,6 +78,40 @@ public class EmbeddingIdempotencyTests : IClassFixture<EmbeddingWorkerFactory>
     }
 
     [Fact]
+    public async Task Admin_embedding_status_reports_failed_counts()
+    {
+        Environment.SetEnvironmentVariable("ADMIN_ENABLED", "true");
+        try
+        {
+            var (client, userId, cookie) = await RegisterLogin();
+            var id = await CreateContact(client, cookie, "Status Target " + Guid.NewGuid().ToString("N"));
+            var row = await WaitForEmbedding(id);
+            Assert.NotNull(row);
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var existing = await db.ContactEmbeddings.IgnoreQueryFilters().FirstAsync(e => e.ContactId == id);
+                existing.Failed = true;
+                existing.LastError = "synthetic test failure";
+                await db.SaveChangesAsync();
+            }
+
+            using var req = new HttpRequestMessage(HttpMethod.Get, "/api/admin/embeddings/status");
+            req.Headers.Add("Cookie", cookie);
+            var res = await client.SendAsync(req);
+            Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+            var body = await res.Content.ReadFromJsonAsync<JsonElement>();
+            Assert.True(body.GetProperty("contactsFailed").GetInt32() >= 1);
+            body.GetProperty("interactionsFailed").GetInt32();
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ADMIN_ENABLED", null);
+        }
+    }
+
+    [Fact]
     public async Task Contact_patch_changing_emails_re_embeds()
     {
         var (client, userId, cookie) = await RegisterLogin();
