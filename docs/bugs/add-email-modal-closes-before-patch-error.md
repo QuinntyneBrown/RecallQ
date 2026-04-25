@@ -2,7 +2,7 @@
 
 **Flow:** 28 — Quick Action: Message
 **Severity:** Medium-High (UX recovery path lost)
-**Status:** Open
+**Status:** Complete — `AddEmailModal` now accepts an optional `onSave: (value) => Promise<string | null>` callback via `DIALOG_DATA`. `save()` awaits the callback and either closes the dialog (null = success) or surfaces the returned error inline via a `role="alert"` element while the dialog stays open and the typed value is preserved. `ContactDetailPage.onMessage` passes an `onSave` that maps `patch_failed_400` to `That email looks invalid`; the success-only `closed` subscription kicks off the recursive `onMessage()` to launch `mailto:`.
 
 ## Symptom
 

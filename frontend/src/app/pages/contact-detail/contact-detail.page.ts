@@ -121,17 +121,22 @@ export class ContactDetailPage implements OnInit {
     }
     const ref = this.dialog.open<string | undefined>(AddEmailModal, {
       ariaLabelledBy: 'add-email-title',
+      data: {
+        onSave: async (v: string): Promise<string | null> => {
+          try {
+            const updated = await this.contacts.patch(c.id, { emails: [v] });
+            this.contact.set(updated);
+            return null;
+          } catch (e: any) {
+            return e?.message === 'patch_failed_400'
+              ? 'That email looks invalid'
+              : 'Could not update contact';
+          }
+        },
+      },
     });
-    ref.closed.subscribe(async (value) => {
-      const v = (value ?? '').trim();
-      if (!v) return;
-      try {
-        const updated = await this.contacts.patch(c.id, { emails: [v] });
-        this.contact.set(updated);
-        this.onMessage();
-      } catch {
-        this.toast.show('Could not update contact');
-      }
+    ref.closed.subscribe((value) => {
+      if ((value ?? '').trim()) this.onMessage();
     });
   }
 
