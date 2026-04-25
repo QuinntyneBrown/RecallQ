@@ -1,5 +1,6 @@
 # Search match-count uses plural noun when count is 1
 
+**Status:** Complete — `search.page` exposes a `matchCountLabel` computed that picks `1 contact matched` for `contactsMatched === 1` and the plural form otherwise; the template binds the computed.
 **Flow:** [15 — Vector Semantic Search](../flows/15-vector-search/15-vector-search.md)
 **Traces:** L1-004, L2-014.
 **Severity:** Low — `frontend/src/app/pages/search/search.page.html` (post-templateUrl refactor) shows `{{ contactsMatched() }} contacts matched`. When the server returns exactly one match the meta band reads `1 contacts matched`, which is grammatically wrong and inconsistent with the home subtitle fix already shipped.

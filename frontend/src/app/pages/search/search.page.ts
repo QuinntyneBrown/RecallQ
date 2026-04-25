@@ -35,7 +35,7 @@ import { SortMenuComponent } from '../../ui/sort-menu/sort-menu.component';
           <app-sort-menu [sort]="sort()" [disabled]="!q()" (sortChange)="onSortChange($event)"></app-sort-menu>
         </div>
         <div class="meta">
-          <span data-testid="match-count">{{ contactsMatched() }} contacts matched</span>
+          <span data-testid="match-count">{{ matchCountLabel() }}</span>
         </div>
 
         @if (error()) {
@@ -227,6 +227,10 @@ export class SearchResultsPage implements OnInit, AfterViewInit, OnDestroy {
   readonly error = this.searchService.error;
   readonly q = this.searchService.query;
   readonly contactsMatched = this.searchService.contactsMatched;
+  readonly matchCountLabel = computed(() => {
+    const n = this.contactsMatched();
+    return n === 1 ? '1 contact matched' : `${n} contacts matched`;
+  });
   readonly sort = this.searchService.sort;
 
   readonly stackName = signal<string | null>(null);
