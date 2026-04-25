@@ -17,7 +17,7 @@
 
     <div class="chips">
       @for (t of tags(); track t) {
-        <span class="chip">{{ t }}<button type="button" (click)="removeTag(t)" aria-label="Remove tag">x</button></span>
+        <span class="chip">{{ t }}<button type="button" (click)="removeTag(t)" [attr.aria-label]="'Remove tag ' + t">x</button></span>
       }
     </div>
     <label class="tag-label">Tags

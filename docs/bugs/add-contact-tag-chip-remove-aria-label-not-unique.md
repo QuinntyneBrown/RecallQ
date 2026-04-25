@@ -1,5 +1,6 @@
 # Add contact tag chip remove buttons share an ambiguous aria-label
 
+**Status:** Complete — `add-contact.page.html` chip remove button now binds `[attr.aria-label]="'Remove tag ' + t"` so each instance announces its tag value.
 **Flow:** [05 — Create Contact](../flows/05-create-contact/05-create-contact.md)
 **Traces:** L1-002, L1-015.
 **Severity:** Low — Each tag chip on the add-contact form renders an `x` close button with `aria-label="Remove tag"`. When the form has multiple tags every button announces the same "Remove tag" text, leaving screen-reader users no way to tell the chips apart and confirm which one will disappear before activating it.
